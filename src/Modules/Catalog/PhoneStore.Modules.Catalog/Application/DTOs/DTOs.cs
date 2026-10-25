@@ -1,12 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace PhoneStore.Modules.Catalog.Application.DTOs;
 
+// N2LHTBLTT-14: Validation được thực hiện bằng FluentValidation (CatalogValidators),
+// không dùng DataAnnotations để tránh chạy validation hai lần.
+
 public record CategoryDto(long Id, string Name, bool IsActive);
-public record CreateCategoryRequest([Required, MaxLength(100)] string Name);
+public record CreateCategoryRequest(string Name);
 
 public record BrandDto(long Id, string Name, bool IsActive);
-public record CreateBrandRequest([Required, MaxLength(100)] string Name);
+public record CreateBrandRequest(string Name);
 
 public record ProductVariantDto(
     long Id,
@@ -31,7 +32,8 @@ public record ProductDto(
     long MinPrice,
     long MaxPrice,
     string? MainImageUrl,
-    bool IsActive
+    bool IsActive,
+    DateTimeOffset CreatedAt
 );
 
 public record ProductDetailDto(
