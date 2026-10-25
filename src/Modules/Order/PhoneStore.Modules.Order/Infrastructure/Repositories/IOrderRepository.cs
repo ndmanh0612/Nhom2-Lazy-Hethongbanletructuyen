@@ -11,4 +11,5 @@ public interface IOrderRepository
     Task<bool> ExistsOrderNumberAsync(string orderNumber, CancellationToken cancellationToken = default);
     Task AddAsync(OrderEntity order, CancellationToken cancellationToken = default);
     void Remove(OrderEntity order);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
