@@ -44,13 +44,21 @@ public class OrdersController : ControllerBase
 
     /// <summary>
     /// FR-08: Danh sách đơn hàng của khách hàng đang đăng nhập.
+    /// Hỗ trợ lọc theo trạng thái, khoảng thời gian tạo đơn và phân trang.
     /// </summary>
+    /// <param name="status">Lọc theo trạng thái đơn (PENDING, CONFIRMED, SHIPPING, DELIVERED, DELIVERY_FAILED, CANCELLED).</param>
+    /// <param name="fromDate">Chỉ lấy đơn tạo từ thời điểm này trở đi (ISO-8601).</param>
+    /// <param name="toDate">Chỉ lấy đơn tạo trước thời điểm này (ISO-8601).</param>
+    /// <param name="page">Số trang, bắt đầu từ 1.</param>
+    /// <param name="pageSize">Số bản ghi mỗi trang (tối đa 100).</param>
     [HttpGet]
-    public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetOrders(
+        [FromQuery] OrderFilterQuery query,
+        CancellationToken cancellationToken)
     {
         var userId = RequireUserId();
-        var result = await _orderService.GetOrdersAsync(userId, cancellationToken);
-        return Ok(ApiResponse<IReadOnlyList<OrderDto>>.Ok(result.Value));
+        var result = await _orderService.GetOrdersAsync(userId, query, cancellationToken);
+        return Ok(ApiResponse<PagedResult<OrderDto>>.Ok(result.Value));
     }
 
     /// <summary>
