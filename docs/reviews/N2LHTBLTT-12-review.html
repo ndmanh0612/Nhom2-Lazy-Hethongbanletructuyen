@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Review Task N2LHTBLTT-12 — Cart &amp; Order Domain</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --bg-soft: #161922;
+    --bg-card: #1b1f2a;
+    --border: #2a3040;
+    --text: #e4e7ee;
+    --text-dim: #9aa3b5;
+    --text-mute: #6b7484;
+    --accent: #4f9cf9;
+    --green: #3fb950;
+    --amber: #d29922;
+    --red: #f85149;
+    --purple: #a371f7;
+    --cyan: #39c5cf;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, "SF Mono", monospace;
+    --sans: "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px 100px; }
+
+  header.hero {
+    background: linear-gradient(135deg, #16202f 0%, #1b1f2a 55%, #221a2b 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 28px 38px;
+    margin-bottom: 34px;
+  }
+  header.hero .wrap { padding-bottom: 0; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700; margin-bottom: 14px;
+  }
+  .eyebrow::before {
+    content: ""; width: 26px; height: 2px; background: var(--accent); border-radius: 2px;
+  }
+  h1 { margin: 0 0 10px; font-size: 31px; line-height: 1.25; letter-spacing: -.3px; }
+  h1 .ticket { color: var(--accent); font-family: var(--mono); font-size: 24px; }
+  .subtitle { color: var(--text-dim); max-width: 760px; margin: 0 0 22px; font-size: 15px; }
+
+  .meta-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    gap: 12px; margin-top: 26px;
+  }
+  .meta-card {
+    background: rgba(255,255,255,.035);
+    border: 1px solid var(--border);
+    border-radius: 9px; padding: 12px 14px;
+  }
+  .meta-card .label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--text-mute); margin-bottom: 4px; font-weight: 600;
+  }
+  .meta-card .value { font-family: var(--mono); font-size: 13px; word-break: break-all; }
+  .meta-card .value.sm { font-size: 12px; }
+
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; font-family: var(--mono);
+    border: 1px solid transparent;
+  }
+  .b-green  { background: rgba(63,185,80,.14);  color: var(--green);  border-color: rgba(63,185,80,.35); }
+  .b-amber  { background: rgba(210,153,34,.14); color: var(--amber);  border-color: rgba(210,153,34,.35); }
+  .b-red    { background: rgba(248,81,73,.14);  color: var(--red);    border-color: rgba(248,81,73,.35); }
+  .b-blue   { background: rgba(79,156,249,.14); color: var(--accent); border-color: rgba(79,156,249,.35); }
+  .b-purple { background: rgba(163,113,247,.14);color: var(--purple); border-color: rgba(163,113,247,.35); }
+  .b-grey   { background: rgba(155,163,181,.1); color: var(--text-dim); border-color: var(--border); }
+
+  h2 {
+    font-size: 21px; margin: 46px 0 8px; padding-top: 14px;
+    border-top: 1px solid var(--border); letter-spacing: -.2px;
+  }
+  h2:first-of-type { border-top: none; }
+  h3 { font-size: 16.5px; margin: 30px 0 10px; color: #f0f3f9; }
+  h4 { font-size: 14px; margin: 22px 0 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
+  p { margin: 10px 0; }
+  .lead { color: var(--text-dim); }
+
+  .toc {
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 11px; padding: 20px 24px; margin-bottom: 30px;
+  }
+  .toc h4 { margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 34px; }
+  .toc li { margin: 5px 0; break-inside: avoid; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 13.5px; }
+  .toc a:hover { text-decoration: underline; }
+
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 11px; padding: 20px 22px; margin: 16px 0;
+  }
+  .card > h3:first-child, .card > h4:first-child { margin-top: 0; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 14px; margin: 18px 0 6px; }
+  .stat {
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px; text-align: center;
+  }
+  .stat .num { font-size: 26px; font-weight: 700; font-family: var(--mono); }
+  .stat .cap { font-size: 11.5px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+
+  pre {
+    background: #10141c; border: 1px solid var(--border); border-radius: 9px;
+    padding: 16px 18px; overflow-x: auto; margin: 12px 0;
+    font-family: var(--mono); font-size: 12.7px; line-height: 1.62; color: #cdd6e4;
+  }
+  pre code { font-family: inherit; }
+  .c-kw   { color: #c792ea; }
+  .c-type { color: #82d9ff; }
+  .c-str  { color: #c3e88d; }
+  .c-num  { color: #f78c6c; }
+  .c-cmt  { color: #5f6b7f; font-style: italic; }
+  .c-meth { color: #ffcb6b; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg-soft); color: var(--text-dim); font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; font-weight: 700; }
+  tr:hover td { background: rgba(255,255,255,.017); }
+  td code, p code, li code {
+    font-family: var(--mono); font-size: 12.4px; background: rgba(79,156,249,.1);
+    color: #9ecbff; padding: 1px 6px; border-radius: 4px;
+  }
+  td .path { font-family: var(--mono); font-size: 11.8px; color: var(--text-dim); display: block; }
+
+  .finding {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 9px; padding: 16px 20px; margin: 14px 0;
+  }
+  .finding.critical { border-left-color: var(--red); }
+  .finding.high     { border-left-color: var(--amber); }
+  .finding.medium   { border-left-color: var(--cyan); }
+  .finding.low      { border-left-color: var(--text-mute); }
+  .finding.info     { border-left-color: var(--accent); }
+  .finding .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .finding .head strong { font-size: 14.5px; }
+  .finding p { margin: 6px 0; font-size: 13.8px; }
+  .finding ul { margin: 6px 0; padding-left: 20px; font-size: 13.8px; }
+  .finding .fix {
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border);
+    font-size: 13.3px; color: var(--text-dim);
+  }
+  .finding .fix strong { color: var(--green); }
+
+  .note {
+    background: rgba(79,156,249,.07); border: 1px solid rgba(79,156,249,.25);
+    border-radius: 9px; padding: 13px 17px; margin: 14px 0; font-size: 13.7px; color: var(--text-dim);
+  }
+  .note strong { color: var(--accent); }
+  .note.warn { background: rgba(210,153,34,.07); border-color: rgba(210,153,34,.28); }
+  .note.warn strong { color: var(--amber); }
+
+  .diagram {
+    background: #10141c; border: 1px solid var(--border); border-radius: 11px;
+    padding: 22px; overflow-x: auto; margin: 18px 0; font-family: var(--mono); font-size: 12.3px; line-height: 1.75; color: #cdd6e4;
+  }
+  .diagram .box { color: var(--cyan); }
+  .diagram .rel { color: var(--text-mute); }
+  .diagram .fld { color: var(--text-dim); }
+
+  .checklist { list-style: none; padding: 0; margin: 14px 0; }
+  .checklist li {
+    padding: 9px 14px 9px 40px; position: relative;
+    border: 1px solid var(--border); border-radius: 8px; margin: 7px 0;
+    background: var(--bg-card); font-size: 13.7px;
+  }
+  .checklist li::before {
+    content: "☐"; position: absolute; left: 14px; top: 8px;
+    font-size: 16px; color: var(--text-mute);
+  }
+  .checklist li.done::before { content: "☑"; color: var(--green); }
+  .checklist li.done { opacity: .72; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } .toc ol { columns: 1; } }
+
+  footer {
+    margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--border);
+    color: var(--text-mute); font-size: 12.5px; text-align: center;
+  }
+  .backtop { position: fixed; right: 22px; bottom: 22px; background: var(--bg-card);
+    border: 1px solid var(--border); color: var(--text-dim); border-radius: 50%;
+    width: 42px; height: 42px; display: grid; place-items: center; text-decoration: none;
+    font-size: 17px; transition: .2s; }
+  .backtop:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 0; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 8px 15px; font-size: 13px; cursor: pointer; color: var(--text-dim);
+    border: 1px solid transparent; border-bottom: none; border-radius: 7px 7px 0 0;
+    background: transparent; font-family: var(--sans);
+  }
+  .tab.active { background: var(--bg-card); border-color: var(--border); color: var(--text); }
+  .tabpane { display: none; } .tabpane.active { display: block; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Code Review · Sprint 2</div>
+    <h1>Task <span class="ticket">N2LHTBLTT-12</span> — Xây dựng Domain Entities, Repository &amp; API contract cho Cart / Order</h1>
+    <p class="subtitle">
+      Báo cáo review chi tiết cho commit <code>600a3e5</code> trên nhánh
+      <code>feature/N2LHTBLTT-12-cart-order-entities</code>. Tài liệu này dùng để review trước khi
+      mở Pull Request — <strong>chưa merge vào <code>main</code> hay <code>develop</code></strong>.
+    </p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="label">Commit</div>
+        <div class="value">600a3e5</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Nhánh hiện tại</div>
+        <div class="value sm">feature/N2LHTBLTT-12-<br>cart-order-entities</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Base commit</div>
+        <div class="value">afcc987</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Assignee</div>
+        <div class="value sm">Mai Thanh Toàn</div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Trạng thái</div>
+        <div class="value"><span class="badge b-amber">Chờ review</span></div>
+      </div>
+      <div class="meta-card">
+        <div class="label">Build / Test</div>
+        <div class="value"><span class="badge b-green">27/27 pass</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <h4>Mục lục</h4>
+    <ol>
+      <li><a href="#tong-quan">Tổng quan &amp; phạm vi</a></li>
+      <li><a href="#files">Danh sách file thay đổi</a></li>
+      <li><a href="#kien-truc">Kiến trúc &amp; mô hình dữ liệu</a></li>
+      <li><a href="#cart">Review Cart module</a></li>
+      <li><a href="#order">Review Order module</a></li>
+      <li><a href="#repo">Review Repository layer</a></li>
+      <li><a href="#ef">Cấu hình EF Core mapping</a></li>
+      <li><a href="#dto">API contract (DTO)</a></li>
+      <li><a href="#diagram">Sơ đồ quan hệ dữ liệu</a></li>
+      <li><a href="#findings">Các phát hiện &amp; rủi ro</a></li>
+      <li><a href="#checklist">Checklist review</a></li>
+      <li><a href="#next">Các task liên quan</a></li>
+    </ol>
+  </nav>
+
+  <!-- ═══════════════ TỔNG QUAN ═══════════════ -->
+  <h2 id="tong-quan">1. Tổng quan &amp; phạm vi</h2>
+  <p class="lead">
+    Task <code>N2LHTBLTT-12</code> là task nền tảng cho toàn bộ Cart/Order module, phục vụ trực tiếp cho
+    <code>N2LHTBLTT-19</code> (FR-06), <code>N2LHTBLTT-20</code> (FR-07), <code>N2LHTBLTT-25</code> (FR-08)
+    và <code>N2LHTBLTT-26</code> (FR-09). Trước task này, cả hai module chỉ là scaffold rỗng —
+    chỉ có <code>DbContext</code> không có entity nào.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat"><div class="num">23</div><div class="cap">File thay đổi</div></div>
+    <div class="stat"><div class="num">+1097</div><div class="cap">Dòng thêm</div></div>
+    <div class="stat"><div class="num">-11</div><div class="cap">Dòng xoá</div></div>
+    <div class="stat"><div class="num">6</div><div class="cap">Entity / Enum</div></div>
+    <div class="stat"><div class="num">4</div><div class="cap">File Repository</div></div>
+    <div class="stat"><div class="num">5</div><div class="cap">Bảng DB</div></div>
+    <div class="stat"><div class="num">27</div><div class="cap">Test xanh</div></div>
+  </div>
+
+  <div class="card">
+    <h4>Trước và sau</h4>
+    <table>
+      <thead><tr><th style="width:32%">Lớp</th><th style="width:34%">Trước task</th><th>Sau task</th></tr></thead>
+      <tbody>
+        <tr><td>Domain</td><td><span class="badge b-red">Chưa có</span></td><td><span class="badge b-green">Cart, CartItem, Order, OrderItem, OrderStatusHistory + 2 enum</span></td></tr>
+        <tr><td>Repository</td><td><span class="badge b-red">Chưa có</span></td><td><span class="badge b-green">ICartRepository, IOrderRepository + 2 implementation</span></td></tr>
+        <tr><td>Application / DTO</td><td><span class="badge b-red">Chưa có</span></td><td><span class="badge b-green">12 record contract cho Cart &amp; Order</span></td></tr>
+        <tr><td>Persistence</td><td><span class="badge b-amber">DbContext rỗng</span></td><td><span class="badge b-green">5 bảng + index + FK + enum→string</span></td></tr>
+        <tr><td>DI Registration</td><td><span class="badge b-amber">Chỉ DbContext</span></td><td><span class="badge b-green">+ 2 repository scoped</span></td></tr>
+        <tr><td>Endpoint</td><td><span class="badge b-amber">Controller trả message</span></td><td><span class="badge b-blue">Giữ nguyên — thuộc task 19/20/25/26</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════════ FILES ═══════════════ -->
+  <h2 id="files">2. Danh sách file thay đổi</h2>
+  <table>
+    <thead><tr><th style="width:52%">File</th><th style="width:9%">Thêm</th><th style="width:9%">Xoá</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><span class="path">src/Modules/Cart/…/Domain/Entities/Cart.cs</span></td><td>96</td><td>0</td><td>Aggregate root giỏ hàng</td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/Domain/Entities/CartItem.cs</span></td><td>73</td><td>0</td><td>Dòng sản phẩm trong giỏ</td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/Domain/Enums/CartStatus.cs</span></td><td>8</td><td>0</td><td>ACTIVE / CONVERTED / ABANDONED</td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/Infrastructure/Repositories/ICartRepository.cs</span></td><td>14</td><td>0</td><td>Interface truy vấn giỏ hàng</td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/Infrastructure/Repositories/CartRepository.cs</span></td><td>56</td><td>0</td><td>Hiện thực EF Core</td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/Infrastructure/Persistence/CartDbContext.cs</span></td><td>43</td><td>2</td><td>Mapping bảng <code>carts</code>, <code>cart_items</code></td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/Application/DTOs/DTOs.cs</span></td><td>33</td><td>0</td><td>Contract Cart</td></tr>
+      <tr><td><span class="path">src/Modules/Cart/…/CartModuleRegistration.cs</span></td><td>5</td><td>2</td><td>Đăng ký <code>ICartRepository</code></td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Domain/Entities/Order.cs</span></td><td>122</td><td>0</td><td>Aggregate root đơn hàng</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Domain/Entities/OrderItem.cs</span></td><td>48</td><td>0</td><td>Dòng đơn hàng (snapshot giá)</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Domain/Entities/OrderStatusHistory.cs</span></td><td>30</td><td>0</td><td>Lịch sử trạng thái (FR-08)</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Domain/Entities/OrderItemDraft.cs</span></td><td>8</td><td>0</td><td>Record input khi tạo đơn</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Domain/Enums/OrderStatus.cs</span></td><td>11</td><td>0</td><td>6 trạng thái vòng đời đơn</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Infrastructure/Repositories/IOrderRepository.cs</span></td><td>14</td><td>0</td><td>Interface truy vấn đơn hàng</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Infrastructure/Repositories/OrderRepository.cs</span></td><td>59</td><td>0</td><td>Hiện thực EF Core</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Infrastructure/Persistence/OrderDbContext.cs</span></td><td>70</td><td>5</td><td>Mapping 3 bảng schema <code>ordering</code></td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/Application/DTOs/DTOs.cs</span></td><td>76</td><td>0</td><td>Contract Order</td></tr>
+      <tr><td><span class="path">src/Modules/Order/…/OrderModuleRegistration.cs</span></td><td>5</td><td>2</td><td>Đăng ký <code>IOrderRepository</code></td></tr>
+      <tr><td><span class="path">tests/PhoneStore.UnitTests/CartTests.cs</span></td><td>122</td><td>0</td><td>11 unit test cho Cart</td></tr>
+      <tr><td><span class="path">tests/PhoneStore.UnitTests/OrderTests.cs</span></td><td>124</td><td>0</td><td>9 unit test cho Order</td></tr>
+      <tr><td><span class="path">tests/PhoneStore.UnitTests/PersistenceModelTests.cs</span></td><td>53</td><td>0</td><td>Kiểm tra EF model build được</td></tr>
+      <tr><td><span class="path">tests/PhoneStore.ArchitectureTests/ModuleArchitectureTests.cs</span></td><td>26</td><td>0</td><td>+2 test ranh giới Cart/Order</td></tr>
+      <tr><td><span class="path">tests/PhoneStore.UnitTests/PhoneStore.UnitTests.csproj</span></td><td>1</td><td>0</td><td>Thêm ProjectReference tới Cart module</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ═══════════════ KIẾN TRÚC ═══════════════ -->
+  <h2 id="kien-truc">3. Kiến trúc &amp; mô hình dữ liệu</h2>
+  <p class="lead">
+    Thiết kế bám theo đúng convention của <code>Identity</code> và <code>Catalog</code> đã có sẵn:
+    Domain entity dùng <code>private set</code> + <code>static Create()</code> factory, đặt quy tắc nghiệp vụ
+    trong method domain (không để lọt sang service), EF mapping khai báo tường minh trong <code>OnModelCreating</code>.
+  </p>
+
+  <div class="diagram">
+<span class="box">┌─── MODULE CART ── schema: cart ─────────────────┐</span>
+<span class="rel">│</span>
+<span class="box">  Cart</span>  <span class="rel">──1:N──▶</span>  <span class="box">CartItem</span>
+<span class="rel">  ├─ Id            (bigint, identity)</span>
+<span class="rel">  ├─ UserId        (bigint)  ◀── FK logic tới Identity.users</span>
+<span class="rel">  ├─ Status        (varchar 20, enum→string)</span>
+<span class="rel">  ├─ CreatedAt / UpdatedAt</span>
+<span class="rel">  └─ Items         (navigation, cascade delete)</span>
+<span class="rel"></span>
+<span class="box">  CartItem</span>
+<span class="rel">  ├─ Id / CartId</span>
+<span class="rel">  ├─ ProductVariantId (bigint) ◀── FK logic tới Catalog</span>
+<span class="rel">  ├─ ProductName / Sku   (snapshot)</span>
+<span class="rel">  ├─ UnitPrice   (snapshot lúc thêm)</span>
+<span class="rel">  └─ Quantity</span>
+<span class="rel">│</span>
+<span class="rel">└──────────────────────────────────────────────┘</span>
+
+<span class="box">┌─── MODULE ORDER ── schema: ordering ───────────────┐</span>
+<span class="rel">│</span>
+<span class="box">  Order</span>  <span class="rel">──1:N──▶</span>  <span class="box">OrderItem</span>  <span class="rel">+</span>  <span class="box">OrderStatusHistory</span>
+<span class="rel">  ├─ Id / OrderNumber (unique)</span>
+<span class="rel">  ├─ CustomerId (bigint) ◀── FK logic tới Identity.users</span>
+<span class="rel">  ├─ Status (enum→string) / PaymentMethod (COD)</span>
+<span class="rel">  ├─ Subtotal / ShippingFee / TotalAmount</span>
+<span class="rel">  ├─ ReceiverName / Phone / ShippingAddress</span>
+<span class="rel">  └─ Items + StatusHistories (cascade delete)</span>
+<span class="rel">│</span>
+<span class="rel">└──────────────────────────────────────────────┘</span>
+  </div>
+
+  <div class="note">
+    <strong>Nguyên tắc cô lập schema được giữ:</strong> <code>CartDbContext</code> và <code>OrderDbContext</code> dùng
+    cùng một connection string nhưng <code>HasDefaultSchema(...)</code> tách bảng và
+    <code>MigrationsHistoryTable</code> tách lịch sử migration theo từng schema. Không có FK vật lý
+    giữa các schema — các liên kết <code>UserId</code>, <code>ProductVariantId</code> là FK <em>logic</em>,
+    đúng theo ranh giới Modular Monolith của đề tài.
+  </div>
+
+  <!-- ═══════════════ CART ═══════════════ -->
+  <h2 id="cart">4. Review Cart module</h2>
+
+  <h3>4.1 Entity <code>Cart</code> — Aggregate Root</h3>
+<pre><code><span class="c-kw">public class</span> <span class="c-type">Cart</span> : <span class="c-type">AggregateRoot</span>&lt;<span class="c-type">long</span>&gt;
+{
+    <span class="c-kw">public const int</span> MaxItemsPerCart = <span class="c-num">50</span>;
+
+    <span class="c-kw">public long</span> UserId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+    <span class="c-kw">public</span> <span class="c-type">CartStatus</span> Status { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-type">CartStatus</span>.ACTIVE;
+
+    <span class="c-kw">private readonly</span> <span class="c-type">List</span>&lt;<span class="c-type">CartItem</span>&gt; _items = [];
+    <span class="c-kw">public</span> IReadOnlyCollection&lt;<span class="c-type">CartItem</span>&gt; Items =&gt; _items.AsReadOnly();
+
+    <span class="c-kw">public int</span> TotalQuantity =&gt; _items.Sum(item =&gt; item.Quantity);
+    <span class="c-kw">public long</span> Subtotal =&gt; _items.Sum(item =&gt; item.Subtotal);
+</code></pre>
+
+  <div class="split">
+    <div class="card">
+      <h4 style="color:var(--green)">✔ Điểm tốt</h4>
+      <ul>
+        <li>Quy tắc nghiệp vụ nằm đúng chỗ — <code>AddItem</code> tự cộng dồn khi trùng variant, tự chặn giỏ đã convert.</li>
+        <li><code>MaxItemsPerCart = 50</code> chặn giỏ phình to vô hạn.</li>
+        <li><code>EnsureItemBelongsToCart</code> chặn việc thao tác nhầm lên item của giỏ khác.</li>
+        <li>Computed property <code>Subtotal</code>/<code>TotalQuantity</code> không lưu DB → không lệch dữ liệu.</li>
+        <li>Pattern <code>static Create()</code> + <code>private set</code> khớp với <code>User</code>/<code>Product</code>.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">⚠ Cần chú ý</h4>
+      <ul>
+        <li><code>CartItem.Create(Id, …)</code> — khi giỏ chưa lưu, <code>Id = 0</code>. Phụ thuộc EF fixup để gán FK (xem F-01).</li>
+        <li><code>MarkAsAbandoned()</code> hiện chưa có nơi gọi — sẽ dùng cho job dọn giỏ bỏ quên (chưa có task).</li>
+        <li>Chưa có <code>AddDomainEvent</code> cho sự kiện giỏ — cần khi tích hợp tồn kho (task 26).</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>4.2 Entity <code>CartItem</code></h3>
+<pre><code><span class="c-kw">public const int</span> MaxQuantityPerItem = <span class="c-num">10</span>;
+
+<span class="c-kw">public long</span> CartId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public long</span> ProductVariantId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public string</span> ProductName { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-kw">string</span>.Empty;
+<span class="c-kw">public string</span> Sku { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-kw">string</span>.Empty;
+<span class="c-kw">public long</span> UnitPrice { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public int</span> Quantity { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+
+<span class="c-kw">public long</span> Subtotal =&gt; UnitPrice * Quantity;
+</code></pre>
+
+  <div class="note info">
+    <strong>Snapshot giá:</strong> <code>UnitPrice</code>, <code>ProductName</code>, <code>Sku</code> được lưu cứng trong giỏ
+    tại thời điểm thêm vào. Đây là chủ ý — lịch sử giá không được đổi retroactively. Tuy nhiên giá trong giỏ
+    <em>không phải</em> giá bán thực — giá server-side tại thời điểm checkout phải được tra cứu lại từ Catalog (xem F-02).
+  </div>
+
+  <h3>4.3 Enum <code>CartStatus</code></h3>
+  <table>
+    <thead><tr><th style="width:20%">Giá trị</th><th style="width:34%">Ý nghĩa</th><th>Được dùng ở đâu</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge b-green">ACTIVE</span></td><td>Giỏ đang dùng</td><td>Trạng thái khởi tạo; mới cho phép thêm/sửa/xoá</td></tr>
+      <tr><td><span class="badge b-blue">CONVERTED</span></td><td>Đã checkout thành đơn</td><td>Đặt bởi <code>MarkAsConverted()</code> trong luồng checkout (task 20)</td></tr>
+      <tr><td><span class="badge b-grey">ABANDONED</span></td><td>Giỏ bỏ quên</td><td>Dự phòng cho job dọn dẹp</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ═══════════════ ORDER ═══════════════ -->
+  <h2 id="order">5. Review Order module</h2>
+
+  <h3>5.1 Entity <code>Order</code> — Aggregate Root</h3>
+<pre><code><span class="c-kw">public const long</span> FreeShippingThreshold = <span class="c-num">10_000_000</span>;
+<span class="c-kw">public const long</span> StandardShippingFee = <span class="c-num">30_000</span>;
+
+<span class="c-kw">public string</span> OrderNumber { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-kw">string</span>.Empty;
+<span class="c-kw">public long</span> CustomerId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public</span> <span class="c-type">OrderStatus</span> Status { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-type">OrderStatus</span>.PENDING;
+<span class="c-kw">public string</span> PaymentMethod { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-kw">"COD"</span>;
+<span class="c-kw">public long</span> Subtotal / ShippingFee / TotalAmount;
+<span class="c-kw">public string</span> ReceiverName / ReceiverPhone / ShippingAddress;
+<span class="c-kw">public string</span>? Note / CancelReason;
+<span class="c-kw">public</span> <span class="c-type">DateTimeOffset</span>? CancelledAt / DeliveredAt;
+</code></pre>
+
+  <div class="finding critical">
+    <div class="head">
+      <span class="badge b-red">F-01 · Critical</span>
+      <strong>Client có thể tự khai giá sản phẩm — rủi ro thao túng đơn hàng</strong>
+    </div>
+    <p>Contract <code>AddToCartRequest</code> nhận <code>UnitPrice</code>, <code>ProductName</code> và <code>Sku</code>
+    trực tiếp từ request của client:</p>
+<pre><code><span class="c-kw">public record</span> <span class="c-type">AddToCartRequest</span>(
+    [Required] <span class="c-kw">long</span> ProductVariantId,
+    [Required, MaxLength(<span class="c-num">200</span>)] <span class="c-kw">string</span> ProductName,
+    [Required, MaxLength(<span class="c-num">64</span>)] <span class="c-kw">string</span> Sku,
+    [Range(<span class="c-num">0</span>, <span class="c-kw">long</span>.MaxValue)] <span class="c-kw">long</span> UnitPrice,
+    [Range(<span class="c-num">1</span>, <span class="c-num">10</span>)] <span class="c-kw">int</span> Quantity = <span class="c-num">1</span>);</code></pre>
+    <p>Do module Cart không được reference trực tiếp <code>CatalogDbContext</code> (nguyên tắc kiến trúc), hiện chưa có
+    nguồn giá server-side. Nếu implement task 19 theo đúng contract này, client có thể gửi
+    <code>UnitPrice = 1</code> và mua iPhone với giá 1 đồng.</p>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> đổi <code>AddToCartRequest</code> thành chỉ nhận <code>ProductVariantId</code> +
+      <code>Quantity</code>. Giá, tên, SKU phải tra từ Catalog qua contract/event bus (task <code>N2LHTBLTT-29</code> của Mạnh).
+      Trong lúc chờ contract, endpoint nên <strong>trả lỗi 501/503</strong> thay vì đọc giá từ client.
+      Cần chốt với Mạnh trước khi làm task 19.
+    </div>
+  </div>
+
+  <div class="finding high">
+    <div class="head">
+      <span class="badge b-amber">F-02 · High</span>
+      <strong>Chưa có logic sinh <code>OrderNumber</code> trong domain</strong>
+    </div>
+    <p><code>Order.Create()</code> nhận <code>orderNumber</code> từ bên ngoài dưới dạng tham số, không tự sinh.
+    Repository có <code>ExistsOrderNumberAsync</code> để kiểm tra trùng, nhưng <strong>chưa có nơi sinh số</strong>.
+    Định dạng đã thống nhất trong test là <code>ORD-20261025-0001</code> — cần một generator an toàn khi chạy song song.</p>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> sinh mã ở tầng service (task 20) theo dạng <code>ORD-{yyyyMMdd}-{seq:D4}</code>,
+      dùng sequence PostgreSQL hoặc retry khi đụng unique constraint. Không nên để client quyết định.
+    </div>
+  </div>
+
+  <div class="finding high">
+    <div class="head">
+      <span class="badge b-amber">F-03 · High</span>
+      <strong>Ma trận chuyển trạng thái chưa được kiểm soát chặt</strong>
+    </div>
+    <p><code>ChangeStatus()</code> chỉ chặn chuyển <em>từ</em> <code>DELIVERED</code> hoặc <code>CANCELLED</code>.
+    Điều này cho phép các bước nhảy không hợp lệ, ví dụ <code>PENDING → DELIVERED</code> hoặc
+    <code>PENDING → SHIPPING</code> mà không qua <code>CONFIRMED</code>.</p>
+<pre><code><span class="c-kw">if</span> (Status == <span class="c-type">OrderStatus</span>.DELIVERED || Status == <span class="c-type">OrderStatus</span>.CANCELLED)
+{
+    <span class="c-kw">throw new</span> <span class="c-type">InvalidOperationException</span>($<span class="c-str">"Không thể chuyển trạng thái từ {Status} sang {newStatus}."</span>);
+}</code></pre>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> thêm bảng transition hợp lệ, ví dụ
+      <code>AllowedTransitions = { PENDING: [CONFIRMED, CANCELLED], CONFIRMED: [SHIPPING, CANCELLED], SHIPPING: [DELIVERED, DELIVERY_FAILED], … }</code>.
+      Đây cũng là nơi để luật "hủy đơn phải trả lại tồn kho" (task 26) gắn vào.
+    </div>
+  </div>
+
+  <div class="finding medium">
+    <div class="head">
+      <span class="badge b-cyan">F-04 · Medium</span>
+      <strong>Ngưỡng miễn phí ship đặt sơ bộ — cần xác nhận nghiệp vụ</strong>
+    </div>
+    <p><code>FreeShippingThreshold = 10_000_000</code> (10 triệu) và <code>StandardShippingFee = 30_000</code>.
+    Ban đầu tôi đặt ngưỡng 500.000 nhưng đó là con số vô lý trong bán điện thoại — một chiếc iPhone đã vượt ngưỡng,
+    khiến quy tắc "miễn phí ship" trở nên vô nghĩa. Số 10 triệu là giá trị tạm để khớp với phụ kiện rẻ.</p>
+    <div class="fix">
+      <strong>Cần bạn xác nhận:</strong> đây là chính sách ship thật của CellphoneS hay số tạm? Nếu ship luôn miễn phí
+      (phổ biến ở e-commerce điện thoại) thì nên bỏ hẳn <code>ShippingFee</code> khỏi entity.
+    </div>
+  </div>
+
+  <div class="finding medium">
+    <div class="head">
+      <span class="badge b-cyan">F-05 · Medium</span>
+      <strong><code>PaymentMethod</code> là string thay vì enum</strong>
+    </div>
+    <p>Trong khi <code>Status</code> dùng enum và được lưu dạng string, <code>PaymentMethod</code> lại là
+    <code>string</code> gán cứng <code>"COD"</code>. Không nhất quán, và không có chỗ mở rộng khi thêm
+    chuyển khoản / ví điện tử ở sprint sau.</p>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> tạo enum <code>PaymentMethod { COD, BANK_TRANSFER, MOMO, VNPAY }</code>,
+      lưu dạng string. Nhất quán với cách xử lý <code>OrderStatus</code>.
+    </div>
+  </div>
+
+  <div class="finding low">
+    <div class="head">
+      <span class="badge b-grey">F-06 · Low</span>
+      <strong><code>RecalculateTotals()</code> là public — để lộ mutation</strong>
+    </div>
+    <p>Phương thức này tái tính <code>Subtotal</code>/<code>ShippingFee</code>/<code>TotalAmount</code> từ danh sách item.
+    Hiện chỉ được gọi nội bộ trong <code>Create()</code>, nhưng để <code>public</code> nghĩa là bất kỳ tầng nào cũng có thể
+    gọi nó và thay đổi tổng tiền của đơn sau khi đã tạo.</p>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> đổi thành <code>private</code> và chỉ cho phép gọi qua các method nghiệp vụ được kiểm soát.
+    </div>
+  </div>
+
+  <h3>5.2 Entity <code>OrderItem</code> — snapshot bất biến</h3>
+<pre><code><span class="c-kw">public long</span> OrderId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public</span> <span class="c-type">Order</span> Order { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-kw">null</span>!;
+<span class="c-kw">public long</span> ProductVariantId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public string</span> ProductName { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public string</span> Sku { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public long</span> UnitPrice { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public int</span> Quantity { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+</code></pre>
+
+  <div class="note">
+    <strong>Không có setter cho tồn kho:</strong> <code>OrderItem</code> không có <code>AdjustStock</code> hay
+    <code>SetQuantity</code> — trái ngược với <code>ProductVariant</code> ở Catalog. Đây là chủ ý: item đơn hàng là bản ghi
+    lịch sử bất biến, không được sửa sau khi tạo. Tồn kho được xử lý ở module Inventory qua event.
+  </div>
+
+  <h3>5.3 Entity <code>OrderStatusHistory</code> — phục vụ FR-08</h3>
+<pre><code><span class="c-kw">public long</span> OrderId { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public</span> <span class="c-type">Order</span> Order { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; } = <span class="c-kw">null</span>!;
+<span class="c-kw">public</span> <span class="c-type">OrderStatus</span>? FromStatus { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public</span> <span class="c-type">OrderStatus</span> ToStatus { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public string</span>? Note { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+<span class="c-kw">public</span> <span class="c-type">DateTimeOffset</span> ChangedAt { <span class="c-kw">get</span>; <span class="c-kw">private set</span>; }
+</code></pre>
+
+  <div class="note warn">
+    <strong>Trùng lặp trường thời gian:</strong> <code>ChangedAt</code> trùng ý nghĩa với <code>CreatedAt</code> kế thừa từ
+    <code>BaseEntity</code>. Có thể bỏ <code>ChangedAt</code> và dùng <code>CreatedAt</code>, hoặc giữ nguyên nếu nghiệp vụ
+    cần phân biệt "thời điểm ghi" với "thời điểm tạo row".
+  </div>
+
+  <h3>5.4 Enum <code>OrderStatus</code> — vòng đời đơn hàng</h3>
+  <table>
+    <thead><tr><th style="width:16%">Trạng thái</th><th style="width:30%">Ý nghĩa</th><th style="width:24%">Ai thực hiện</th><th>Hành động phụ</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge b-grey">PENDING</span></td><td>Vừa tạo, chờ xác nhận</td><td>Khách checkout</td><td>Trừ tồn kho (task 20)</td></tr>
+      <tr><td><span class="badge b-blue">CONFIRMED</span></td><td>Đã xác nhận</td><td>Staff</td><td>—</td></tr>
+      <tr><td><span class="badge b-purple">SHIPPING</span></td><td>Đang giao</td><td>Staff</td><td>—</td></tr>
+      <tr><td><span class="badge b-green">DELIVERED</span></td><td>Đã giao thành công</td><td>Staff</td><td>Set <code>DeliveredAt</code></td></tr>
+      <tr><td><span class="badge b-amber">DELIVERY_FAILED</span></td><td>Giao thất bại</td><td>Staff</td><td>— (chưa dùng)</td></tr>
+      <tr><td><span class="badge b-red">CANCELLED</span></td><td>Đã hủy</td><td>Khách / Staff</td><td>Hoàn tồn (task 26)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.5 Quy tắc hủy đơn — đã hiện thực</h3>
+<pre><code><span class="c-kw">public void</span> <span class="c-meth">Cancel</span>(<span class="c-kw">string</span> reason)
+{
+    <span class="c-kw">if</span> (Status != <span class="c-type">OrderStatus</span>.PENDING &amp;&amp; Status != <span class="c-type">OrderStatus</span>.CONFIRMED)
+    {
+        <span class="c-kw">throw new</span> <span class="c-type">InvalidOperationException</span>($<span class="c-str">"Đơn hàng đang ở trạng thái {Status} không thể hủy."</span>);
+    }
+
+    <span class="c-kw">var</span> previousStatus = Status;
+    Status = <span class="c-type">OrderStatus</span>.CANCELLED;
+    CancelReason = reason.Trim();
+    CancelledAt = <span class="c-type">DateTimeOffset</span>.UtcNow;
+    _statusHistories.Add(<span class="c-type">OrderStatusHistory</span>.Create(<span class="c-kw">this</span>, previousStatus, <span class="c-type">OrderStatus</span>.CANCELLED, CancelReason));
+    Touch();
+}</code></pre>
+  <div class="note warn">
+    <strong>Phần còn thiếu:</strong> hủy đơn phải hoàn lại tồn kho. Hiện domain chỉ đổi trạng thái —
+    chưa phát <code>DomainEvent</code> để module Inventory nhận và trả kho. Sẽ xử lý ở task
+    <code>N2LHTBLTT-26</code> cùng cơ chế event bus của Mạnh.
+  </div>
+
+  <!-- ═══════════════ REPOSITORY ═══════════════ -->
+  <h2 id="repo">6. Review Repository layer</h2>
+
+  <h3>6.1 <code>ICartRepository</code></h3>
+  <table>
+    <thead><tr><th style="width:42%">Method</th><th style="width:20%">Tracking</th><th>Mục đích</th></tr></thead>
+    <tbody>
+      <tr><td><code>GetActiveCartByUserAsync</code></td><td>Tracking + Include Items</td><td>Giỏ đang hoạt động của user — dùng cho cả đọc lẫn ghi</td></tr>
+      <tr><td><code>GetByIdAsync</code></td><td>Tracking + Include Items</td><td>Lấy giỏ theo Id (chi tiết item)</td></tr>
+      <tr><td><code>GetByUserAsync</code></td><td><span class="badge b-green">NoTracking</span></td><td>Lịch sử các giỏ của user (kể cả đã convert)</td></tr>
+      <tr><td><code>ExistsActiveCartAsync</code></td><td>—</td><td>Kiểm tra user đã có giỏ active chưa</td></tr>
+      <tr><td><code>AddAsync</code> / <code>Remove</code></td><td>—</td><td>Thêm / xoá giỏ</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 <code>IOrderRepository</code></h3>
+  <table>
+    <thead><tr><th style="width:42%">Method</th><th style="width:20%">Tracking</th><th>Mục đích</th></tr></thead>
+    <tbody>
+      <tr><td><code>GetByIdAsync</code></td><td>Tracking + Include</td><td>Chi tiết đơn kèm items &amp; lịch sử</td></tr>
+      <tr><td><code>GetByOrderNumberAsync</code></td><td>Tracking + Include</td><td>Tra cứu theo mã đơn (chuẩn hoá uppercase)</td></tr>
+      <tr><td><code>GetByCustomerAsync</code></td><td><span class="badge b-green">NoTracking</span></td><td>Danh sách đơn của khách — <strong>chưa phân trang</strong> (F-07)</td></tr>
+      <tr><td><code>ExistsOrderNumberAsync</code></td><td>—</td><td>Chống trùng mã đơn</td></tr>
+      <tr><td><code>AddAsync</code> / <code>Remove</code></td><td>—</td><td>Thêm / xoá đơn</td></tr>
+    </tbody>
+  </table>
+
+  <div class="finding medium">
+    <div class="head">
+      <span class="badge b-cyan">F-07 · Medium</span>
+      <strong>Repository thiếu phương thức lọc theo trạng thái / khoảng ngày</strong>
+    </div>
+    <p>Contract <code>OrderFilterQuery</code> đã khai báo <code>Status</code>, <code>FromDate</code>, <code>ToDate</code>,
+    <code>Page</code>, <code>PageSize</code> nhưng repository chưa có method tương ứng. <code>GetByCustomerAsync</code>
+    trả về toàn bộ đơn của khách — sẽ nặng khi khách có nhiều đơn.</p>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> bổ sung <code>GetPagedByCustomerAsync(customerId, query)</code> trả về
+      <code>PagedResult&lt;OrderDto&gt;</code> (sẵn có trong <code>BuildingBlocks/Application/PagedResult.cs</code>)
+      — dùng ngay cho task <code>N2LHTBLTT-25</code>.
+    </div>
+  </div>
+
+  <div class="finding low">
+    <div class="head">
+      <span class="badge b-grey">F-08 · Low</span>
+      <strong>Repository chưa có phương thức phục vụ transaction checkout</strong>
+    </div>
+    <p>Checkout cần đọc giỏ + ghi đơn + ghi items + cập nhật trạng thái giỏ trong <strong>cùng một transaction</strong>
+    (task 20/22 của Mạnh). Hiện repository không có API nào cho việc này — service sẽ phải tự gọi
+    <code>_dbContext.SaveChangesAsync</code> qua <code>CartDbContext</code> và <code>OrderDbContext</code> riêng lẻ,
+    không thể giao dịch xuyên 2 DbContext.</p>
+    <div class="fix">
+      <strong>Cần bàn với Mạnh:</strong> dùng <code>TransactionScope</code> (hỗ trợ giao dịch phân tán trên cùng connection)
+      hay chuyển sang <code>ExecutionStrategy</code> + shared transaction. Đây là quyết định kiến trúc, không nên tự quyết.
+    </div>
+  </div>
+
+  <!-- ═══════════════ EF MAPPING ═══════════════ -->
+  <h2 id="ef">7. Cấu hình EF Core mapping</h2>
+
+  <h3>7.1 Bảng <code>cart.carts</code> &amp; <code>cart.cart_items</code></h3>
+<pre><code>modelBuilder.Entity&lt;<span class="c-type">CartEntity</span>&gt;(entity =&gt;
+{
+    entity.ToTable(<span class="c-str">"carts"</span>);
+    entity.HasKey(e =&gt; e.Id);
+    entity.Property(e =&gt; e.Id).UseIdentityAlwaysColumn();
+    entity.Property(e =&gt; e.Status).HasConversion&lt;<span class="c-kw">string</span>&gt;().HasMaxLength(<span class="c-num">20</span>).IsRequired();
+    entity.Property(e =&gt; e.CreatedAt).HasDefaultValueSql(<span class="c-str">"now()"</span>).IsRequired();
+    entity.Property(e =&gt; e.UpdatedAt).HasDefaultValueSql(<span class="c-str">"now()"</span>).IsRequired();
+
+    entity.HasIndex(e =&gt; e.UserId);
+    entity.HasIndex(e =&gt; new { e.UserId, e.Status });   <span class="c-cmt">// hỗ trợ truy vấn giỏ active</span>
+
+    entity.HasMany(e =&gt; e.Items)
+        .WithOne()
+        .HasForeignKey(item =&gt; item.CartId)
+        .OnDelete(DeleteBehavior.Cascade);
+});</code></pre>
+
+  <h3>7.2 Bảng <code>ordering.orders</code></h3>
+<pre><code>entity.Property(e =&gt; e.OrderNumber).HasMaxLength(<span class="c-num">32</span>).IsRequired();
+entity.Property(e =&gt; e.Status).HasConversion&lt;<span class="c-kw">string</span>&gt;().HasMaxLength(<span class="c-num">20</span>).IsRequired();
+entity.Property(e =&gt; e.PaymentMethod).HasMaxLength(<span class="c-num">20</span>).IsRequired();
+entity.Property(e =&gt; e.ReceiverPhone).HasMaxLength(<span class="c-num">20</span>).IsRequired();
+entity.Property(e =&gt; e.ShippingAddress).HasMaxLength(<span class="c-num">500</span>).IsRequired();
+entity.Property(e =&gt; e.Note).HasMaxLength(<span class="c-num">500</span>);
+entity.Property(e =&gt; e.CancelReason).HasMaxLength(<span class="c-num">500</span>);
+
+entity.HasIndex(e =&gt; e.OrderNumber).IsUnique();
+entity.HasIndex(e =&gt; e.CustomerId);
+entity.HasIndex(e =&gt; new { e.Status, e.CreatedAt });   <span class="c-cmt">// lọc đơn theo trạng thái + ngày</span></code></pre>
+
+  <div class="split">
+    <div class="card">
+      <h4 style="color:var(--green)">✔ Điểm tốt</h4>
+      <ul>
+        <li>Enum lưu dạng string → đọc log DB dễ hiểu, không phụ thuộc thứ tự giá trị.</li>
+        <li>Đặt tên bảng snake_case đúng convention PostgreSQL.</li>
+        <li><code>UseIdentityAlwaysColumn()</code> nhất quán với Catalog/Identity.</li>
+        <li><code>HasDefaultValueSql("now()")</code> cho cả CreatedAt/UpdatedAt.</li>
+        <li>Index phù hợp với truy vấn thực tế (giỏ theo user, đơn theo trạng thái + ngày).</li>
+        <li>Unique index <code>(CartId, ProductVariantId)</code> chống trùng item trong cùng giỏ.</li>
+        <li><code>Cascade</code> cho Items/Histories — xoá đơn thì dọn luôn bản ghi con.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--amber)">⚠ Cần chú ý</h4>
+      <ul>
+        <li><code>PaymentMethod</code> cần đổi thành enum nếu chọn F-05.</li>
+        <li><code>UpdatedAt</code> không có trigger tự cập nhật — phải gọi <code>Touch()</code> thủ công (domain đã làm).</li>
+        <li>Chưa có migration — thuộc task <code>N2LHTBLTT-13</code> của Đạt.</li>
+        <li>Index <code>(CartId, ProductVariantId)</code> unique: nếu nghiệp vụ cho phép cùng variant ở 2 dòng (khác màu, khác dung lượng) thì sai — hiện chỉ khóa theo <code>ProductVariantId</code> nên vẫn đúng.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="finding info">
+    <div class="head">
+      <span class="badge b-blue">F-09 · Info</span>
+      <strong>Xung đột namespace C# giữa tên module và tên entity</strong>
+    </div>
+    <p>Module tên <code>Cart</code> và <code>Order</code> trùng với tên entity <code>Cart</code> và <code>Order</code>,
+    gây lỗi <code>CS0118: 'Order' is a namespace but is used like a type</code> ở mọi file ngoài thư mục
+    <code>Domain/Entities</code>. Đã xử lý bằng alias:</p>
+<pre><code><span class="c-kw">using</span> OrderEntity = PhoneStore.Modules.Order.Domain.Entities.Order;
+<span class="c-kw">using</span> CartEntity  = PhoneStore.Modules.Cart.Domain.Entities.Cart;</code></pre>
+    <div class="fix">
+      <strong>Cần lưu ý:</strong> module <code>Inventory</code> (của Đạt) nhiều khả năng cũng có entity trùng tên —
+      nên thống nhất quy ước alias này trước khi các bạn code. Đề xuất ghi vào <code>GIT_WORKFLOW.md</code>.
+    </div>
+  </div>
+
+  <!-- ═══════════════ DTO ═══════════════ -->
+  <h2 id="dto">8. API contract (DTO)</h2>
+
+  <h3>8.1 Contract Cart</h3>
+  <table>
+    <thead><tr><th style="width:34%">Record</th><th style="width:16%">Trả về</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><code>CartDto</code></td><td>Response</td><td>Giỏ hàng đầy đủ + tổng tiền + tổng số lượng</td></tr>
+      <tr><td><code>CartItemDto</code></td><td>Response</td><td>Dòng giỏ kèm <code>Subtotal</code> tính sẵn</td></tr>
+      <tr><td><code>AddToCartRequest</code></td><td>Request</td><td>Thêm sản phẩm — <span class="badge b-red">có vấn đề F-01</span></td></tr>
+      <tr><td><code>UpdateCartItemRequest</code></td><td>Request</td><td>Sửa số lượng, giới hạn <code>[Range(1, 10)]</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.2 Contract Order</h3>
+  <table>
+    <thead><tr><th style="width:34%">Record</th><th style="width:16%">Trả về</th><th>Mô tả</th></tr></thead>
+    <tbody>
+      <tr><td><code>OrderDto</code></td><td>Response</td><td>Danh sách đơn — có items, không có lịch sử</td></tr>
+      <tr><td><code>OrderDetailDto</code></td><td>Response</td><td>Chi tiết đơn — có items + status histories</td></tr>
+      <tr><td><code>OrderItemDto</code></td><td>Response</td><td>Dòng đơn kèm subtotal</td></tr>
+      <tr><td><code>OrderStatusHistoryDto</code></td><td>Response</td><td>Một mốc lịch sử trạng thái</td></tr>
+      <tr><td><code>CheckoutRequest</code></td><td>Request</td><td>Thông tin người nhận + ghi chú — <span class="badge b-blue">dành cho task 20</span></td></tr>
+      <tr><td><code>CancelOrderRequest</code></td><td>Request</td><td>Lý do hủy — <span class="badge b-blue">dành cho task 26</span></td></tr>
+      <tr><td><code>OrderFilterQuery</code></td><td>Query</td><td>Lọc theo trạng thái/ngày + phân trang</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Quy ước nhất quán với Catalog/Identity:</strong> record dạng positional, dùng
+    <code>[Required]</code> / <code>[MaxLength]</code> / <code>[Range]</code> / <code>[Phone]</code> từ
+    <code>System.ComponentModel.DataAnnotations</code>; enum được trả về dưới dạng <code>string</code> để Swagger
+    hiển thị và client đọc được.
+  </div>
+
+  <div class="finding low">
+    <div class="head">
+      <span class="badge b-grey">F-10 · Low</span>
+      <strong>Magic number lặp lại giữa DTO và Domain</strong>
+    </div>
+    <p><code>[Range(1, 10)]</code> trong <code>AddToCartRequest</code> và <code>UpdateCartItemRequest</code> trùng với
+    <code>CartItem.MaxQuantityPerItem = 10</code>. Nếu đổi giới hạn ở domain mà quên sửa DTO, validation ở tầng HTTP
+    sẽ khác với tầng domain.</p>
+    <div class="fix">
+      <strong>Cách sửa đề xuất:</strong> dùng hằng số trong attribute không được (phải là const compile-time) —
+    nên chấp nhận lặp lại và ghi chú, hoặc bỏ <code>[Range]</code> ở DTO và để domain là nguồn sự thật duy nhất
+    rồi bắt exception ở tầng global (task 14).
+    </div>
+  </div>
+
+  <!-- ═══════════════ DIAGRAM ═══════════════ -->
+  <h2 id="diagram">9. Sơ đồ quan hệ dữ liệu (schema)</h2>
+  <div class="diagram">
+<span class="fld">── schema: cart ──────────────────────────────────</span>
+
+<span class="box">carts</span>
+<span class="fld">┌────────────────────────────┬──────────────────────────┐</span>
+<span class="fld">│ id          bigint  PK     │ user_id       bigint      │</span>
+<span class="fld">│ user_id     bigint          │ status        varchar(20) │</span>
+<span class="fld">│ status      varchar(20)     │ created_at   timestamptz  │</span>
+<span class="fld">│ created_at  timestamptz     │ updated_at   timestamptz  │</span>
+<span class="fld">│ updated_at  timestamptz     │                          │</span>
+<span class="fld">└────────────────────────────┴──────────────────────────┘</span>
+<span class="fld">   IDX: user_id · (user_id, status)</span>
+
+<span class="fld">── schema: ordering ──────────────────────────────</span>
+
+<span class="box">orders</span>
+<span class="fld">┌────────────────────────────────────────────┬──────────────────┐</span>
+<span class="fld">│ id             bigint  PK                   │ subtotal  bigint │</span>
+<span class="fld">│ order_number   varchar(32)  UQ             │ shipping_fee     │</span>
+<span class="fld">│ customer_id    bigint                       │ total_amount     │</span>
+<span class="fld">│ status         varchar(20)                  │ receiver_name    │</span>
+<span class="fld">│ payment_method varchar(20)                  │ receiver_phone   │</span>
+<span class="fld">│ note / cancel_reason  varchar(500)         │ shipping_address │</span>
+<span class="fld">│ cancelled_at / delivered_at  timestamptz   │ created_at       │</span>
+<span class="fld">└────────────────────────────────────────────┴──────────────────┘</span>
+<span class="fld">   IDX: order_number UQ · customer_id · (status, created_at)</span>
+
+<span class="box">order_items</span>              <span class="box">order_status_histories</span>
+<span class="fld">┌────────────────────────────┐</span>        <span class="fld">┌────────────────────────────┐</span>
+<span class="fld">│ id                PK       │</span>        <span class="fld">│ id                PK       │</span>
+<span class="fld">│ order_id     FK → orders    │</span>        <span class="fld">│ order_id     FK → orders    │</span>
+<span class="fld">│ product_variant_id  bigint  │</span>        <span class="fld">│ from_status  varchar(20)   │</span>
+<span class="fld">│ product_name / sku        │</span>        <span class="fld">│ to_status    varchar(20)   │</span>
+<span class="fld">│ unit_price    bigint       │</span>        <span class="fld">│ note         varchar(500)  │</span>
+<span class="fld">│ quantity      int          │</span>        <span class="fld">│ changed_at   timestamptz   │</span>
+<span class="fld">└────────────────────────────┘</span>        <span class="fld">└────────────────────────────┘</span>
+<span class="fld">   FK → orders  ON DELETE CASCADE</span>        <span class="fld">   FK → orders  ON DELETE CASCADE</span>
+  </div>
+
+  <!-- ═══════════════ FINDINGS ═══════════════ -->
+  <h2 id="findings">10. Tổng hợp các phát hiện</h2>
+  <table>
+    <thead><tr><th style="width:8%">ID</th><th style="width:12%">Mức độ</th><th style="width:34%">Vấn đề</th><th style="width:20%">File liên quan</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <tr><td><strong>F-01</strong></td><td><span class="badge b-red">Critical</span></td><td>Client tự khai giá sản phẩm — có thể thao túng đơn hàng</td><td><code>Cart/Application/DTOs/DTOs.cs</code></td><td><span class="badge b-amber">Chờ chốt với Mạnh</span></td></tr>
+      <tr><td><strong>F-02</strong></td><td><span class="badge b-amber">High</span></td><td>Chưa có logic sinh <code>OrderNumber</code></td><td><code>Order/Domain/Entities/Order.cs</code></td><td><span class="badge b-amber">Task 20</span></td></tr>
+      <tr><td><strong>F-03</strong></td><td><span class="badge b-amber">High</span></td><td>Ma trận chuyển trạng thái không chặt chẽ</td><td><code>Order/Domain/Entities/Order.cs</code></td><td><span class="badge b-grey">Chưa xử lý</span></td></tr>
+      <tr><td><strong>F-04</strong></td><td><span class="badge b-cyan">Medium</span></td><td>Ngưỡng miễn phí ship là số tạm, cần xác nhận nghiệp vụ</td><td><code>Order/Domain/Entities/Order.cs</</code></td><td><span class="badge b-blue">Cần bạn xác nhận</span></td></tr>
+      <tr><td><strong>F-05</strong></td><td><span class="badge b-cyan">Medium</span></td><td><code>PaymentMethod</code> là string thay vì enum</td><td><code>Order/Domain/Entities/Order.cs</code></td><td><span class="badge b-grey">Chưa xử lý</span></td></tr>
+      <tr><td><strong>F-06</strong></td><td><span class="badge b-grey">Low</span></td><td><code>RecalculateTotals()</code> public — lộ mutation</td><td><code>Order/Domain/Entities/Order.cs</code></td><td><span class="badge b-grey">Chưa xử lý</span></td></tr>
+      <tr><td><strong>F-07</strong></td><td><span class="badge b-cyan">Medium</span></td><td>Repository thiếu phương thức lọc + phân trang đơn hàng</td><td><code>Order/Infrastructure/Repositories/</code></td><td><span class="badge b-blue">Task 25</span></td></tr>
+      <tr><td><strong>F-08</strong></td><td><span class="badge b-grey">Low</span></td><td>Chưa có API phục vụ transaction xuyên 2 DbContext</td><td>Repository layer</td><td><span class="badge b-amber">Cần bàn với Mạnh</span></td></tr>
+      <tr><td><strong>F-09</strong></td><td><span class="badge b-blue">Info</span></td><td>Xung đột namespace module ↔ entity (đã xử lý bằng alias)</td><td>Tất cả file ngoài <code>Domain/Entities</code></td><td><span class="badge b-green">Đã xử lý</span></td></tr>
+      <tr><td><strong>F-10</strong></td><td><span class="badge b-grey">Low</span></td><td>Magic number <code>10</code> lặp giữa DTO và Domain</td><td>DTO Cart + CartItem</td><td><span class="badge b-grey">Chấp nhận</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="card">
+    <h4 style="color:var(--green)">✔ Đã xử lý trong quá trình làm</h4>
+    <ul>
+      <li><strong>Xung đột namespace <code>Order</code>/<code>Cart</code></strong> — dùng alias <code>OrderEntity</code>/<code>CartEntity</code>.</li>
+      <li><strong>Thiếu navigation property trên <code>OrderItem</code></strong> — bổ sung <code>Order Order</code> để EF fixup gán FK đúng.</li>
+      <li><strong>Ngưỡng miễn phí ship 500.000</strong> — nâng lên 10.000.000 vì không sản phẩm điện thoại nào dưới ngưỡng đó.</li>
+      <li><strong>Test project chưa reference Cart module</strong> — đã thêm <code>ProjectReference</code>.</li>
+      <li><strong>Thiếu test architecture cho Cart/Order</strong> — đã bổ sung, bảo vệ ranh giới module.</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════ CHECKLIST ═══════════════ -->
+  <h2 id="checklist">11. Checklist review</h2>
+  <p class="lead">Dùng làm danh sách kiểm tra khi review pull request.</p>
+
+  <h4>Kiến trúc &amp; convention</h4>
+  <ul class="checklist">
+    <li class="done">Entity dùng <code>private set</code> + <code>static Create()</code> factory — đúng convention Catalog/Identity</li>
+    <li class="done">Quy tắc nghiệp vụ nằm trong domain, không lọt sang service</li>
+    <li class="done">Mỗi module giữ <code>DbContext</code> riêng, schema riêng, migration history riêng</li>
+    <li class="done">Không module nào reference trực tiếp DbContext của module khác</li>
+    <li class="done">Architecture test kiểm tra ranh giới cho cả Cart và Order</li>
+    <li>Enum lưu dạng string trong DB (đọc log dễ, không phụ thuộc thứ tự)</li>
+    <li>Index phù hợp truy vấn thực tế</li>
+  </ul>
+
+  <h4>Nghiệp vụ Cart</h4>
+  <ul class="checklist">
+    <li class="done">Thêm cùng variant → cộng dồn thay vì tạo dòng trùng</li>
+    <li class="done">Giới hạn 50 dòng khác nhau / giỏ</li>
+    <li class="done">Giới hạn 10 đơn vị / dòng</li>
+    <li class="done">Giỏ đã CONVERTED không thêm/sửa/xoá được</li>
+    <li class="done">Chặn thao tác lên item không thuộc giỏ</li>
+    <li>Chặn thêm sản phẩm đã ngừng bán / hết tồn (cần contract từ Catalog)</li>
+    <li>Giỏ có hạn dùng — tự chuyển ABANDONED sau N ngày không cập nhật</li>
+  </ul>
+
+  <h4>Nghiệp vụ Order</h4>
+  <ul class="checklist">
+    <li class="done">Đơn mới luôn <code>PENDING</code>, thanh toán <code>COD</code></li>
+    <li class="done">Lịch sử trạng thái ghi lại mọi lần chuyển</li>
+    <li class="done">Chỉ hủy được khi <code>PENDING</code> / <code>CONFIRMED</code></li>
+    <li class="done">Từ <code>DELIVERED</code> / <code>CANCELLED</code> không chuyển trạng thái được nữa</li>
+    <li class="done">Set <code>DeliveredAt</code> khi giao thành công</li>
+    <li class="done">Set <code>CancelledAt</code> + <code>CancelReason</code> khi hủy</li>
+    <li>Mã đơn sinh tự động, duy nhất, không đoán được</li>
+    <li>Ma trận chuyển trạng thái được ràng buộc đầy đủ</li>
+    <li>Tính lại giá từ Catalog tại thời điểm checkout, không tin giá trong giỏ</li>
+    <li>Hủy đơn → hoàn tồn kho qua event</li>
+    <li>Chống race khi 2 request cùng checkout 1 giỏ (khóa / idempotency)</li>
+  </ul>
+
+  <h4>Chất lượng &amp; kiểm thử</h4>
+  <ul class="checklist">
+    <li class="done">Build solution không lỗi, không warning</li>
+    <li class="done">27/27 test xanh</li>
+    <li class="done">Có test EF model build (bắt lỗi mapping trước khi lên production)</li>
+    <li class="done">Test bao phủ: validation, transition, giới hạn, tổng tiền</li>
+    <li>Test cho <code>OrderNumber</code> tự sinh &amp; không trùng</li>
+    <li>Integration test với PostgreSQL thật (docker compose)</li>
+    <li>Migration được tạo và áp dụng thành công</li>
+  </ul>
+
+  <!-- ═══════════════ NEXT ═══════════════ -->
+  <h2 id="next">12. Các task liên quan</h2>
+  <table>
+    <thead><tr><th style="width:16%">Mã task</th><th style="width:30%">Nội dung</th><th style="width:16%">Phụ thuộc</th><th>Ghi chú</th></tr></thead>
+    <tbody>
+      <tr><td><code>N2LHTBLTT-19</code></td><td>FR-06 API giỏ hàng</td><td><span class="badge b-green">N2LHTBLTT-12</span></td><td>Cần DTO + repository + entity của task này. Bị chặn bởi F-01.</td></tr>
+      <tr><td><code>N2LHTBLTT-20</code></td><td>FR-07 Checkout COD</td><td><span class="badge b-green">N2LHTBLTT-12</span></td><td>Cần <code>CheckoutRequest</code> + sinh mã đơn (F-02) + giá server-side.</td></tr>
+      <tr><td><code>N2LHTBLTT-25</code></td><td>FR-08 Danh sách / chi tiết / lịch sử đơn</td><td><span class="badge b-green">N2LHTBLTT-12</span></td><td>Cần <code>OrderFilterQuery</code> + <code>OrderDetailDto</code> + phân trang (F-07).</td></tr>
+      <tr><td><code>N2LHTBLTT-26</code></td><td>FR-09 Hủy đơn + hoàn tồn</td><td><span class="badge b-green">N2LHTBLTT-12</span></td><td>Cần <code>CancelOrderRequest</code> + event bus hoàn tồn.</td></tr>
+      <tr><td><code>N2LHTBLTT-14</code></td><td>Swagger + Global Exception + Validation</td><td><span class="badge b-grey">Độc lập</span></td><td>Task hạ tầng dùng chung — cần thống nhất với Mạnh trước khi merge.</td></tr>
+      <tr><td><code>N2LHTBLTT-13</code></td><td>Migration PostgreSQL 5 schema</td><td><span class="badge b-amber">Cần entity</span></td><td>Thuộc Đạt — giờ đã có entity Cart/Order để sinh migration.</td></tr>
+      <tr><td><code>N2LHTBLTT-29</code></td><td>Event bus / contract giữa các module</td><td><span class="badge b-amber">Cần bàn</span></td><td>Thuộc Mạnh — giải quyết F-01 và F-08.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn">
+    <strong>Cần bàn với nhóm trước khi mở PR:</strong>
+    <br>① Cách Cart/Order lấy giá &amp; tồn kho mà không rò rỉ <code>DbContext</code> của module khác — <strong>Mạnh</strong> (<code>N2LHTBLTT-23</code>, <code>29</code>) và <strong>Đạt</strong> (<code>N2LHTBLTT-21</code>).
+    <br>② <code>N2LHTBLTT-22</code> (transaction, khóa tồn kho) và <code>N2LHTBLTT-23</code> (tích hợp 5 module) đang gán cho Mạnh nhưng là lõi Cart/Order — xin nhận thêm?
+    <br>③ <code>N2LHTBLTT-14</code> (global middleware / Swagger) là code dùng chung — ai merge, vào <code>develop</code> hay nhánh riêng?
+    <br>④ Ngưỡng miễn phí ship &amp; phí ship (F-04) — xác nhận theo chính sách thật.
+  </div>
+
+  <footer>
+    Báo cáo review tự động sinh cho commit <code>600a3e5</code> — nhánh <code>feature/N2LHTBLTT-12-cart-order-entities</code><br>
+    PhoneStore Backend · Modular Monolith (.NET 10) · Đồ án HP 608819 · Đại học Xây Dựng Hà Nội
+  </footer>
+</div>
+
+<a href="#" class="backtop">↑</a>
+
+</body>
+</html>
