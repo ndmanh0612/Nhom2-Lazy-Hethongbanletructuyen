@@ -9,11 +9,13 @@ Tài liệu hướng dẫn quy trình làm việc với Git cho cả nhóm 5 ng�
 - **`main`**: Nhánh chính (Production-ready). Chỉ chứa code đã kiểm thử ổn định, deploy được.
 - **`develop`**: Nhánh tích hợp (Integration branch). Code các module sau khi review PR sẽ merge vào đây.
 - **`feature/N2LHTBLTT-<mã-task>-<tên-ngắn-gọn>`**: Nhánh tính năng của từng thành viên.
+  - `<mã-task>` là **mã Jira dạng số** (ví dụ `N2LHTBLTT-12`), không dùng mã nội bộ `S2-xx`.
   - *Ví dụ*:
-    - Trí: `feature/N2LHTBLTT-S2-04-identity-register`
-    - Nghĩa: `feature/N2LHTBLTT-S2-06-catalog-category`
-    - Toàn: `feature/N2LHTBLTT-S2-08-cart-order-entities`
-    - Đạt: `feature/N2LHTBLTT-S2-03-db-migrations`
+    - Trí: `feature/N2LHTBLTT-8-identity-register`
+    - Nghĩa: `feature/N2LHTBLTT-10-catalog-category`
+    - Toàn: `feature/N2LHTBLTT-12-cart-order-entities`
+    - Đạt: `feature/N2LHTBLTT-13-inventory-stock`
+  - Danh sách issue đầy đủ: [`docs/JIRA_TASKS.md`](docs/JIRA_TASKS.md).
 - **`bugfix/...`**: Nhánh sửa lỗi phát sinh trong sprint.
 
 ---
@@ -22,8 +24,11 @@ Tài liệu hướng dẫn quy trình làm việc với Git cho cả nhóm 5 ng�
 
 Cấu trúc commit chuẩn:
 ```text
-<type>(<scope>): <mô tả ngắn bằng tiếng Việt hoặc tiếng Anh> [Mã Jira nếu có]
+<type>(<scope>): <mô tả ngắn bằng tiếng Việt hoặc tiếng Anh> [N2LHTBLTT-<số>]
 ```
+
+Phần trong ngoặc vuông là **mã Jira** (bắt buộc), theo sau bởi mã issue cụ thể. Ví dụ:
+`feat(cart): implement add-to-cart API [N2LHTBLTT-19]`
 
 **Các type cho phép:**
 - `feat`: Tính năng mới (ví dụ: `feat(identity): implement register API [FR-01]`)
@@ -53,7 +58,7 @@ Cấu trúc commit chuẩn:
    - Commit nhỏ, tường minh theo quy chuẩn Conventional Commits.
    ```bash
    git add .
-   git commit -m "feat(<module>): <mô tả> [N2LHTBLTT-XXX]"
+   git commit -m "feat(<module>): <mô tả> [N2LHTBLTT-<số>]"
    ```
 
 4. **Kiểm tra trước khi đẩy code lên remote**:
