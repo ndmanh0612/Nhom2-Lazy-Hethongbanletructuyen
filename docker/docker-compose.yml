@@ -3,20 +3,27 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: phonestore_postgres
+    container_name: phonestore-postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: phonestore_db
     ports:
-      - "5432:5432"
+      # 5433 để tránh đụng port 5432 mặc định của PostgreSQL cài local.
+      # Khớp với ConnectionStrings:DefaultConnection trong appsettings.json.
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   minio:
     image: minio/minio:latest
-    container_name: phonestore_minio
+    container_name: phonestore-minio
     restart: always
     command: server /data --console-address ":9001"
     environment:
