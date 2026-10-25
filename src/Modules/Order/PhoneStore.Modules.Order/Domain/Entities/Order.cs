@@ -1,3 +1,4 @@
+using PhoneStore.BuildingBlocks.Contracts.Order;
 using PhoneStore.BuildingBlocks.Domain;
 using PhoneStore.Modules.Order.Domain.Enums;
 
@@ -111,6 +112,14 @@ public class Order : AggregateRoot<long>
         CancelledAt = DateTimeOffset.UtcNow;
         _statusHistories.Add(OrderStatusHistory.Create(this, previousStatus, OrderStatus.CANCELLED, CancelReason));
         Touch();
+
+        // Phát event để Inventory hoàn trả tồn kho (FR-09).
+        // Event được dispatch sau khi SaveChanges bởi OrderService.
+        AddDomainEvent(new OrderCancelled(
+            Id,
+            CustomerId,
+            OrderNumber,
+            _items.Select(item => new OrderCancelledItem(item.ProductVariantId, item.Quantity)).ToList()));
     }
 
     public void RecalculateTotals()
