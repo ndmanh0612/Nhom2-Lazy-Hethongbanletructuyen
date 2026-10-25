@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using PhoneStore.Modules.Cart.Domain.Enums;
 
 namespace PhoneStore.Modules.Cart.Application.DTOs;
@@ -26,10 +25,11 @@ public record CartDto(
 /// Thêm sản phẩm vào giỏ.
 /// Giá, tên sản phẩm và SKU KHÔNG nhận từ client — server tự lấy từ Catalog
 /// qua IProductPricingContract để tránh client tự đặt giá (F-01).
+/// Validation được thực hiện bằng FluentValidation (AddToCartRequestValidator).
 /// </summary>
 public record AddToCartRequest(
-    [Required] long ProductVariantId,
-    [Range(1, 10)] int Quantity = 1);
+    long ProductVariantId,
+    int Quantity = 1);
 
 public record UpdateCartItemRequest(
-    [Range(1, 10)] int Quantity);
+    int Quantity);
