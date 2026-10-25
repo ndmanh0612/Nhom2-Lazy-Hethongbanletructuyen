@@ -17,7 +17,7 @@ namespace PhoneStore.Modules.Order.Application.Services;
 public interface IOrderService
 {
     Task<Result<OrderDto>> CheckoutAsync(long customerId, CheckoutRequest request, CancellationToken cancellationToken = default);
-    Task<Result<IReadOnlyList<OrderDto>>> GetOrdersAsync(long customerId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<OrderDto>>> GetOrdersAsync(long customerId, OrderFilterQuery query, CancellationToken cancellationToken = default);
     Task<Result<OrderDetailDto>> GetOrderAsync(long orderId, long customerId, CancellationToken cancellationToken = default);
     Task<Result<OrderDetailDto>> CancelOrderAsync(long orderId, long customerId, CancelOrderRequest request, CancellationToken cancellationToken = default);
 }
@@ -101,12 +101,20 @@ public class OrderService : IOrderService
         return Result.Success(ToDto(order));
     }
 
-    public async Task<Result<IReadOnlyList<OrderDto>>> GetOrdersAsync(
+    /// <summary>
+    /// FR-08: Danh sách đơn hàng của khách hàng, hỗ trợ lọc theo trạng thái / thời gian và phân trang.
+    /// </summary>
+    public async Task<Result<PagedResult<OrderDto>>> GetOrdersAsync(
         long customerId,
+        OrderFilterQuery query,
         CancellationToken cancellationToken = default)
     {
-        var orders = await _orderRepository.GetByCustomerAsync(customerId, cancellationToken);
-        return Result.Success<IReadOnlyList<OrderDto>>(orders.Select(ToDto).ToList());
+        var paged = await _orderRepository.GetByCustomerPagedAsync(customerId, query, cancellationToken);
+
+        var dtos = paged.Items.Select(ToDto).ToList();
+        var result = PagedResult<OrderDto>.Create(dtos, paged.Page, paged.PageSize, paged.TotalCount);
+
+        return Result.Success(result);
     }
 
     public async Task<Result<OrderDetailDto>> GetOrderAsync(
