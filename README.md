@@ -38,7 +38,8 @@ PhoneStore/
 │       └── PhoneStore.Api/                    # Web API Host (Swagger, Middleware, Routing)
 ├── tests/
 │   ├── PhoneStore.ArchitectureTests/          # Kiểm tra ranh giới kiến trúc & rò rỉ module
-│   └── PhoneStore.UnitTests/                  # Unit tests nghiệp vụ
+│   ├── PhoneStore.UnitTests/                  # Unit tests nghiệp vụ
+│   └── PhoneStore.IntegrationTests/           # E2E test qua HTTP thật (WebApplicationFactory + PostgreSQL)
 ├── docker/                                    # docker-compose.yml (PostgreSQL 16, MinIO S3)
 ├── .github/                                   # CI Pipeline (GitHub Actions) & PR template
 ├── GIT_WORKFLOW.md                            # Cẩm nang quy chuẩn Git cho nhóm
@@ -63,23 +64,42 @@ PhoneStore/
 ```bash
 docker compose -f docker/docker-compose.yml up -d
 ```
-- **PostgreSQL**: `localhost:5432` | DB: `phonestore_db` | User: `postgres` | Pass: `postgrespassword`
+- **PostgreSQL**: `localhost:5433` | DB: `phonestore_db` | User: `postgres` | Pass: `postgres`
 - **MinIO Console**: `http://localhost:9001` (User: `admin`, Pass: `password123`)
+
+> Connection string mặc định nằm trong `src/Host/PhoneStore.Api/appsettings.json`
+> (`ConnectionStrings:DefaultConnection`). Có thể override bằng biến môi trường
+> `ConnectionStrings__DefaultConnection`.
 
 ### 3. Build và Chạy Web API
 ```bash
 # Build toàn bộ Solution
 dotnet build PhoneStore.slnx
 
-# Chạy test kiểm tra kiến trúc và unit test
+# Chạy toàn bộ test (unit + architecture + integration E2E)
 dotnet test PhoneStore.slnx
 
 # Chạy Web API Backend
 dotnet run --project src/Host/PhoneStore.Api/PhoneStore.Api.csproj
 ```
 
+> **Lưu ý về integration test**: `PhoneStore.IntegrationTests` cần PostgreSQL chạy sẵn ở port 5433.
+> Test tự tạo database riêng (tên random) cho từng lần chạy và xoá sau khi hoàn tất —
+> không đụng tới `phonestore_db`. Biến môi trường `PHONESTORE_TEST_ADMIN_CONNECTION`
+> có thể override connection string quản trị (mặc định `postgres` trên `postgres`).
+
 ### 4. Truy cập Swagger UI
 Mở trình duyệt: `http://localhost:5000/` hoặc `https://localhost:5001/` để xem toàn bộ danh mục API của các module.
+Ở môi trường Development, Swagger UI nằm ở root (`/`), còn OpenAPI JSON ở `/swagger/v1/swagger.json`.
+
+### 5. Tình trạng test hiện tại
+
+| Project | Số test | Loại |
+|---|---:|---|
+| `PhoneStore.UnitTests` | 34 | Unit test nghiệp vụ domain + application service |
+| `PhoneStore.ArchitectureTests` | 7 | Ranh giới module (không rò rỉ tham chiếu) |
+| `PhoneStore.IntegrationTests` | 48 | E2E qua HTTP thật với `WebApplicationFactory` + PostgreSQL |
+| **Tổng** | **89** | |
 
 ---
 
