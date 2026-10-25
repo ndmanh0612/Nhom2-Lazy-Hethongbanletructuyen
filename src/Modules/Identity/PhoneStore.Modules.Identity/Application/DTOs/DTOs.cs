@@ -1,17 +1,18 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace PhoneStore.Modules.Identity.Application.DTOs;
 
+// N2LHTBLTT-14: Validation được thực hiện bằng FluentValidation (IdentityValidators),
+// không dùng DataAnnotations để tránh chạy validation hai lần.
+
 public record RegisterRequest(
-    [Required, EmailAddress] string Email,
-    [Required, MinLength(8), MaxLength(72)] string Password,
-    [Required, MaxLength(100)] string FullName,
-    [Phone] string? Phone
+    string Email,
+    string Password,
+    string FullName,
+    string? Phone
 );
 
 public record LoginRequest(
-    [Required, EmailAddress] string Email,
-    [Required] string Password
+    string Email,
+    string Password
 );
 
 public record AuthResponseDto(
@@ -33,13 +34,13 @@ public record UserProfileDto(
 );
 
 public record UpdateProfileRequest(
-    [Required, MaxLength(100)] string FullName,
-    [Phone] string? Phone
+    string FullName,
+    string? Phone
 );
 
 public record ChangePasswordRequest(
-    [Required] string CurrentPassword,
-    [Required, MinLength(8), MaxLength(72)] string NewPassword
+    string CurrentPassword,
+    string NewPassword
 );
 
 public record AddressDto(
@@ -52,7 +53,7 @@ public record AddressDto(
 );
 
 public record CreateAddressRequest(
-    [Required, MaxLength(100)] string ReceiverName,
-    [Required, Phone] string ReceiverPhone,
-    [Required, MaxLength(500)] string AddressText
+    string ReceiverName,
+    string ReceiverPhone,
+    string AddressText
 );
