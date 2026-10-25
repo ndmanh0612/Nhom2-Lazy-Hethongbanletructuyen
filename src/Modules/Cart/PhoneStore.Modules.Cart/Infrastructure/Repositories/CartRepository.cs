@@ -53,4 +53,9 @@ public class CartRepository : ICartRepository
     {
         _dbContext.Carts.Remove(cart);
     }
+
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

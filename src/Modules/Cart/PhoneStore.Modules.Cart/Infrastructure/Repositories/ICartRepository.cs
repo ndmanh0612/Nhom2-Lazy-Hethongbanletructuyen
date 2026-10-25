@@ -11,4 +11,5 @@ public interface ICartRepository
     Task<bool> ExistsActiveCartAsync(long userId, CancellationToken cancellationToken = default);
     Task AddAsync(CartEntity cart, CancellationToken cancellationToken = default);
     void Remove(CartEntity cart);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
