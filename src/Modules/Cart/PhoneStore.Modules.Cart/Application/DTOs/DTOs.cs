@@ -22,11 +22,13 @@ public record CartDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
 
+/// <summary>
+/// Thêm sản phẩm vào giỏ.
+/// Giá, tên sản phẩm và SKU KHÔNG nhận từ client — server tự lấy từ Catalog
+/// qua IProductPricingContract để tránh client tự đặt giá (F-01).
+/// </summary>
 public record AddToCartRequest(
     [Required] long ProductVariantId,
-    [Required, MaxLength(200)] string ProductName,
-    [Required, MaxLength(64)] string Sku,
-    [Range(0, long.MaxValue)] long UnitPrice,
     [Range(1, 10)] int Quantity = 1);
 
 public record UpdateCartItemRequest(
