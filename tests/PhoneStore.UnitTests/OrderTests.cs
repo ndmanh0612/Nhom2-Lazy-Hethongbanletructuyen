@@ -1,5 +1,6 @@
 using FluentAssertions;
 using PhoneStore.BuildingBlocks.Contracts.Order;
+using PhoneStore.BuildingBlocks.Exceptions;
 using PhoneStore.Modules.Order.Domain.Entities;
 using PhoneStore.Modules.Order.Domain.Enums;
 using Xunit;
@@ -95,7 +96,9 @@ public class OrderTests
 
         var action = () => order.ChangeStatus(OrderStatus.CANCELLED);
 
-        action.Should().Throw<InvalidOperationException>();
+        action.Should().Throw<ConflictException>()
+            .WithMessage("*DELIVERED*")
+            .Which.Code.Should().Be("INVALID_ORDER_STATUS");
     }
 
     [Fact]
@@ -120,7 +123,9 @@ public class OrderTests
 
         var action = () => order.Cancel("Khách đổi ý định mua");
 
-        action.Should().Throw<InvalidOperationException>();
+        action.Should().Throw<ConflictException>()
+            .WithMessage("*SHIPPING*")
+            .Which.Code.Should().Be("INVALID_ORDER_STATUS");
     }
 
     [Fact]

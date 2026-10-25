@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using PhoneStore.Modules.Order.Domain.Enums;
 using OrderEntity = PhoneStore.Modules.Order.Domain.Entities.Order;
 
@@ -59,15 +58,26 @@ public record OrderDetailDto(
     IReadOnlyList<OrderStatusHistoryDto> StatusHistories,
     DateTimeOffset CreatedAt);
 
+/// <summary>
+/// FR-07: Thông tin người nhận cho đơn hàng COD.
+/// Validation được thực hiện bằng FluentValidation (CheckoutRequestValidator).
+/// </summary>
 public record CheckoutRequest(
-    [Required, MaxLength(100)] string ReceiverName,
-    [Required, Phone, MaxLength(20)] string ReceiverPhone,
-    [Required, MaxLength(500)] string ShippingAddress,
-    [MaxLength(500)] string? Note);
+    string ReceiverName,
+    string ReceiverPhone,
+    string ShippingAddress,
+    string? Note);
 
+/// <summary>
+/// FR-09: Lý do hủy đơn. Validation bằng CancelOrderRequestValidator.
+/// </summary>
 public record CancelOrderRequest(
-    [Required, MaxLength(500)] string Reason);
+    string Reason);
 
+/// <summary>
+/// FR-08: Bộ lọc và tham số phân trang danh sách đơn hàng.
+/// Validation bằng OrderFilterQueryValidator.
+/// </summary>
 public record OrderFilterQuery(
     OrderStatus? Status,
     DateTimeOffset? FromDate,
