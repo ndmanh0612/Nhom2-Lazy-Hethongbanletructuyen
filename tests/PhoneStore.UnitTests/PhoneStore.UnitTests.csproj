@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>PhoneStore.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="FluentAssertions" Version="8.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BuildingBlocks\PhoneStore.BuildingBlocks\PhoneStore.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Identity\PhoneStore.Modules.Identity\PhoneStore.Modules.Identity.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Order\PhoneStore.Modules.Order\PhoneStore.Modules.Order.csproj" />
+  </ItemGroup>
+
+</Project>
