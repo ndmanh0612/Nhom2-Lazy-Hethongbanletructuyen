@@ -1,4 +1,5 @@
 using FluentAssertions;
+using PhoneStore.BuildingBlocks.Contracts.Order;
 using PhoneStore.Modules.Order.Domain.Entities;
 using PhoneStore.Modules.Order.Domain.Enums;
 using Xunit;
@@ -120,5 +121,34 @@ public class OrderTests
         var action = () => order.Cancel("Khách đổi ý định mua");
 
         action.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Cancel_ShouldRaiseOrderCancelledDomainEvent()
+    {
+        var order = Order.Create("ORD-20261025-0001", 42, "Mai Thanh Toàn", "0912345678", "Hà Nội", null, SingleItemDraft);
+
+        order.Cancel("Khách đổi ý định mua");
+
+        var domainEvent = order.DomainEvents.Should().ContainSingle().Subject;
+        domainEvent.Should().BeOfType<OrderCancelled>();
+        var orderCancelled = (OrderCancelled)domainEvent;
+        orderCancelled.OrderId.Should().Be(order.Id);
+        orderCancelled.CustomerId.Should().Be(42);
+        orderCancelled.OrderNumber.Should().Be("ORD-20261025-0001");
+        orderCancelled.Items.Should().ContainSingle();
+        orderCancelled.Items[0].ProductVariantId.Should().Be(100);
+        orderCancelled.Items[0].Quantity.Should().Be(2);
+    }
+
+    [Fact]
+    public void ClearDomainEvents_ShouldRemoveRaisedEvents()
+    {
+        var order = Order.Create("ORD-20261025-0001", 42, "Mai Thanh Toàn", "0912345678", "Hà Nội", null, SingleItemDraft);
+        order.Cancel("Khách đổi ý định mua");
+
+        order.ClearDomainEvents();
+
+        order.DomainEvents.Should().BeEmpty();
     }
 }
