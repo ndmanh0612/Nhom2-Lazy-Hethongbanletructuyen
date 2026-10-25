@@ -56,4 +56,9 @@ public class OrderRepository : IOrderRepository
     {
         _dbContext.Orders.Remove(order);
     }
+
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }
