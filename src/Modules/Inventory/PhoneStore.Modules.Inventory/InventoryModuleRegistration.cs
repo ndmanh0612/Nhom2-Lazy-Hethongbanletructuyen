@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PhoneStore.BuildingBlocks.Contracts.Inventory;
+using PhoneStore.Modules.Inventory.Application.Services;
 using PhoneStore.Modules.Inventory.Infrastructure.Persistence;
 
 namespace PhoneStore.Modules.Inventory;
@@ -10,11 +12,13 @@ public static class InventoryModuleRegistration
 {
     public static IServiceCollection AddInventoryModule(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection") 
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? "Host=localhost;Port=5432;Database=phonestore_db;Username=postgres;Password=postgres";
 
         services.AddDbContext<InventoryDbContext>(options =>
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", InventoryDbContext.Schema)));
+
+        services.AddScoped<IInventoryContract, InventoryContract>();
 
         return services;
     }
