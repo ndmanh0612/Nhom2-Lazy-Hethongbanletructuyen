@@ -228,15 +228,59 @@ chỉ cần sửa implementation, không phải sửa call-site.
 ### Trạng thái
 
 - Build: 0 error, 0 warning.
-- Test: **41 test xanh** (34 unit + 7 architecture).
+- Test: **89 test xanh** (34 unit + 7 architecture + 48 integration E2E qua HTTP thật).
 - API chạy được, DI resolve OK, `/health` trả 200, `/api/v1/cart` trả 401 đúng khi chưa đăng nhập.
-  (Phần query DB chưa test được vì Postgres chưa chạy trên máy.)
+- Swagger trả 21 path kèm mô tả tiếng Việt từ XML comments.
 
-### Phần còn thiếu (cần DB + chốt hướng)
+### Phần còn thiếu
 
-1. **Migration** — chưa có migration nào trong repo, schema `cart`, `ordering`, `inventory` chưa được tạo.
-   Task `N2LHTBLTT-13` của Đạt.
-2. **Seed dữ liệu** — cần `catalog.product_variants` + `inventory.product_stocks` để test checkout thật.
-3. **Trừ tồn kho lúc checkout** — hiện checkout chưa trừ tồn kho (chờ Đạt xong `S2-09`).
-4. **Authentication thật** — chờ Trí xong `N2LHTBLTT-8`, `N2LHTBLTT-9`.
+1. **Trừ tồn kho lúc checkout** — hiện checkout **không** trừ tồn kho (chỉ hoàn tồn khi hủy đơn đã có test).
+   Cần chốt với Đạt cho task `S2-09` / `N2LHTBLTT-21`.
+2. **Authentication thật** — chờ Trí xong `N2LHTBLTT-8`, `N2LHTBLTT-9` (hiện dùng header `X-User-Id` tạm).
+   Chi tiết ở [`ASK-TRI-AUTH-TOKEN-ISSUE.md`](ASK-TRI-AUTH-TOKEN-ISSUE.md).
+3. **Chống bán vượt tồn** (task `N2LHTBLTT-22` của Mạnh) — cần khoá tồn kho ở tầng Inventory.
+4. **Sort / filter của Catalog** — đã sửa tạm kèm test, chờ Nghĩa xác nhận hướng.
+   Chi tiết ở [`ASK-NGHIA-CATALOG-SORT-FILTER-BUG.md`](ASK-NGHIA-CATALOG-SORT-FILTER-BUG.md).
+
+---
+
+## Cập nhật 2026-10-26 (sau khi có DB thật + integration test)
+
+### Đã có DB thật và E2E test
+
+Postgres chạy bằng docker (`phonestore-postgres`, port 5433). Đã áp dụng migration cho cả 5 schema và
+seed dữ liệu mẫu. Thêm project mới `tests/PhoneStore.IntegrationTests` chạy test qua HTTP thật với
+`WebApplicationFactory` + PostgreSQL.
+
+| Nhóm test | Số test | Phủ |
+|---|---|---|
+| `CheckoutFlowTests` | 7 | health, catalog, thêm giỏ, F-01 không tin giá client, validation, checkout COD, swagger |
+| `CartApiTests` | 8 | giỏ rỗng, gộp dòng khi thêm trùng, sửa số lượng, vượt giới hạn, xóa item, variant không tồn tại, item không tồn tại, thiếu user → 401 |
+| `OrderLifecycleTests` | 10 | danh sách đơn, chi tiết đơn, lọc trạng thái, hủy đơn, hủy 2 lần, chặn khách khác xem/hủy đơn, checkout giỏ rỗng |
+| `StockRestoreOnCancelTests` | 1 | hủy đơn → tồn kho `inventory.product_stocks` được hoàn lại đúng số lượng |
+| `CatalogQueryTests` | 10 | tìm kiếm, lọc giá/danh mục, sắp xếp asc/desc/newest, phân trang, sort sai → validation, sản phẩm không tồn tại |
+| `IdentityApiTests` | 12 | đăng ký / trùng email / sai email / mật khẩu yếu, đăng nhập đúng–sai, hồ sơ, cập nhật hồ sơ, đổi mật khẩu, địa chỉ (thêm / xem / tách theo user) |
+
+### Bug thật tìm ra qua integration test và đã sửa
+
+| Bug | Triệu chứng | Sửa |
+|---|---|---|
+| `IValidatorFactory` không còn tồn tại trong FluentValidation 11 | `/api/v1/products` trả 500 khi chạy qua API | `FluentValidationFilter` resolve `IValidator<T>` từ DI, dùng `IValidator.ValidateAsync(IValidationContext)` |
+| Validation chạy trùng | DataAnnotations của `[ApiController]` chặn trước FluentValidation, message tiếng Anh | Bỏ DataAnnotations khỏi request DTO, để FluentValidation là nguồn duy nhất; filter đặt `Order = -3000` để chạy trước `ModelStateInvalidFilter` |
+| Domain ném `InvalidOperationException` khi hủy đơn | API trả 500 thay vì 409 | `Order.Cancel` / `Order.ChangeStatus` ném `ConflictException` (code `INVALID_ORDER_STATUS`) |
+| Exception lạ không có handler | Lỗi không lường trước trả HTML/500 trần | `AppExceptionMiddleware` bắt `Exception` chung, trả `ErrorResponse` chuẩn |
+| **`SortBy` / `MinPrice` / `MaxPrice` không được áp dụng** | `?sortBy=price_desc` vẫn trả theo thời gian tạo; lọc giá trả về toàn bộ sản phẩm | `CatalogService.GetProductsAsync` thêm filter giá theo biến thể đang bán và 3 nhánh sắp xếp (giá tăng/giảm/mới nhất) |
+| **Phân trang bị bỏ qua** | `?pageSize=1` vẫn trả về toàn bộ sản phẩm | `dtoList` dùng nhầm `products` thay vì `pagedProducts` — sửa lại |
+| **Sắp xếp không ổn định** | Hai sản phẩm cùng giá / cùng thời gian tạo có thể đảo thứ tự giữa 2 lần gọi | Thêm tie-break theo `Id` cho cả 3 nhánh sort |
+| `ProductDto` thiếu `CreatedAt` | Client không biết sản phẩm được tạo khi nào, cũng không verify được sort `newest` | Thêm `CreatedAt` vào `ProductDto` |
+
+### Ghi chú kỹ thuật integration test
+
+- Mỗi test class dùng chung **một** database riêng (tên random), tạo trước / xoá sau test.
+- Connection string override bằng biến môi trường `ConnectionStrings__DefaultConnection` vì `Program.cs`
+  đọc connection string lúc đăng ký `DbContext` — trước khi `ConfigureWebHost` của test được áp dụng.
+  Nếu dùng `ConfigureAppConfiguration` thì test vẫn ghi vào DB chính (đã dính bug này một lần).
+- Vì env var là global nên bật `[assembly: CollectionBehavior(DisableTestParallelization = true)]`.
+- `OrderLifecycleTests` dùng `X-User-Id` riêng cho mỗi test để không đụng giỏ hàng của nhau.
+
 
