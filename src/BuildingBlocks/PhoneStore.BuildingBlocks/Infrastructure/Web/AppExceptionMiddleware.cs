@@ -47,5 +47,23 @@ public class AppExceptionMiddleware
             context.Response.ContentType = "application/json; charset=utf-8";
             await context.Response.WriteAsJsonAsync(response);
         }
+        catch (Exception exception)
+        {
+            // N2LHTBLTT-14: Mọi lỗi không lường trước đều trả về đúng định dạng ErrorResponse
+            // thay vì để ASP.NET trả về HTML/500 trần, để client xử lý thống nhất.
+            _logger.LogError(exception, "Unhandled exception: {RequestId}", context.TraceIdentifier);
+
+            var response = new ErrorResponse
+            {
+                Code = "INTERNAL_SERVER_ERROR",
+                Message = "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.",
+                RequestId = context.TraceIdentifier,
+                Timestamp = DateTimeOffset.UtcNow
+            };
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json; charset=utf-8";
+            await context.Response.WriteAsJsonAsync(response);
+        }
     }
 }
