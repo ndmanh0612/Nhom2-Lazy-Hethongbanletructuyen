@@ -1,5 +1,6 @@
 using PhoneStore.BuildingBlocks.Contracts.Order;
 using PhoneStore.BuildingBlocks.Domain;
+using PhoneStore.BuildingBlocks.Exceptions;
 using PhoneStore.Modules.Order.Domain.Enums;
 
 namespace PhoneStore.Modules.Order.Domain.Entities;
@@ -84,7 +85,7 @@ public class Order : AggregateRoot<long>
 
         if (Status == OrderStatus.DELIVERED || Status == OrderStatus.CANCELLED)
         {
-            throw new InvalidOperationException($"Không thể chuyển trạng thái từ {Status} sang {newStatus}.");
+            throw new ConflictException($"Không thể chuyển trạng thái từ {Status} sang {newStatus}.", "INVALID_ORDER_STATUS");
         }
 
         var previousStatus = Status;
@@ -103,7 +104,7 @@ public class Order : AggregateRoot<long>
     {
         if (Status != OrderStatus.PENDING && Status != OrderStatus.CONFIRMED)
         {
-            throw new InvalidOperationException($"Đơn hàng đang ở trạng thái {Status} không thể hủy.");
+            throw new ConflictException($"Đơn hàng đang ở trạng thái {Status} không thể hủy.", "INVALID_ORDER_STATUS");
         }
 
         var previousStatus = Status;
