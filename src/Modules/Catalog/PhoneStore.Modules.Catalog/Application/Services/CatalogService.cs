@@ -116,20 +116,49 @@ public class CatalogService : ICatalogService
             baseQuery = baseQuery.Where(p => p.BrandId == query.BrandId.Value);
         }
 
+        // Lọc theo khoảng giá của các phiên bản đang bán: sản phẩm được giữ lại
+        // nếu có ít nhất một phiên bản nằm trong khoảng [MinPrice, MaxPrice].
+        var hasPriceFilter = query.MinPrice.HasValue || query.MaxPrice.HasValue;
+        if (hasPriceFilter)
+        {
+            var minPrice = query.MinPrice ?? 0;
+            var maxPrice = query.MaxPrice ?? long.MaxValue;
+
+            baseQuery = baseQuery.Where(p => p.Variants.Any(v =>
+                v.IsActive && v.Price >= minPrice && v.Price <= maxPrice));
+        }
+
         var totalCount = await baseQuery.LongCountAsync(cancellationToken);
 
         var categories = await _dbContext.Categories.AsNoTracking().ToDictionaryAsync(c => c.Id, c => c.Name, cancellationToken);
         var brands = await _dbContext.Brands.AsNoTracking().ToDictionaryAsync(b => b.Id, b => b.Name, cancellationToken);
 
-        var products = await baseQuery
+        // Sắp xếp: theo giá sản phẩm dựa trên giá biến thể thấp nhất, hoặc theo thời gian tạo.
+        // Luôn có tie-break theo Id để thứ tự ổn định khi nhiều bản ghi có cùng
+        // giá / cùng thời điểm tạo (không phụ thuộc thứ tự trả về của database).
+        var products = baseQuery
             .Include(p => p.Variants)
             .Include(p => p.Images)
-            .OrderByDescending(p => p.CreatedAt)
+            .AsEnumerable();
+
+        products = query.SortBy switch
+        {
+            "price_asc" => products
+                .OrderBy(p => p.Variants.Where(v => v.IsActive).Select(v => (long?)v.Price).Min() ?? long.MaxValue)
+                .ThenBy(p => p.Id),
+            "price_desc" => products
+                .OrderByDescending(p => p.Variants.Where(v => v.IsActive).Select(v => (long?)v.Price).Min() ?? long.MaxValue)
+                .ThenByDescending(p => p.Id),
+            "newest" => products.OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.Id),
+            _ => products.OrderByDescending(p => p.CreatedAt).ThenByDescending(p => p.Id)
+        };
+
+        var pagedProducts = products
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
-        var dtoList = products.Select(p =>
+        var dtoList = pagedProducts.Select(p =>
         {
             var activeVariants = p.Variants.Where(v => v.IsActive).ToList();
             var minPrice = activeVariants.Count != 0 ? activeVariants.Min(v => v.Price) : 0;
@@ -138,7 +167,7 @@ public class CatalogService : ICatalogService
             var categoryName = categories.GetValueOrDefault(p.CategoryId, "Chưa phân loại");
             var brandName = brands.GetValueOrDefault(p.BrandId, "Chưa phân loại");
 
-            return new ProductDto(p.Id, p.CategoryId, categoryName, p.BrandId, brandName, p.Name, minPrice, maxPrice, mainImage, p.IsActive);
+            return new ProductDto(p.Id, p.CategoryId, categoryName, p.BrandId, brandName, p.Name, minPrice, maxPrice, mainImage, p.IsActive, p.CreatedAt);
         }).ToList();
 
         return Result.Success(PagedResult<ProductDto>.Create(dtoList, page, pageSize, totalCount));
