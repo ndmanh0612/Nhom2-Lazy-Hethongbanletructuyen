@@ -1,5 +1,7 @@
 using PhoneStore.BuildingBlocks;
 using PhoneStore.BuildingBlocks.Infrastructure.Web;
+using PhoneStore.BuildingBlocks.Validation;
+using PhoneStore.Api.Seeding;
 using PhoneStore.Modules.Cart;
 using PhoneStore.Modules.Catalog;
 using PhoneStore.Modules.Identity;
@@ -8,9 +10,15 @@ using PhoneStore.Modules.Order;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// N2LHTBLTT-14: Swagger, Validation và Global Exception Handling.
+builder.Services.AddAppSwagger("PhoneStore API", "v1");
+builder.Services.AddBuildingBlocksValidation(
+    typeof(BuildingBlocksRegistration),
+    typeof(IdentityModuleRegistration),
+    typeof(CatalogModuleRegistration),
+    typeof(CartModuleRegistration),
+    typeof(OrderModuleRegistration),
+    typeof(InventoryModuleRegistration));
 
 // Register BuildingBlocks (Mediator, Event Bus, Shared Kernel)
 // Lưu ý: MediatR phải scan cả các module, nên truyền marker type của từng module vào đây.
@@ -39,6 +47,15 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// N2LHTBLTT-40: Seed dữ liệu tối thiểu cho môi trường local (idempotent).
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        await DatabaseSeeder.SeedAsync(app.Services);
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
