@@ -34,3 +34,15 @@ desktop.ini
 .env
 !.env.example
 docker/data/
+
+## Archify diagram output
+.archify/
+*.delivery.json
+*.delivery-pending.json
+
+## Local-only files (không đẩy lên GitHub)
+prompts.ts
+Jira.csv
+
+## Cursor local config
+.cursor/
