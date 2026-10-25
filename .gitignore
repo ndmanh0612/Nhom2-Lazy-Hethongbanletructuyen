@@ -1,0 +1,36 @@
+## .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio & Rider
+.vs/
+.idea/
+*.DotSettings.user
+
+## VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## Logs & Temp
+*.log
+logs/
+temp/
+TestResults/
+coverage/
+
+## OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Docker & Environment
+.env
+!.env.example
+docker/data/
