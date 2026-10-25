@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PhoneStore.Modules.Order.Infrastructure.Persistence;
+using PhoneStore.Modules.Order.Infrastructure.Repositories;
 
 namespace PhoneStore.Modules.Order;
 
@@ -10,11 +11,13 @@ public static class OrderModuleRegistration
 {
     public static IServiceCollection AddOrderModule(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection") 
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? "Host=localhost;Port=5432;Database=phonestore_db;Username=postgres;Password=postgres";
 
         services.AddDbContext<OrderDbContext>(options =>
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", OrderDbContext.Schema)));
+
+        services.AddScoped<IOrderRepository, OrderRepository>();
 
         return services;
     }
@@ -24,7 +27,7 @@ public static class OrderModuleRegistration
 [Route("api/v1/orders")]
 public class OrdersController : ControllerBase
 {
-    // Task của Toàn & Mạnh: S2-08 & S3-06
+    // Task của Toàn & Mạnh: N2LHTBLTT-12 (Domain Entities, Repository, API contract)
     [HttpGet]
     public IActionResult GetOrders() => Ok(new { message = "Order Module Ready - Assigned to Toàn & Mạnh" });
 }
