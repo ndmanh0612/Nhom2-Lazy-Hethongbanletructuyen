@@ -1,4 +1,5 @@
 using PhoneStore.BuildingBlocks;
+using PhoneStore.BuildingBlocks.Infrastructure.Web;
 using PhoneStore.Modules.Cart;
 using PhoneStore.Modules.Catalog;
 using PhoneStore.Modules.Identity;
@@ -12,7 +13,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register BuildingBlocks (Mediator, Event Bus, Shared Kernel)
-builder.Services.AddBuildingBlocks(typeof(Program));
+// Lưu ý: MediatR phải scan cả các module, nên truyền marker type của từng module vào đây.
+builder.Services.AddBuildingBlocks(
+    typeof(BuildingBlocksRegistration),
+    typeof(IdentityModuleRegistration),
+    typeof(CatalogModuleRegistration),
+    typeof(CartModuleRegistration),
+    typeof(OrderModuleRegistration),
+    typeof(InventoryModuleRegistration));
 
 // Register Modules (Modular Monolith)
 builder.Services.AddIdentityModule(builder.Configuration);
@@ -43,6 +51,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll");
+
+app.UseMiddleware<AppExceptionMiddleware>();
 
 app.MapGet("/health", () => Results.Ok(new
 {
