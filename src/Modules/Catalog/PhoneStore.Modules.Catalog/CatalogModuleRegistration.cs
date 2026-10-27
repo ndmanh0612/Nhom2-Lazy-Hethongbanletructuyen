@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PhoneStore.BuildingBlocks.Contracts.Catalog;
 using PhoneStore.Modules.Catalog.Application.Services;
 using PhoneStore.Modules.Catalog.Infrastructure.Persistence;
 
@@ -17,6 +18,7 @@ public static class CatalogModuleRegistration
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", CatalogDbContext.Schema)));
 
         services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<IProductPricingContract, ProductPricingContract>();
 
         return services;
     }
