@@ -1,5 +1,4 @@
 using PhoneStore.Modules.Order.Domain.Enums;
-using OrderEntity = PhoneStore.Modules.Order.Domain.Entities.Order;
 
 namespace PhoneStore.Modules.Order.Application.DTOs;
 
@@ -84,3 +83,33 @@ public record OrderFilterQuery(
     DateTimeOffset? ToDate,
     int Page = 1,
     int PageSize = 20);
+
+/// <summary>
+/// FR-10 (N2LHTBLTT-27): Xác nhận đơn và chuyển sang trạng thái giao hàng.
+/// </summary>
+public record ConfirmOrderRequest(string? Note);
+
+/// <summary>
+/// FR-10 (N2LHTBLTT-27): Bàn giao cho đơn vị vận chuyển — trạng thái SHIPPING.
+/// </summary>
+public record ShipOrderRequest(string? Carrier, string? TrackingNumber, string? Note);
+
+/// <summary>
+/// FR-11 (N2LHTBLTT-28): Giao hàng thành công — thu tiền COD.
+/// </summary>
+public record DeliverOrderRequest(long CollectedAmount, string? Note);
+
+/// <summary>
+/// FR-11 (N2LHTBLTT-28): Giao hàng thất bại — giao lại hoặc huỷ.
+/// </summary>
+public record DeliveryFailedRequest(string Reason, bool CancelOrder);
+
+/// <summary>
+/// FR-11 (N2LHTBLTT-28): Đơn hàng đã thu COD — thống kê tiền mặt đã thu.
+/// </summary>
+public record CodCollectionDto(
+    long OrderId,
+    string OrderNumber,
+    long TotalAmount,
+    long CollectedAmount,
+    DateTimeOffset CollectedAt);

@@ -516,7 +516,7 @@ public class CatalogAndIdentityRegressionTests : IAsyncLifetime
     [Fact]
     public async Task Profile_of_an_unknown_user_returns_not_found()
     {
-        using var client = ApiTestHelper.CreateUserClient(_factory, 999_999_999);
+        using var client = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         var (status, body) = await ApiTestHelper.SendAsync(client, HttpMethod.Get, "/api/v1/me");
 

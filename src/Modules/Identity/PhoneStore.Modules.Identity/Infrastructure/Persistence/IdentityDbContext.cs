@@ -9,6 +9,7 @@ public class IdentityDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options)
     {
@@ -50,6 +51,23 @@ public class IdentityDbContext : DbContext
             entity.Property(e => e.AddressText).HasMaxLength(500).IsRequired();
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.HasIndex(e => e.UserId);
+        });
+
+        // N2LHTBLTT-9: Bảng refresh token cho cơ chế session + xoay vòng token.
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("refresh_tokens");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+            entity.Property(e => e.TokenHash).HasMaxLength(64).IsRequired();
+            entity.Property(e => e.ExpiresAt).IsRequired();
+            entity.Property(e => e.IsRevoked).HasDefaultValue(false);
+            entity.Property(e => e.RevokedAt);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();
+
+            entity.HasIndex(e => e.TokenHash).IsUnique();
             entity.HasIndex(e => e.UserId);
         });
     }

@@ -27,6 +27,11 @@ public class OrderDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).UseIdentityAlwaysColumn();
             entity.Property(e => e.OrderNumber).HasMaxLength(32).IsRequired();
+            entity.Property(e => e.CartId);
+            entity.Property(e => e.Carrier).HasMaxLength(100);
+            entity.Property(e => e.TrackingNumber).HasMaxLength(64);
+            entity.Property(e => e.CollectedAmount);
+            entity.Property(e => e.CollectedAt);
             entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
             entity.Property(e => e.PaymentMethod).HasMaxLength(20).IsRequired();
             entity.Property(e => e.ReceiverName).HasMaxLength(100).IsRequired();
@@ -39,6 +44,7 @@ public class OrderDbContext : DbContext
 
             entity.HasIndex(e => e.OrderNumber).IsUnique();
             entity.HasIndex(e => e.CustomerId);
+            entity.HasIndex(e => e.CartId);
             entity.HasIndex(e => new { e.Status, e.CreatedAt });
 
             entity.HasMany(e => e.Items)

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PhoneStore.BuildingBlocks.Application;
 using PhoneStore.Modules.Order.Application.DTOs;
 using PhoneStore.Modules.Order.Domain.Entities;
+using PhoneStore.Modules.Order.Domain.Enums;
 using PhoneStore.Modules.Order.Infrastructure.Persistence;
 using OrderEntity = PhoneStore.Modules.Order.Domain.Entities.Order;
 
@@ -86,6 +87,27 @@ public class OrderRepository : IOrderRepository
             .ToListAsync(cancellationToken);
 
         return PagedResult<OrderEntity>.Create(orders, page, pageSize, totalCount);
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-24: Tìm đơn hàng đã tạo từ một giỏ hàng — dùng để chống tạo trùng.
+    /// </summary>
+    public Task<OrderEntity?> GetByCartIdAsync(long cartId, CancellationToken cancellationToken = default)
+    {
+        return _dbContext.Orders
+            .Include(order => order.Items)
+            .Include(order => order.StatusHistories)
+            .FirstOrDefaultAsync(order => order.CartId == cartId, cancellationToken);
+    }
+
+    /// <summary>
+    /// FR-11 (N2LHTBLTT-28): Truy vấn các đơn đã giao thành công (đã thu COD).
+    /// </summary>
+    public IQueryable<OrderEntity> QueryDelivered()
+    {
+        return _dbContext.Orders
+            .AsNoTracking()
+            .Where(order => order.Status == OrderStatus.DELIVERED);
     }
 
     public Task<bool> ExistsOrderNumberAsync(string orderNumber, CancellationToken cancellationToken = default)

@@ -23,6 +23,7 @@ builder.Services.AddBuildingBlocksValidation(
 // Register BuildingBlocks (Mediator, Event Bus, Shared Kernel)
 // Lưu ý: MediatR phải scan cả các module, nên truyền marker type của từng module vào đây.
 builder.Services.AddBuildingBlocks(
+    builder.Configuration,
     typeof(BuildingBlocksRegistration),
     typeof(IdentityModuleRegistration),
     typeof(CatalogModuleRegistration),
@@ -42,7 +43,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
 
@@ -68,6 +69,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll");
+
+// N2LHTBLTT-9: Xác thực + phân quyền phải chạy trước middleware xử lý lỗi
+// để lỗi 401/403 trả về đúng envelope ErrorResponse.
+app.UseAuthentication();
+app.UseAuthorization();
+
+// N2LHTBLTT-38: Bảo vệ CSRF cho các endpoint dùng cookie để xác thực.
+app.UseMiddleware<CsrfProtectionMiddleware>();
 
 app.UseMiddleware<AppExceptionMiddleware>();
 

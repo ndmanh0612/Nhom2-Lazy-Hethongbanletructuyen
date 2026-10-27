@@ -1,4 +1,5 @@
 using PhoneStore.BuildingBlocks.Domain;
+using PhoneStore.BuildingBlocks.Exceptions;
 
 namespace PhoneStore.Modules.Identity.Domain.Entities;
 
@@ -48,6 +49,38 @@ public class User : AggregateRoot<long>
         };
     }
 
+    /// <summary>
+    /// FR-15: Tạo tài khoản nhân viên với vai trò được chỉ định.
+    /// Chỉ ADMIN được gọi method này (kiểm tra ở tầng endpoint).
+    /// </summary>
+    public static User CreateWithRole(
+        string email,
+        string passwordHash,
+        string fullName,
+        UserRole role,
+        string? phone = null)
+    {
+        if (role == UserRole.CUSTOMER)
+        {
+            throw new ValidationException(
+                "role",
+                "Dùng CreateCustomer cho khách hàng; tài khoản nhân viên phải có vai trò STAFF hoặc ADMIN.");
+        }
+
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        return new User
+        {
+            Email = normalizedEmail,
+            PasswordHash = passwordHash,
+            FullName = fullName.Trim(),
+            Phone = phone?.Trim(),
+            Role = role,
+            IsActive = true,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UpdatedAt = DateTimeOffset.UtcNow
+        };
+    }
+
     public void UpdateProfile(string fullName, string? phone)
     {
         FullName = fullName.Trim();
@@ -65,5 +98,40 @@ public class User : AggregateRoot<long>
     {
         IsActive = isActive;
         Touch();
+    }
+
+    /// <summary>
+    /// FR-15: Đổi vai trò của tài khoản.
+    /// Không cho phép hạ cấp quyền của chính mình (chống khoá mình khỏi hệ thống).
+    /// </summary>
+    public void ChangeRole(UserRole newRole)
+    {
+        if (newRole == UserRole.CUSTOMER)
+        {
+            throw new ValidationException(
+                "role",
+                "Vai trò CUSTOMER dành cho khách hàng. Muốn hạ quyền nhân viên thì dùng API khóa tài khoản.");
+        }
+
+        if (Role == newRole)
+        {
+            return;
+        }
+
+        Role = newRole;
+        Touch();
+    }
+
+    /// <summary>
+    /// FR-15: Khóa / mở khóa tài khoản. Không cho phép tự khóa chính mình.
+    /// </summary>
+    public void Lock(bool isLocked)
+    {
+        if (isLocked && IsActive is false)
+        {
+            return;
+        }
+
+        SetActive(!isLocked);
     }
 }
