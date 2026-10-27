@@ -4,9 +4,11 @@ namespace PhoneStore.Modules.Catalog.Application.DTOs;
 
 public record CategoryDto(long Id, string Name, bool IsActive);
 public record CreateCategoryRequest([Required, MaxLength(100)] string Name);
+public record UpdateCategoryRequest([Required, MaxLength(100)] string Name, bool IsActive = true);
 
 public record BrandDto(long Id, string Name, bool IsActive);
 public record CreateBrandRequest([Required, MaxLength(100)] string Name);
+public record UpdateBrandRequest([Required, MaxLength(100)] string Name, bool IsActive = true);
 
 public record ProductVariantDto(
     long Id,
