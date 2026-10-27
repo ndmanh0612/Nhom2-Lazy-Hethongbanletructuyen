@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ôn tập Toàn — PhoneStore | Cart · Order · Testing</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">
+      <div class="logo">P</div>
+      <div>Ôn tập Toàn
+        <small>PhoneStore · Cart · Order · Testing · 7 task</small>
+      </div>
+    </div>
+    <div class="hstats">
+      <div class="stat"><b id="s-card">0</b><span>Flashcard</span></div>
+      <div class="stat"><b id="s-quiz">0</b><span>Quiz</span></div>
+      <div class="stat"><b id="s-lab">0</b><span>Code Lab</span></div>
+      <div class="stat"><b id="s-ck">0</b><span>Checklist</span></div>
+      <div class="stat" title="Tiến độ tổng">
+        <svg class="ring" viewBox="0 0 42 42">
+          <circle class="bg" cx="21" cy="21" r="17"/>
+          <circle class="fg" id="ring" cx="21" cy="21" r="17" transform="rotate(-90 21 21)" stroke-dasharray="106.8" stroke-dashoffset="106.8"/>
+        </svg>
+      </div>
+      <button class="iconbtn" id="theme" title="Đổi giao diện sáng/tối">◐</button>
+      <button class="iconbtn" id="reset" title="Xoá toàn bộ tiến độ">↺</button>
+    </div>
+  </div>
+</header>
+
+<nav><div class="nwrap" id="nav">
+  <button class="on" data-s="dash">📊 Tổng quan</button>
+  <button data-s="time">🕐 Dòng thời gian</button>
+  <button data-s="arch">🏗 Kiến trúc</button>
+  <button data-s="flow">🔄 Luồng nghiệp vụ</button>
+  <button data-s="flash">🃏 Flashcard</button>
+  <button data-s="quiz">📝 Quiz</button>
+  <button data-s="lab">💻 Code Lab</button>
+  <button data-s="cheat">📋 Tra cứu nhanh</button>
+  <button data-s="check">✅ Tự đánh giá</button>
+</div></nav>
+
+<main>
+<!-- ============ DASHBOARD ============ -->
+<section class="on" id="s-dash">
+  <h2 class="sec">Tổng quan <span class="tag">Mai Thanh Toàn · toanlion24 · 221066</span></h2>
+  <p class="lead">7 task Jira thuộc phần việc <b>Cart / Order / Testing</b> của bạn. Trang này gom lại theo <b>9 hình thức học</b> khác nhau — đọc tổng quan, xem dòng thời gian, đọc sơ đồ, luyện flashcard, thi quiz, điền code, tra cứu nhanh và tự đánh giá. Tiến độ lưu tự động trên trình duyệt.</p>
+
+  <div class="grid g4" style="margin-bottom:26px">
+    <div class="card"><div class="stat" style="text-align:left"><b style="font-size:26px;color:var(--acc)">7</b><span>Task Jira</span></div></div>
+    <div class="card"><div class="stat" style="text-align:left"><b style="font-size:26px;color:var(--purple)">5</b><span>FR đã làm</span></div></div>
+    <div class="card"><div class="stat" style="text-align:left"><b style="font-size:26px;color:var(--ok)">168</b><span>Test đang chạy</span></div></div>
+    <div class="card"><div class="stat" style="text-align:left"><b style="font-size:26px;color:var(--warn)">2</b><span>PR đang mở</span></div></div>
+  </div>
+
+  <h3>🗂 7 task của bạn — bấm để xem chi tiết</h3>
+  <div class="grid g2" id="taskcards"></div>
+
+  <div class="note acc">
+    <b>Phạm vi phụ trách của bạn:</b> toàn bộ module <code class="inl">Cart</code> và <code class="inl">Order</code> (Domain → Repository → Service → API), hạ tầng dùng chung <code class="inl">Swagger / Validation / Global Exception</code>, và toàn bộ bộ kiểm thử tích hợp. Ngoài ra bạn phụ trách <b>task 39</b> (regression test) — đây là task bạn nhận thêm sau đợt export Jira ngày 25/10.
+  </div>
+
+  <h3>🎯 Điều bạn cần nắm vững</h3>
+  <div class="grid g3">
+    <div class="card"><b style="font-size:14px">1 · Domain thuần túy</b><p style="font-size:13px;color:var(--fg2);margin-top:7px">Entity <code class="inl">Cart</code>, <code class="inl">CartItem</code>, <code class="inl">Order</code> giữ toàn bộ luật nghiệp vụ. Không reference EF Core, không throw HTTP exception.</p></div>
+    <div class="card"><b style="font-size:14px">2 · Contract giữa module</b><p style="font-size:13px;color:var(--fg2);margin-top:7px">Order không biết Cart/Inventory/Catalog. Chỉ nói chuyện qua <code class="inl">ICartContract</code>, <code class="inl">IInventoryContract</code>, <code class="inl">IProductPricingContract</code>.</p></div>
+    <div class="card"><b style="font-size:14px">3 · Event Bus</b><p style="font-size:13px;color:var(--fg2);margin-top:7px">Hủy đơn → phát <code class="inl">OrderCancelled</code> → MediatR → Inventory hoàn tồn. Loose coupling giữa các module.</p></div>
+    <div class="card"><b style="font-size:14px">4 · Error chuẩn</b><p style="font-size:13px;color:var(--fg2);margin-top:7px">Mọi lỗi đi qua <code class="inl">AppExceptionMiddleware</code> → <code class="inl">ErrorResponse</code> có <code class="inl">code</code> + <code class="inl">requestId</code>.</p></div>
+    <div class="card"><b style="font-size:14px">5 · Test thật</b><p style="font-size:13px;color:var(--fg2);margin-top:7px">Integration test dựng WebApplicationFactory + PostgreSQL thật, mỗi lần chạy một database riêng rồi xoá.</p></div>
+    <div class="card"><b style="font-size:14px">6 · Git workflow</b><p style="font-size:13px;color:var(--fg2);margin-top:7px">Branch <code class="inl">feature/N2LHTBLTT-&lt;số&gt;</code>, commit Conventional Commits kèm mã Jira, PR vào <code class="inl">develop</code>.</p></div>
+  </div>
+</section>
+
+<!-- ============ TIMELINE ============ -->
+<section id="s-time">
+  <h2 class="sec">Dòng thời gian <span class="tag">theo thứ tự đã triển khai</span></h2>
+  <p class="lead">Các task của bạn được triển khai theo thứ tự sau. Mỗi task là một lớp xếp chồng lên task trước — hiểu thứ tự này giúp bạn nhớ vì sao code trông như nó trông.</p>
+  <div class="tl" id="timeline"></div>
+</section>
+
+<!-- ============ ARCH ============ -->
+<section id="s-arch">
+  <h2 class="sec">Kiến trúc &amp; vị trí code của bạn <span class="tag">Modular Monolith + Clean Architecture</span></h2>
+  <p class="lead">Dấu ★ là phần bạn trực tiếp sở hữu. Mỗi module là một "lồng" riêng: <code class="inl">Domain</code> → <code class="inl">Application</code> → <code class="inl">Infrastructure</code>, không module nào thấy DbContext của module khác.</p>
+
+  <div class="arch">
+    <div class="layer">
+      <div class="layer-t">Host — PhoneStore.Api</div>
+      <div class="flow">
+        <div class="fnode me">Program.cs</div><div class="arrow">→</div>
+        <div class="fnode">AddAppSwagger</div><div class="arrow">→</div>
+        <div class="fnode">AddBuildingBlocksValidation</div><div class="arrow">→</div>
+        <div class="fnode me">DatabaseSeeder</div><div class="arrow">→</div>
+        <div class="fnode">MapControllers</div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-t">Modules — 5 module, ★ = của bạn</div>
+      <div class="mods">
+        <div class="mod"><b>Identity</b><span>Trí</span></div>
+        <div class="mod"><b>Catalog</b><span>Nghĩa</span></div>
+        <div class="mod mine"><b>Cart</b><span>Toàn ★</span></div>
+        <div class="mod mine"><b>Order</b><span>Toàn ★</span></div>
+        <div class="mod"><b>Inventory</b><span>Đạt</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-t">Building Blocks — hạ tầng dùng chung</div>
+      <div class="bb">
+        <div class="mod mine"><b>AppExceptionMiddleware</b><span>★ task 14</span></div>
+        <div class="mod mine"><b>SwaggerRegistration</b><span>★ task 14</span></div>
+        <div class="mod mine"><b>FluentValidationFilter</b><span>★ task 14</span></div>
+        <div class="mod mine"><b>ApiResponse / ErrorResponse</b><span>★ task 14</span></div>
+        <div class="mod mine"><b>Result&lt;T&gt;</b><span>★ task 12</span></div>
+        <div class="mod"><b>InMemoryEventBus</b><span>Mạnh/Đạt</span></div>
+        <div class="mod"><b>HttpContextCurrentUser</b><span>Trí</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-t">Contracts — đường giao tiếp giữa module</div>
+      <div class="bb">
+        <div class="mod mine"><b>ICartContract</b><span>★ Cart cung cấp</span></div>
+        <div class="mod mine"><b>IInventoryContract</b><span>Inventory cung cấp</span></div>
+        <div class="mod"><b>IProductPricingContract</b><span>Catalog cung cấp</span></div>
+        <div class="mod mine"><b>OrderCancelled</b><span>★ Order phát</span></div>
+      </div>
+    </div>
+
+    <div class="layer">
+      <div class="layer-t">Persistence — 1 DbContext + 1 schema / module</div>
+      <div class="mods">
+        <div class="mod"><b>identity</b><span>IdentityDbContext</span></div>
+        <div class="mod"><b>catalog</b><span>CatalogDbContext</span></div>
+        <div class="mod mine"><b>cart</b><span>CartDbContext ★</span></div>
+        <div class="mod mine"><b>ordering</b><span>OrderDbContext ★</span></div>
+        <div class="mod"><b>inventory</b><span>InventoryDbContext</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Đường đi của một request Checkout</h3>
+  <div class="arch">
+    <div class="flow">
+      <div class="fnode">HTTP POST /api/v1/orders/checkout</div><div class="arrow">→</div>
+      <div class="fnode me">OrdersController.Checkout</div><div class="arrow">→</div>
+      <div class="fnode me">OrderService.CheckoutAsync</div>
+    </div>
+    <div class="flow-down">↓</div>
+    <div class="flow">
+      <div class="fnode">ICartContract<br><small style="color:var(--fg3)">đọc giỏ</small></div>
+      <div class="arrow">→</div>
+      <div class="fnode">IProductPricingContract<br><small style="color:var(--fg3)">lấy giá server-side</small></div>
+      <div class="arrow">→</div>
+      <div class="fnode me">Order.Create<br><small style="color:var(--fg3)">tính tổng tiền</small></div>
+      <div class="arrow">→</div>
+      <div class="fnode me">IOrderRepository.Add</div>
+    </div>
+    <div class="flow-down">↓ TransactionScope bao toàn bộ</div>
+    <div class="flow">
+      <div class="fnode">ICartContract.MarkAsConverted</div><div class="arrow">→</div>
+      <div class="fnode me">TransactionScope.Complete</div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Điểm cố nhớ:</b> giá sản phẩm <b>luôn</b> lấy lại từ Catalog lúc checkout, không đọc giá cũ trong giỏ và không tin giá client gửi lên. Nếu bạn dùng giá trong giỏ, khách có thể mua iPhone giá 1đ.
+  </div>
+</section>
+
+<!-- ============ FLOW ============ -->
+<section id="s-flow">
+  <h2 class="sec">Luồng nghiệp vụ <span class="tag">đọc theo bước</span></h2>
+  <p class="lead">Bốn luồng chính bạn đã viết. Học theo luồng dễ nhớ hơn học theo file.</p>
+
+  <div class="tabs" id="flowtabs">
+    <button class="on" data-f="cart">FR-06 · Giỏ hàng</button>
+    <button data-f="checkout">FR-07 · Checkout COD</button>
+    <button data-f="order">FR-08 · Xem đơn</button>
+    <button data-f="cancel">FR-09 · Hủy đơn</button>
+  </div>
+  <div id="flowbody"></div>
+</section>
+
+<!-- ============ FLASHCARD ============ -->
+<section id="s-flash">
+  <h2 class="sec">Flashcard <span class="tag">lật thẻ · đánh dấu biết/chưa biết</span></h2>
+  <p class="lead">Bấm vào thẻ để lật xem đáp án. Dùng <span class="kbd">←</span> <span class="kbd">→</span> để chuyển thẻ, <span class="kbd">Space</span> để lật, <span class="kbd">1</span> / <span class="kbd">2</span> để đánh dấu.</p>
+  <div class="fc-toolbar">
+    <label style="font-size:12.5px;color:var(--fg2)">Lọc theo task:
+      <select id="fcFilter">
+        <option value="all">Tất cả task</option>
+        <option value="12">N2LHTBLTT-12 · Domain &amp; Contract</option>
+        <option value="14">N2LHTBLTT-14 · Swagger / Validation / Exception</option>
+        <option value="19">N2LHTBLTT-19 · FR-06 Giỏ hàng</option>
+        <option value="20">N2LHTBLTT-20 · FR-07 Checkout</option>
+        <option value="25">N2LHTBLTT-25 · FR-08 Danh sách đơn</option>
+        <option value="26">N2LHTBLTT-26 · FR-09 Hủy đơn</option>
+        <option value="39">N2LHTBLTT-39 · Kiểm thử</option>
+        <option value="git">Git Workflow</option>
+      </select>
+    </label>
+    <label style="font-size:12.5px;color:var(--fg2)">Trạng thái:
+      <select id="fcState">
+        <option value="all">Tất cả</option>
+        <option value="new">Chưa học</option>
+        <option value="known">Đã biết</option>
+        <option value="weak">Chưa biết</option>
+      </select>
+    </label>
+    <button class="btn" id="fcShuffle">🔀 Đảo thứ tự</button>
+    <button class="btn" id="fcReset">↺ Reset thẻ này</button>
+    <span style="margin-left:auto;font-size:12.5px;color:var(--fg2)" id="fcPool"></span>
+  </div>
+  <div class="fc-count" id="fcCount"></div>
+  <div class="fc-stage">
+    <div class="fc" id="fcCard">
+      <div class="fc-face fc-front" id="fcFront"></div>
+      <div class="fc-face fc-back" id="fcBack"></div>
+    </div>
+  </div>
+  <div class="fc-nav">
+    <button class="btn" id="fcPrev">← Trước</button>
+    <button class="btn r" id="fcWeak">Chưa biết (2)</button>
+    <button class="btn g" id="fcKnown">Đã biết (1)</button>
+    <button class="btn" id="fcNext">Sau →</button>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="s-quiz">
+  <h2 class="sec">Quiz <span class="tag">trắc nghiệm + giải thích</span></h2>
+  <p class="lead">Chọn đáp án, bấm "Đáp lời" để xem giải thích. Điểm được lưu lại để bạn biết mình yếu ở phần nào.</p>
+  <div class="fc-toolbar">
+    <label style="font-size:12.5px;color:var(--fg2)">Lọc:
+      <select id="qzFilter">
+        <option value="all">Tất cả</option>
+        <option value="12">Task 12</option>
+        <option value="14">Task 14</option>
+        <option value="19">Task 19</option>
+        <option value="20">Task 20</option>
+        <option value="25">Task 25</option>
+        <option value="26">Task 26</option>
+        <option value="39">Task 39</option>
+      </select>
+    </label>
+    <button class="btn" id="qzCheck">✓ Đáp lời tất cả</button>
+    <button class="btn" id="qzReset">↺ Reset</button>
+    <span style="margin-left:auto;font-size:13px;font-weight:600" id="qzScore"></span>
+  </div>
+  <div id="quizBody"></div>
+</section>
+
+<!-- ============ CODE LAB ============ -->
+<section id="s-lab">
+  <h2 class="sec">Code Lab <span class="tag">điền vào chỗ trống</span></h2>
+  <p class="lead">Đọc đoạn code thật trong repo của bạn, chọn đáp án đúng cho mỗi chỗ trống. Sau khi bấm "Kiểm tra" mỗi chỗ sẽ xanh/đỏ ngay — sai thì xem lại đường dẫn file.</p>
+  <div class="fc-toolbar">
+    <button class="btn p" id="labCheck">✓ Kiểm tra tất cả</button>
+    <button class="btn" id="labReset">↺ Reset</button>
+    <span style="margin-left:auto;font-size:13px;font-weight:600" id="labScore"></span>
+  </div>
+  <div id="labBody"></div>
+</section>
+
+<!-- ============ CHEATSHEET ============ -->
+<section id="s-cheat">
+  <h2 class="sec">Tra cứu nhanh <span class="tag">copy để dùng lúc thi</span></h2>
+  <div class="tabs" id="cheattabs">
+    <button class="on" data-c="api">API Endpoints</button>
+    <button data-c="err">Mã lỗi</button>
+    <button data-c="const">Hằng số &amp; giới hạn</button>
+    <button data-c="file">Bản đồ file</button>
+    <button data-c="git">Git workflow</button>
+  </div>
+  <div id="cheatBody"></div>
+</section>
+
+<!-- ============ CHECKLIST ============ -->
+<section id="s-check">
+  <h2 class="sec">Tự đánh giá <span class="tag">checklist theo từng task</span></h2>
+  <p class="lead">Đánh dấu những gì bạn đã tự giải thích được. Mục tiêu: mỗi task đạt 100% trước khi đi thi vòng bảo vệ.</p>
+  <div id="checkBody"></div>
+</section>
+</main>
+
+<footer>
+  Ôn tập nội bộ — PhoneStore · Nhóm 2 (Lazy) · dựng từ source code thật của repo · tiến độ lưu trong localStorage
+</footer>
+
+<div class="hint-bar">
+  <span><span class="kbd">←</span><span class="kbd">→</span> chuyển thẻ</span>
+  <span><span class="kbd">Space</span> lật thẻ</span>
+  <span><span class="kbd">1</span> biết</span>
+  <span><span class="kbd">2</span> chưa biết</span>
+  <span><span class="kbd">1–9</span> chuyển mục</span>
+</div>
+
+<script src="data.js"></script>
+<script src="data-cards.js"></script>
+<script src="data-quiz.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

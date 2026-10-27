@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhoneStore — Phân tích yêu cầu &amp; Phân rã chức năng (FBD)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Đồ án Phát Triển Ứng Dụng Phía Máy Chủ Nâng Cao · HP 608819</div>
+    <h1>Phân tích yêu cầu &amp; <span class="ticket">Phân rã chức năng</span></h1>
+    <p class="subtitle">Tài liệu thiết kế hệ thống bán điện thoại và phụ kiện trực tuyến — mô phỏng nghiệp vụ CellphoneS. Tài liệu được đối chiếu trực tiếp với source code hiện có trong repo (5 module, 23 endpoint nghiệp vụ, 13 bảng trên 5 schema CSDL).</p>
+    <div class="meta-grid">
+      <div class="meta-card"><div class="label">Nhóm</div><div class="value">Nhóm 2 — Lazy</div></div>
+      <div class="meta-card"><div class="label">Project Jira</div><div class="value">N2LHTBLTT</div></div>
+      <div class="meta-card"><div class="label">Module</div><div class="value">5 module</div></div>
+      <div class="meta-card"><div class="label">Yêu cầu chức năng</div><div class="value">16 FR</div></div>
+      <div class="meta-card"><div class="label">Yêu cầu phi chức năng</div><div class="value">9 NFR</div></div>
+      <div class="meta-card"><div class="label">Cập nhật</div><div class="value sm">26/10/2026</div></div>
+    </div>
+    <div class="meta-grid" style="margin-top:12px">
+      <div class="meta-card" style="grid-column:1/-1"><div class="label">Tài liệu này phục vụ</div><div class="value sm">N2LHTBLTT-1 (Phân tích yêu cầu) · N2LHTBLTT-2 (Sơ đồ phân rã chức năng) · N2LHTBLTT-3 (Kiến trúc tổng thể) · N2LHTBLTT-4 (Thiết kế CSDL &amp; ERD)</div></div>
+      <div class="meta-card" style="grid-column:1/-1;border-color:var(--accent)"><div class="label">Tài liệu liên quan</div><div class="value sm"><a href="thiet-ke-he-thong.html">→ Thiết kế hệ thống (kiến trúc · CSDL · ERD · luồng kỹ thuật)</a> · <a href="index.html">← Trang chỉ mục</a></div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="top">
+  <div class="wrap">
+    <a href="#tong-quan" class="on">1. Tổng quan</a>
+    <a href="#tac-nhan">2. Tác nhân</a>
+    <a href="#phân-tich">3. Phân tích yêu cầu</a>
+    <a href="#phân-ra">4. Phân rã chức năng (FBD)</a>
+    <a href="#use-case">5. Use Case chi tiết</a>
+    <a href="#quy-trinh">6. Quy trình nghiệp vụ</a>
+    <a href="#quy-tac">7. Quy tắc nghiệp vụ</a>
+    <a href="#nfr">8. Yêu cầu phi chức năng</a>
+    <a href="#trace">9. Truy vết FR ↔ Task</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= 1. TỔNG QUAN ================= -->
+<section id="tong-quan">
+  <h2><span class="num">1</span> Tổng quan hệ thống</h2>
+  <p class="lead">PhoneStore là hệ thống bán lẻ trực tuyến chuyên điện thoại, máy tính bảng và phụ kiện. Hệ thống cho phép khách hàng lướt danh mục, thêm vào giỏ, đặt hàng thanh toán COD theo dõi đơn và nhân viên quản trị sản phẩm, tồn kho, vận chuyển.</p>
+
+  <div class="grid g3">
+    <div class="card">
+      <h4>Phạm vi hệ thống</h4>
+      <ul class="tight">
+        <li>Bán lẻ trực tuyến 1 kênh (web API)</li>
+        <li>5 module nghiệp vụ độc lập</li>
+        <li>Thanh toán COD — chuyển khoản online nằm ngoài phạm vi</li>
+        <li>Quản lý tồn kho và vận chuyển nội bộ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Đối tượng sử dụng</h4>
+      <ul class="tight">
+        <li><b>Khách hàng</b> — mua sắm, theo dõi đơn</li>
+        <li><b>Nhân viên</b> — xác nhận đơn, giao hàng, thu COD</li>
+        <li><b>Quản trị viên</b> — quản lý danh mục, sản phẩm, nhân viên</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Kiến trúc</h4>
+      <ul class="tight">
+        <li><b>Modular Monolith</b> + <b>Clean Architecture</b></li>
+        <li>.NET 10 · ASP.NET Core Web API</li>
+        <li>PostgreSQL 16 — 5 schema độc lập</li>
+        <li>MediatR (In-memory Event Bus) liên module</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Bối cảnh nghiệp vụ</h3>
+  <pre class="ascii">┌──────────────────────────────────────────────────────────────────────────┐
+│                        KHÁCH HÀNG (Web / Mobile App)                        │
+└───────────────────────────────────┬──────────────────────────────────────────┘
+                                    │ HTTPS / JSON
+┌───────────────────────────────────▼──────────────────────────────────────────┐
+│                        PHONESTORE API  (ASP.NET Core 10)                    │
+│                                                                             │
+│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌──────────┐ │
+│  │ IDENTITY  │  │  CATALOG  │  │   CART    │  │   ORDER   │  │INVENTORY │ │
+│  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └────┬─────┘ │
+│        │               │               │               │              │       │
+│  ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼─────┐  ┌─────▼────┐  │
+│  │  identity │  │  catalog  │  │   cart    │  │ ordering  │  │inventory │  │
+│  │  schema   │  │  schema   │  │  schema   │  │  schema   │  │  schema  │  │
+│  └───────────┘  └───────────┘  └───────────┘  └───────────┘  └──────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘</pre>
+
+  <div class="callout purple">
+    <b>Điểm khác biệt về thiết kế:</b> hệ thống không dùng một CSDL chung với một bảng chung cho mọi module. Mỗi module sở hữu <b>schema PostgreSQL riêng</b> và <b>DbContext riêng</b>, giao tiếp với nhau chỉ qua <b>public Contract</b> hoặc <b>domain event</b>. Ranh giới này được kiểm chứng tự động bằng 7 architecture test.
+  </div>
+</section>
+
+<!-- ================= 2. TÁC NHÂN ================= -->
+<section id="tac-nhan">
+  <h2><span class="num">2</span> Tác nhân hệ thống (Actors)</h2>
+  <p class="lead">Bốn tác nhân tương tác với hệ thống, mỗi tác nhân có tập quyền và mục tiêu nghiệp vụ riêng.</p>
+
+  <table>
+    <thead><tr><th>Tác nhân</th><th>Mô tả</th><th>Mục tiêu chính</th><th>Module liên quan</th><th>Phân quyền</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Khách hàng</b><br><span class="muted">Customer</span></td>
+        <td>Người dùng đăng ký tài khoản, mua sắm sản phẩm</td>
+        <td>Tìm đúng sản phẩm với giá hợp lý, đặt hàng nhanh, theo dõi đơn</td>
+        <td>Identity · Catalog · Cart · Order</td>
+        <td><span class="badge b-blue">CUSTOMER</span></td>
+      </tr>
+      <tr>
+        <td><b>Nhân viên bán hàng</b><br><span class="muted">Staff</span></td>
+        <td>Nhân viên xác nhận đơn, cập nhật trạng thái giao hàng, thu COD</td>
+        <td>Xử lý đơn hàng đúng tiến độ, giao đủ và đúng hàng</td>
+        <td>Order · Inventory</td>
+        <td><span class="badge b-purple">STAFF</span></td>
+      </tr>
+      <tr>
+        <td><b>Quản trị viên</b><br><span class="muted">Admin</span></td>
+        <td>Quản lý danh mục, thương hiệu, sản phẩm, SKU, tài khoản nhân viên</td>
+        <td>Đảm bảo dữ liệu danh mục luôn chính xác và cập nhật</td>
+        <td>Catalog · Identity · Inventory</td>
+        <td><span class="badge b-red">ADMIN</span></td>
+      </tr>
+      <tr>
+        <td><b>Đơn vị vận chuyển</b><br><span class="muted">Shipping Provider</span></td>
+        <td>Bên ngoài — mô phỏng bằng module Order nội bộ</td>
+        <td>Nhận thông tin giao hàng, cập nhật trạng thái vận chuyển</td>
+        <td>Order</td>
+        <td><span class="badge b-amber">Ngoài hệ thống</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="legend">
+    <span><b>CUSTOMER</b> — mặc định khi đăng ký, tự tạo tài khoản</span>
+    <span><b>STAFF</b> — do Admin cấp, quản lý vận hành đơn</span>
+    <span><b>ADMIN</b> — cấp quyền quản trị danh mục &amp; nhân viên</span>
+  </div>
+</section>
+
+<!-- ================= 3. PHÂN TÍCH YÊU CẦU ================= -->
+<section id="phân-tích">
+  <h2><span class="num">3</span> Phân tích yêu cầu</h2>
+
+  <h3>3.1. Yêu cầu chức năng (FR)</h3>
+  <p class="lead">16 yêu cầu chức năng, mỗi yêu cầu ánh xạ tới một hoặc nhiều Jira task và một nhóm endpoint cụ thể trong hệ thống.</p>
+
+  <table>
+    <thead><tr><th>FR</th><th>Tên yêu cầu</th><th>Module</th><th>Endpoint (hiện có)</th><th>Jira task</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <tr><td><b>FR-01</b></td><td>Đăng ký tài khoản khách hàng</td><td>Identity</td><td><code>POST /api/v1/auth/register</code></td><td>N2LHTBLTT-8</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-02</b></td><td>Đăng nhập, đăng xuất &amp; session</td><td>Identity</td><td><code>POST /api/v1/auth/login</code><br><code>POST /api/v1/auth/logout</code></td><td>N2LHTBLTT-9</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-03</b></td><td>Quản lý hồ sơ, mật khẩu, địa chỉ</td><td>Identity</td><td><code>GET|PATCH /api/v1/me</code><br><code>POST /api/v1/me/change-password</code><br><code>GET|POST /api/v1/me/addresses</code></td><td>N2LHTBLTT-15</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-04</b></td><td>Danh sách, tìm kiếm &amp; lọc sản phẩm</td><td>Catalog</td><td><code>GET /api/v1/products</code></td><td>N2LHTBLTT-11</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-05</b></td><td>Chi tiết sản phẩm &amp; phiên bản SKU</td><td>Catalog</td><td><code>GET /api/v1/products/{id}</code></td><td>N2LHTBLTT-17</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-06</b></td><td>Giỏ hàng — thêm, sửa số lượng, xóa</td><td><b>Cart</b></td><td><code>GET /api/v1/cart</code><br><code>POST|PUT|DELETE /api/v1/cart/items</code></td><td>N2LHTBLTT-19</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-07</b></td><td>Checkout COD, tạo đơn, tính tổng tiền</td><td><b>Cart / Order</b></td><td><code>POST /api/v1/orders/checkout</code></td><td>N2LHTBLTT-20</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-08</b></td><td>Danh sách, chi tiết &amp; lịch sử đơn hàng</td><td><b>Order</b></td><td><code>GET /api/v1/orders</code><br><code>GET /api/v1/orders/{id}</code></td><td>N2LHTBLTT-25</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-09</b></td><td>Hủy đơn, kiểm tra trạng thái &amp; hoàn tồn</td><td><b>Order</b></td><td><code>POST /api/v1/orders/{id}/cancel</code></td><td>N2LHTBLTT-26</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-10</b></td><td>Xác nhận đơn &amp; chuyển trạng thái giao hàng</td><td>Order</td><td>— <span class="muted">(chưa tách controller)</span></td><td>N2LHTBLTT-27</td><td><span class="badge b-amber">Đang chờ</span></td></tr>
+      <tr><td><b>FR-11</b></td><td>Giao thành công, thu COD, giao thất bại</td><td>Order</td><td>—</td><td>N2LHTBLTT-28</td><td><span class="badge b-amber">Đang chờ</span></td></tr>
+      <tr><td><b>FR-12</b></td><td>Quản lý danh mục &amp; thương hiệu</td><td>Catalog</td><td><code>GET /api/v1/categories</code><br><code>GET /api/v1/brands</code><br><code>POST /api/v1/admin/categories</code> · <code>brands</code></td><td>N2LHTBLTT-10</td><td><span class="badge b-green">Đã có</span></td></tr>
+      <tr><td><b>FR-13</b></td><td>CRUD sản phẩm, SKU, giá, thông số</td><td>Catalog</td><td><span class="muted">(mới chỉ có truy vấn đọc)</span></td><td>N2LHTBLTT-18</td><td><span class="badge b-amber">Đang chờ</span></td></tr>
+      <tr><td><b>FR-14</b></td><td>Nhập kho, điều chỉnh tồn &amp; nhật ký tồn kho</td><td>Inventory</td><td><code>GET /api/v1/admin/inventory/movements</code></td><td>N2LHTBLTT-21</td><td><span class="badge b-amber">Đang chờ</span></td></tr>
+      <tr><td><b>FR-15</b></td><td>Quản lý tài khoản nhân viên, khóa/mở, phân quyền</td><td>Identity</td><td>—</td><td>N2LHTBLTT-16</td><td><span class="badge b-amber">Đang chờ</span></td></tr>
+      <tr><td><b>FR-16</b></td><td>Thống kê doanh thu, trạng thái đơn, tồn kho thấp</td><td>Reporting</td><td>—</td><td>N2LHTBLTT-32</td><td><span class="badge b-amber">Đang chờ</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2. Yêu cầu phi chức năng (NFR)</h3>
+  <table>
+    <thead><tr><th>NFR</th><th>Yêu cầu</th><th>Tiêu chí đo lường</th><th>Cơ chế đáp ứng trong hệ thống</th></tr></thead>
+    <tbody>
+      <tr><td><b>NFR-01</b></td><td>Hiệu năng phản hồi</td><td>p95 &lt; 500 ms cho truy vấn đọc</td><td>Index theo <code>CustomerId</code>, <code>Status</code>+<code>CreatedAt</code>; phân trang PagedResult; không N+1 query</td></tr>
+      <tr><td><b>NFR-02</b></td><td>Toàn vẹn dữ liệu khi thanh toán</td><td>0 trường hợp tạo đơn trùng lặp / mất hàng</td><td><code>TransactionScope</code> bọc tạo đơn + chuyển giỏ; mã đơn unique index; thử tối đa 5 lần sinh lại</td></tr>
+      <tr><td><b>NFR-03</b></td><td>Không bán vượt tồn kho</td><td>Tồn &ge; 0 sau mọi giao dịch</td><td><code>ProductStock.Reserve</code> ném lỗi nếu thiếu; contract <code>TryReserveStockAsync</code> trả bool</td></tr>
+      <tr><td><b>NFR-04</b></td><td>Bảo mật — giá luôn do server quyết định</td><td>0 rủi ro client gửi giá giả</td><td><code>AddToCartRequest</code> không có field giá; giá lấy qua <code>IProductPricingContract</code> lúc thêm và lúc checkout</td></tr>
+      <tr><td><b>NFR-05</b></td><td>Phân quyền theo chủ sở hữu dữ liệu</td><td>0 rủi ro đọc đơn của khách khác</td><td>Ownership check trong service → <code>ForbiddenException</code> 403; role CUSTOMER/STAFF/ADMIN trong <code>identity.users</code></td></tr>
+      <tr><td><b>NFR-06</b></td><td>Tính nhất quán thông báo lỗi</td><td>100% lỗi trả JSON chuẩn</td><td><code>AppExceptionMiddleware</code> bắt cả exception không lường trước → <code>ErrorResponse</code> có <code>code</code> + <code>requestId</code></td></tr>
+      <tr><td><b>NFR-07</b></td><td>Khả dụng &amp; triển khai lặp lại</td><td>1 lệnh dựng môi trường</td><td>docker-compose (PostgreSQL 16 + MinIO), Dockerfile multi-stage, CI tự chạy 168 test, EF Core migration theo module</td></tr>
+      <tr><td><b>NFR-08</b></td><td>Cô lập module &amp; khả năng mở rộng</td><td>0 rò rỉ tham chiếu chéo module</td><td>7 architecture test chặn import DbContext/Implementation chéo; giao tiếp qua Contract + Event Bus</td></tr>
+      <tr><td><b>NFR-09</b></td><td>Chất lượng &amp; khả năng bảo trì</td><td>168 test tự động xanh</td><td>Unit + Architecture + Integration test; mỗi lần chạy tạo DB riêng <code>phonestore_test_&lt;guid&gt;</code></td></tr>    </tbody>
+  </table>
+</section>
+
+<!-- ================= 4. PHÂN RÃ CHỨC NĂNG ================= -->
+<section id="phân-ra">
+  <h2><span class="num">4</span> Phân rã chức năng (Function Decomposition Diagram)</h2>
+  <p class="lead">Cây phân rã chức năng bắt đầu từ mục tiêu hệ thống, mở rộng theo từng vai trò người dùng, rồi tới nhóm chức năng và chức năng con. Mỗi lá trong cây đều ánh xạ được về ít nhất một endpoint đã hiện thực.</p>
+
+  <div class="legend">
+    <span><b>Cấp 0</b> — Mục tiêu hệ thống</span>
+    <span><b>Cấp 1</b> — Chức năng theo vai trò</span>
+    <span><b>Cấp 2</b> — Nhóm chức năng nghiệp vụ</span>
+    <span><b>Cấp 3</b> — Chức năng con (FR)</span>
+    <span><b>Cấp 4</b> — Thao tác cụ thể (endpoint)</span>
+  </div>
+
+  <div class="fbd">
+    <ul>
+      <li>
+        <div class="node l0">🎯 HỆ THỐNG BÁN ĐIỆN THOẠI &amp; PHỤ KIỆN TRỰC TUYẾN</div>
+        <ul>
+
+          <li>
+            <div class="node l1"><span class="k">A</span> Quản lý tài khoản khách hàng <span class="who">Identity</span></div>
+            <ul>
+              <li><div class="node l2"><span class="k">A1</span> Đăng ký &amp; xác thực</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-01</span> Đăng ký tài khoản khách hàng</div>
+                    <ul>
+                      <li><div class="node l4">POST /api/v1/auth/register</div></li>
+                      <li><div class="node l4">Chuẩn hoá email về lowercase · kiểm tra trùng → 409</div></li>
+                      <li><div class="node l4">Băm mật khẩu bằng BCrypt</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">FR-02</span> Đăng nhập / đăng xuất &amp; session</div>
+                    <ul>
+                      <li><div class="node l4">POST /api/v1/auth/login</div></li>
+                      <li><div class="node l4">POST /api/v1/auth/logout</div></li>
+                      <li><div class="node l4"><span class="badge b-amber">Tạm thời</span> nhận danh tính qua header X-User-Id — chờ JWT task 8/9</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">A2</span> Hồ sơ &amp; địa chỉ</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-03</span> Quản lý hồ sơ, mật khẩu, địa chỉ</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/me — xem hồ sơ</div></li>
+                      <li><div class="node l4">PATCH /api/v1/me — cập nhật hồ sơ</div></li>
+                      <li><div class="node l4">POST /api/v1/me/change-password</div></li>
+                      <li><div class="node l4">GET /api/v1/me/addresses · POST /api/v1/me/addresses</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">A3</span> Quản lý người dùng</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-15</span> Tài khoản nhân viên, khóa/mở, phân quyền</div>
+                    <ul>
+                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-16</div></li>
+                      <li><div class="node l4">Cơ chế đã có: <code>User.SetActive(bool)</code> · enum UserRole</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="node l1"><span class="k">B</span> Quản lý danh mục sản phẩm <span class="who">Catalog</span></div>
+            <ul>
+              <li><div class="node l2"><span class="k">B1</span> Duyệt &amp; tra cứu danh mục</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-12</span> Quản lý danh mục &amp; thương hiệu</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/categories</div></li>
+                      <li><div class="node l4">GET /api/v1/brands</div></li>
+                      <li><div class="node l4">POST /api/v1/admin/categories · POST /api/v1/admin/brands</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">FR-04</span> Tìm kiếm, lọc, sắp xếp, phân trang sản phẩm</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/products?search=&sortBy=&page=&pageSize=</div></li>
+                      <li><div class="node l4">Lọc theo danh mục, thương hiệu, khoảng giá, tồn kho</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">FR-05</span> Chi tiết sản phẩm &amp; phiên bản SKU</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/products/{id}</div></li>
+                      <li><div class="node l4">Trả về: variants[] (màu, dung lượng, giá) · images[]</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">B2</span> Quản lý sản phẩm</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-13</span> CRUD sản phẩm, SKU, giá, thông số kỹ thuật</div>
+                    <ul>
+                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-18</div></li>
+                      <li><div class="node l4">Cơ chế đã có: <code>Product.UpdateInfo</code> · <code>ProductVariant.UpdatePrice</code> · <code>AdjustStock</code></div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="node l1"><span class="k">C</span> Mua sắm &amp; giỏ hàng <span class="who">Cart</span></div>
+            <ul>
+              <li><div class="node l2"><span class="k">C1</span> Quản lý giỏ hàng</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-06</span> Thêm, sửa số lượng, xóa sản phẩm trong giỏ</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/cart — lấy/tạo giỏ ACTIVE</div></li>
+                      <li><div class="node l4">POST /api/v1/cart/items — thêm (gộp nếu đã có)</div></li>
+                      <li><div class="node l4">PUT /api/v1/cart/items/{cartItemId} — đổi số lượng</div></li>
+                      <li><div class="node l4">DELETE /api/v1/cart/items/{cartItemId} — xoá</div></li>
+                      <li><div class="node l4">Giới hạn: ≤10 đơn vị/sản phẩm · ≤50 sản phẩm khác nhau/giỏ</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">C2</span> Thanh toán</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-07</span> Checkout COD, tạo đơn, tính tổng tiền</div>
+                    <ul>
+                      <li><div class="node l4">POST /api/v1/orders/checkout → 201 Created</div></li>
+                      <li><div class="node l4">Subtotal = Σ(giá × số lượng)</div></li>
+                      <li><div class="node l4">Phí ship: 0 nếu ≥ 10.000.000, ngược lại 30.000</div></li>
+                      <li><div class="node l4">Mã đơn ORD-{yyyyMMdd}-{6 hex}</div></li>
+                      <li><div class="node l4">TransactionScope: tạo đơn + chuyển giỏ CONVERTED</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="node l1"><span class="k">D</span> Quản lý vòng đời đơn hàng <span class="who">Order</span></div>
+            <ul>
+              <li><div class="node l2"><span class="k">D1</span> Theo dõi đơn của khách</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-08</span> Danh sách, chi tiết &amp; lịch sử đơn</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/orders?status=&fromDate=&toDate=&page=&pageSize=</div></li>
+                      <li><div class="node l4">GET /api/v1/orders/{orderId}</div></li>
+                      <li><div class="node l4">Trả PagedResult + statusHistories[]</div></li>
+                      <li><div class="node l4">Đơn người khác → 403 FORBIDDEN</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">FR-09</span> Hủy đơn &amp; hoàn tồn kho</div>
+                    <ul>
+                      <li><div class="node l4">POST /api/v1/orders/{orderId}/cancel</div></li>
+                      <li><div class="node l4">Chỉ hủy được PENDING / CONFIRMED → nếu không 409</div></li>
+                      <li><div class="node l4">Phát <code>OrderCancelled</code> → Inventory hoàn tồn</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">D2</span> Vận hành giao hàng (nhân viên)</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-10</span> Xác nhận đơn &amp; chuyển trạng thái giao hàng</div>
+                    <ul>
+                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-27</div></li>
+                      <li><div class="node l4">Cơ chế đã có: <code>Order.ChangeStatus(newStatus, note)</code> tự ghi lịch sử</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">FR-11</span> Giao thành công, thu COD, giao thất bại</div>
+                    <ul>
+                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-28</div></li>
+                      <li><div class="node l4">Cơ chế đã có: <code>Order.DeliveredAt</code> tự set khi sang DELIVERED</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="node l1"><span class="k">E</span> Quản lý kho &amp; báo cáo <span class="who">Inventory / Reporting</span></div>
+            <ul>
+              <li><div class="node l2"><span class="k">E1</span> Quản lý tồn kho</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-14</span> Nhập kho, điều chỉnh tồn &amp; nhật ký tồn kho</div>
+                    <ul>
+                      <li><div class="node l4">GET /api/v1/admin/inventory/movements</div></li>
+                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-21</div></li>
+                      <li><div class="node l4">Cơ chế đã có: <code>ProductStock.Reserve</code> · <code>Restore</code></div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">E2</span> Báo cáo &amp; thống kê</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">FR-16</span> Thống kê doanh thu, trạng thái đơn, tồn kho thấp</div>
+                    <ul>
+                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-32</div></li>
+                      <li><div class="node l4">Dữ liệu nguồn: bảng <code>ordering.orders</code> + <code>inventory.product_stocks</code></div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <div class="node l1"><span class="k">F</span> Hạ tầng dùng chung <span class="who">Building Blocks</span></div>
+            <ul>
+              <li><div class="node l2"><span class="k">F1</span> Chất lượng &amp; kiểm thử</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">T-01</span> Kiểm thử tích hợp &amp; hồi quy các API nghiệp vụ</div>
+                    <ul>
+                      <li><div class="node l4">126 integration test · 35 unit · 7 architecture = 168</div></li>
+                      <li><div class="node l4">WebApplicationFactory + PostgreSQL thật, DB riêng mỗi lần chạy</div></li>
+                      <li><div class="node l4">Task N2LHTBLTT-39</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">F2</span> Triển khai &amp; vận hành</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">T-02</span> Docker Compose — API · Database · MinIO</div>
+                    <ul>
+                      <li><div class="node l4">docker/docker-compose.yml · PostgreSQL 16 port 5433 · MinIO 9000/9001</div></li>
+                      <li><div class="node l4">Task N2LHTBLTT-36</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">T-03</span> CI Pipeline — GitHub Actions build &amp; test</div>
+                    <ul>
+                      <li><div class="node l4">Service postgres:16-alpine + chạy 3 bước test</div></li>
+                      <li><div class="node l4">Task N2LHTBLTT-39</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">T-04</span> Tài liệu, seed data, Postman, kịch bản demo</div>
+                    <ul>
+                      <li><div class="node l4">Task N2LHTBLTT-40 (seed + Postman) · 43 (README &amp; API doc) · 45 (kịch bản demo)</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">T-05</span> Kiểm thử phân quyền, hiệu năng, auth/CSRF</div>
+                    <ul>
+                      <li><div class="node l4">Task N2LHTBLTT-33 (phân quyền) · 38 (Auth/CSRF) · 41 (JMeter)</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">T-06</span> Dockerfile multi-stage &amp; Jenkins Pipeline</div>
+                    <ul>
+                      <li><div class="node l4">Task N2LHTBLTT-35 (Dockerfile) · 37 (Jenkins)</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><div class="node l2"><span class="k">F3</span> Tích hợp &amp; kiểm thử nghiệp vụ</div>
+                <ul>
+                  <li><div class="node l3"><span class="k">T-07</span> Tích hợp 5 module · transaction · chống bán vượt tồn</div>
+                    <ul>
+                      <li><div class="node l4">Task N2LHTBLTT-22 (transaction, khoá tồn) · 23 (tích hợp) · 24 (rollback, chống trùng) · 29 (Event Bus)</div></li>
+                    </ul>
+                  </li>
+                  <li><div class="node l3"><span class="k">T-08</span> Kiểm thử luồng đơn hàng, hủy đơn, hoàn tồn, COD</div>
+                    <ul>
+                      <li><div class="node l4">Task N2LHTBLTT-34</div></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="callout ok">
+    <b>Đối chiếu với Jira:</b> 16 FR ánh xạ đủ vào 16 task nghiệp vụ (N2LHTBLTT-8 → 32). 8 FR đã hiện thực và có endpoint chạy được, 8 FR còn lại đã có <b>cơ chế domain</b> dưới đáy (entity, method, event) nhưng chưa tách controller — đây chính là phần việc của Sprint 5.
+  </div>
+</section>
+
+<!-- ================= 5. USE CASE ================= -->
+<section id="use-case">
+  <h2><span class="num">5</span> Đặc tả Use Case chi tiết</h2>
+  <p class="lead">Đặc tả dạng lời cho 5 use case trụ cột của hệ thống, mỗi use case gồm: tác nhân, tiền điều kiện, luồng chính, luồng thay thế, điều kiện sau.</p>
+
+  <div class="grid g2">
+
+    <div class="card">
+      <h4><span class="badge b-blue">UC-01</span> Thêm sản phẩm vào giỏ hàng</h4>
+      <table>
+        <tr><th style="width:120px">Tác nhân</th><td>Khách hàng (CUSTOMER)</td></tr>
+        <tr><th>Tiền điều kiện</th><td>Đã đăng nhập; sản phẩm tồn tại và đang bán</td></tr>
+        <tr><th>Điều kiện sau</th><td>Giỏ ACTIVE chứa thêm 1 mục hoặc cộng dồn vào mục cũ</td></tr>
+      </table>
+      <h4 style="margin-top:14px">Luồng chính</h4>
+      <ol class="tight">
+        <li>Khách chọn phiên bản (màu, dung lượng) và số lượng</li>
+        <li>Hệ thống tìm hoặc tạo giỏ ACTIVE của khách</li>
+        <li>Hệ thống gọi <code>IProductPricingContract</code> lấy giá/tên/SKU <b>từ Catalog</b></li>
+        <li>Không tìm thấy → trả 404 <code>PRODUCT_VARIANT_NOT_FOUND</code></li>
+        <li>Nếu sản phẩm đã có trong giỏ → cộng dồn số lượng</li>
+        <li>Kiểm tra giới hạn: ≤10 đơn vị/sản phẩm, ≤50 sản phẩm khác nhau</li>
+        <li>Vượt giới hạn → 400 <code>VALIDATION_ERROR</code></li>
+        <li>Lưu và trả về giỏ hàng đầy đủ</li>
+      </ol>
+      <h4 style="margin-top:14px">Luồng thay thế</h4>
+      <ul class="tight">
+        <li>Chưa đăng nhập → 401 <code>UNAUTHORIZED</code></li>
+        <li>Giỏ đã <code>CONVERTED</code>/<code>ABANDONED</code> → tạo giỏ ACTIVE mới</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4><span class="badge b-amber">UC-02</span> Checkout COD — tạo đơn hàng</h4>
+      <table>
+        <tr><th style="width:120px">Tác nhân</th><td>Khách hàng (CUSTOMER)</td></tr>
+        <tr><th>Tiền điều kiện</th><td>Đã đăng nhập; giỏ ACTIVE không rỗng</td></tr>
+        <tr><th>Điều kiện sau</th><td>Đơn PENDING được tạo; giỏ chuyển CONVERTED</td></tr>
+      </table>
+      <h4 style="margin-top:14px">Luồng chính</h4>
+      <ol class="tight">
+        <li>Khách nhập tên, SĐT, địa chỉ nhận hàng, ghi chú (tuỳ chọn)</li>
+        <li>Hệ thống đọc giỏ ACTIVE qua <code>ICartContract</code></li>
+        <li>Giỏ rỗng → 400 "Giỏ hàng đang trống, không thể checkout."</li>
+        <li>Lấy lại giá từ Catalog cho từng mục (không dùng giá trong giỏ)</li>
+        <li>Sản phẩm không còn bán → 400 "Sản phẩm X không còn được bán."</li>
+        <li>Sinh mã đơn <code>ORD-{yyyyMMdd}-{6 hex}</code>, thử tối đa 5 lần nếu trùng</li>
+        <li>Mở <code>TransactionScope</code></li>
+        <li>Tạo Order (PENDING, COD) + OrderItem[] + lịch sử trạng thái đầu</li>
+        <li>Tính: Subtotal → ShippingFee (0 nếu ≥10tr, 30.000 nếu không) → Total</li>
+        <li>Đánh dấu giỏ <code>CONVERTED</code></li>
+        <li>Commit → trả <b>201 Created</b></li>
+      </ol>
+      <h4 style="margin-top:14px">Luồng thay thế</h4>
+      <ul class="tight">
+        <li>Bất kỳ bước nào lỗi → scope không Complete → <b>rollback toàn bộ</b>, giỏ vẫn ACTIVE</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4><span class="badge b-blue">UC-03</span> Xem danh sách đơn hàng</h4>
+      <table>
+        <tr><th style="width:120px">Tác nhân</th><td>Khách hàng (CUSTOMER)</td></tr>
+        <tr><th>Tiền điều kiện</th><td>Đã đăng nhập</td></tr>
+        <tr><th>Điều kiện sau</th><td>Không thay đổi dữ liệu</td></tr>
+      </table>
+      <h4 style="margin-top:14px">Luồng chính</h4>
+      <ol class="tight">
+        <li>Khách truyền <code>status?</code> <code>fromDate?</code> <code>toDate?</code> <code>page</code> <code>pageSize</code></li>
+        <li>Validate: page ≥ 1, pageSize ∈ [1,100], fromDate ≤ toDate</li>
+        <li>Vi phạm → 400 kèm fieldErrors</li>
+        <li>Lọc theo <code>CustomerId</code> của user đang đăng nhập</li>
+        <li>Trả <code>PagedResult&lt;OrderDto&gt;</code> — items[], totalCount, page, pageSize, totalPages</li>
+      </ol>
+      <h4 style="margin-top:14px">Luồng thay thế</h4>
+      <ul class="tight">
+        <li>Chưa đăng nhập → 401</li>
+        <li>Không có đơn nào → trả danh sách rỗng, totalCount = 0 (không phải lỗi)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4><span class="badge b-blue">UC-04</span> Xem chi tiết đơn hàng</h4>
+      <table>
+        <tr><th style="width:120px">Tác nhân</th><td>Khách hàng (CUSTOMER)</td></tr>
+        <tr><th>Tiền điều kiện</th><td>Đã đăng nhập</td></tr>
+        <tr><th>Điều kiện sau</th><td>Không thay đổi dữ liệu</td></tr>
+      </table>
+      <h4 style="margin-top:14px">Luồng chính</h4>
+      <ol class="tight">
+        <li>Khách gọi GET /api/v1/orders/{orderId}</li>
+        <li>Không tìm thấy → 404 <code>ORDER_NOT_FOUND</code></li>
+        <li>Đơn thuộc khách khác → 403 <code>FORBIDDEN</code></li>
+        <li>Trả <code>OrderDetailDto</code> = OrderDto + <code>statusHistories[]</code> (fromStatus, toStatus, note, changedAt) sắp xếp theo thời gian</li>
+      </ol>
+      <div class="callout warn" style="margin:12px 0 0">
+        <b>Quyết định thiết kế:</b> trả <b>403</b> thay vì 404 cho đơn của người khác. Đã xác thực thành công nhưng không đủ quyền — 404 sẽ gây nhầm lẫn "đơn không tồn tại" và che mất nguyên nhân thật.
+      </div>
+    </div>
+
+    <div class="card">
+      <h4><span class="badge b-blue">UC-05</span> Hủy đơn hàng</h4>
+      <table>
+        <tr><th style="width:120px">Tác nhân</th><td>Khách hàng (CUSTOMER)</td></tr>
+        <tr><th>Tiền điều kiện</th><td>Đã đăng nhập; đơn ở trạng thái PENDING hoặc CONFIRMED</td></tr>
+        <tr><th>Điều kiện sau</th><td>Đơn CANCELLED; tồn kho được hoàn lại</td></tr>
+      </table>
+      <h4 style="margin-top:14px">Luồng chính</h4>
+      <ol class="tight">
+        <li>Khách gửi lý do hủy</li>
+        <li>Kiểm tra quyền sở hữu → không phải chủ đơn thì 403</li>
+        <li>Kiểm tra trạng thái: chỉ PENDING/CONFIRMED mới hủy được</li>
+        <li>Sai trạng thái → 409 <code>INVALID_ORDER_STATUS</code></li>
+        <li>Set CANCELLED + CancelReason + CancelledAt, ghi vào lịch sử trạng thái</li>
+        <li>Phát domain event <code>OrderCancelled</code> (kèm danh sách item)</li>
+        <li>SaveChanges → <b>dispatch event sau commit</b></li>
+        <li>Event Bus → <code>OrderCancelledHandler</code> → Inventory hoàn tồn</li>
+        <li>Trả về chi tiết đơn đã cập nhật</li>
+      </ol>
+      <h4 style="margin-top:14px">Luồng thay thế</h4>
+      <ul class="tight">
+        <li>Hủy lần 2 → 409, tồn kho <b>không</b> bị hoàn 2 lần (đã có test khẳng định)</li>
+        <li>Đơn đã giao (SHIPPING/DELIVERED) → 409, không thể hủy</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= 6. QUY TRÌNH ================= -->
+<section id="quy-trinh">
+  <h2><span class="num">6</span> Quy trình nghiệp vụ</h2>
+
+  <h3>6.1. Vòng đời trạng thái đơn hàng</h3>
+  <pre class="ascii">        ┌──────────┐
+        │  PENDING │  ← tạo từ checkout (COD)
+        └────┬─────┘
+             │ nhân viên xác nhận
+        ┌────▼─────┐
+        │CONFIRMED │
+        └────┬─────┘
+             │ bắt đầu giao
+        ┌────▼─────┐        giao thất bại
+        │ SHIPPING │─────────────────┐
+        └────┬─────┘                 │
+             │ giao thành công        │
+        ┌────▼─────┐          ┌──────▼───────┐
+        │DELIVERED │          │DELIVERY_FAILED│
+        └──────────┘          └───────────────┘
+
+        ┌───────────┐
+        │ CANCELLED │ ← hủy từ PENDING hoặc CONFIRMED
+        └───────────┘   (phát OrderCancelled → hoàn tồn)</pre>
+
+  <table>
+    <thead><tr><th>Trạng thái</th><th>Ý nghĩa</th><th>Cho phép hủy</th><th>Chuyển tiếp hợp lệ</th></tr></thead>
+    <tbody>
+      <tr><td><code>PENDING</code></td><td>Đơn vừa tạo, chờ xác nhận</td><td><span class="badge b-green">Có</span></td><td>→ CONFIRMED, CANCELLED</td></tr>
+      <tr><td><code>CONFIRMED</code></td><td>Nhân viên đã xác nhận, chuẩn bị giao</td><td><span class="badge b-green">Có</span></td><td>→ SHIPPING, CANCELLED</td></tr>
+      <tr><td><code>SHIPPING</code></td><td>Đang giao hàng</td><td><span class="badge b-red">Không</span></td><td>→ DELIVERED, DELIVERY_FAILED</td></tr>
+      <tr><td><code>DELIVERED</code></td><td>Giao thành công, thu COD</td><td><span class="badge b-red">Không</span></td><td>— trạng thái cuối</td></tr>
+      <tr><td><code>DELIVERY_FAILED</code></td><td>Giao thất bại</td><td><span class="badge b-red">Không</span></td><td>— trạng thái cuối</td></tr>
+      <tr><td><code>CANCELLED</code></td><td>Đơn đã bị hủy</td><td><span class="badge b-red">Không</span></td><td>— trạng thái cuối</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <b>Luật bất biến:</b> mọi lần chuyển trạng thái đều được ghi lại vào <code>ordering.order_status_histories</code> với fromStatus, toStatus, note, changedAt. Không có chuyển trạng thái nào diễn ra mà không có dòng lịch sử — đây là cơ sở để tra cứu khiếu nại khách hàng.
+  </div>
+
+  <h3>6.2. Luồng đặt hàng hoàn chỉnh</h3>
+  <div class="flow" style="margin:14px 0">
+    <div class="fnode ext">Khách: xem sản phẩm</div><div class="arw">→</div>
+    <div class="fnode">GET /products</div><div class="arw">→</div>
+    <div class="fnode">Catalog</div><div class="arw">→</div>
+    <div class="fnode">Chọn phiên bản SKU</div><div class="arw">→</div>
+    <div class="fnode">Thêm vào giỏ</div><div class="arw">→</div>
+    <div class="fnode me">Cart</div>
+  </div>
+  <div class="flow" style="margin:14px 0">
+    <div class="fnode">Sửa số lượng / xoá</div><div class="arw">→</div>
+    <div class="fnode me">Cart (≤10 /SP, ≤50 SP)</div><div class="arw">→</div>
+    <div class="fnode">Checkout COD</div><div class="arw">→</div>
+    <div class="fnode me">OrderService</div><div class="arw">→</div>
+    <div class="fnode">ICartContract.MarkAsConverted</div>
+  </div>
+  <div class="flow" style="margin:14px 0">
+    <div class="fnode">Nhân viên xác nhận</div><div class="arw">→</div>
+    <div class="fnode">SHIPPING</div><div class="arw">→</div>
+    <div class="fnode">Giao + thu COD</div><div class="arw">→</div>
+    <div class="fnode">DELIVERED</div><div class="arw">|</div>
+    <div class="fnode">Đơn hủy → OrderCancelled → hoàn tồn</div>
+  </div>
+</section>
+
+<!-- ================= 7. QUY TẮC ================= -->
+<section id="quy-tac">
+  <h2><span class="num">7</span> Quy tắc nghiệp vụ (Business Rules)</h2>
+  <p class="lead">Các quy tắc được định nghĩa tại tầng Domain — tức là nơi duy nhất có thể bảo đảm chúng không bị lách bỏ bởi bất kỳ đường gọi nào (API, event, test, script).</p>
+
+  <table>
+    <thead><tr><th>Mã</th><th>Quy tắc</th><th>Điểm thực thi</th><th>Hệ quả khi vi phạm</th></tr></thead>
+    <tbody>
+      <tr><td><b>BR-01</b></td><td>Giá sản phẩm luôn lấy từ Catalog, không bao giờ lấy từ dữ liệu client gửi lên</td><td><code>IProductPricingContract.GetVariantPricingAsync</code></td><td>Thiếu giá → 404 <code>PRODUCT_VARIANT_NOT_FOUND</code></td></tr>
+      <tr><td><b>BR-02</b></td><td>Mỗi sản phẩm trong giỏ tối đa <b>10</b> đơn vị</td><td><code>CartItem.SetQuantity</code></td><td>400 <code>VALIDATION_ERROR</code> + fieldErrors</td></tr>
+      <tr><td><b>BR-03</b></td><td>Mỗi giỏ tối đa <b>50</b> sản phẩm khác nhau</td><td><code>Cart.AddItem</code></td><td>400 <code>VALIDATION_ERROR</code></td></tr>
+      <tr><td><b>BR-04</b></td><td>Chỉ giỏ <code>ACTIVE</code> mới được thêm / sửa / xoá sản phẩm</td><td><code>Cart.AddItem</code></td><td>400 "Chỉ giỏ hàng đang hoạt động mới được thêm sản phẩm."</td></tr>
+      <tr><td><b>BR-05</b></td><td>Thêm sản phẩm đã có trong giỏ → cộng dồn số lượng, không tạo dòng mới</td><td><code>Cart.AddItem</code></td><td>—</td></tr>
+      <tr><td><b>BR-06</b></td><td>Phí ship = 0 khi Subtotal ≥ <b>10.000.000</b>, ngược lại <b>30.000</b></td><td><code>Order.RecalculateTotals</code></td><td>—</td></tr>
+      <tr><td><b>BR-07</b></td><td>TotalAmount = Subtotal + ShippingFee</td><td><code>Order.RecalculateTotals</code></td><td>—</td></tr>
+      <tr><td><b>BR-08</b></td><td>Phương thức thanh toán hiện chỉ là <b>COD</b></td><td><code>Order.Create</code></td><td>—</td></tr>
+      <tr><td><b>BR-09</b></td><td>Mã đơn <code>ORD-{yyyyMMdd}-{6 hex}</code>, duy nhất trong hệ thống</td><td><code>OrderService.GenerateOrderNumberAsync</code> + unique index</td><td>Hết 5 lần thử → lỗi hệ thống</td></tr>
+      <tr><td><b>BR-10</b></td><td>Giỏ rỗng không được checkout</td><td><code>OrderService.CheckoutAsync</code></td><td>400 "Giỏ hàng đang trống, không thể checkout."</td></tr>
+      <tr><td><b>BR-11</b></td><td>Tạo đơn và chuyển giỏ phải thành công cùng lúc (all-or-nothing)</td><td><code>TransactionScope</code></td><td>Rollback — giỏ vẫn ACTIVE</td></tr>
+      <tr><td><b>BR-12</b></td><td>Chỉ hủy được đơn PENDING hoặc CONFIRMED</td><td><code>Order.Cancel</code></td><td>409 <code>INVALID_ORDER_STATUS</code></td></tr>
+      <tr><td><b>BR-13</b></td><td>Không chuyển trạng thái ra khỏi DELIVERED hoặc CANCELLED</td><td><code>Order.ChangeStatus</code></td><td>409 <code>INVALID_ORDER_STATUS</code></td></tr>
+      <tr><td><b>BR-14</b></td><td>Mỗi lần chuyển trạng thái đều sinh 1 dòng lịch sử</td><td><code>OrderStatusHistory.Create</code></td><td>—</td></tr>
+      <tr><td><b>BR-15</b></td><td>Khách chỉ xem được đơn của chính mình</td><td>Ownership check trong service</td><td>403 <code>FORBIDDEN</code></td></tr>
+      <tr><td><b>BR-16</b></td><td>Hủy đơn hoàn tồn kho đúng 1 lần</td><td>Điều kiện trạng thái chặn lần hủy thứ 2</td><td>Lần 2 → 409, tồn kho giữ nguyên</td></tr>
+      <tr><td><b>BR-17</b></td><td>Email chuẩn hoá lowercase; không được trùng</td><td><code>User.CreateCustomer</code> + unique index</td><td>409 <code>EMAIL_ALREADY_EXISTS</code></td></tr>
+      <tr><td><b>BR-18</b></td><td>Tồn kho không được âm</td><td><code>ProductStock.Reserve</code></td><td>Exception → 500 hoặc 409 tuỳ lớp gọi</td></tr>
+      <tr><td><b>BR-19</b></td><td>Đơn vị vị trí trong danh sách đơn: page ≥ 1, pageSize ∈ [1,100]</td><td><code>OrderFilterQueryValidator</code></td><td>400 kèm fieldErrors</td></tr>
+      <tr><td><b>BR-20</b></td><td>Không module nào được tham chiếu trực tiếp DbContext của module khác</td><td>Architecture test (7 test)</td><td>Build/CI fail</td></tr>
+      <tr><td><b>BR-21</b></td><td>Thông báo đăng nhập không tiết lộ email có tồn tại</td><td><code>IdentityService.LoginAsync</code></td><td>401 <code>INVALID_CREDENTIALS</code> (không phân biệt sai email / sai mật khẩu)</td></tr>
+      <tr><td><b>BR-22</b></td><td>Tài khoản bị khoá không đăng nhập được</td><td><code>IdentityService.LoginAsync</code> → kiểm tra <code>IsActive</code></td><td>403 <code>ACCOUNT_LOCKED</code></td></tr>
+      <tr><td><b>BR-23</b></td><td>Số điện thoại người nhận phải khớp mẫu <code>^(0|\+84)\d{8,11}$</code></td><td><code>CheckoutRequestValidator</code></td><td>400 kèm fieldErrors</td></tr>
+      <tr><td><b>BR-24</b></td><td>Sắp xếp sản phẩm luôn có tie-break theo <code>Id</code> để thứ tự ổn định</td><td><code>CatalogService.GetProductsAsync</code></td><td>—</td></tr>
+      <tr><td><b>BR-25</b></td><td>Tên danh mục / thương hiệu không được trùng</td><td><code>CatalogService</code> + unique index</td><td>409 <code>CATEGORY_ALREADY_EXISTS</code> / <code>BRAND_ALREADY_EXISTS</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 8. NFR ================= -->
+<section id="nfr">
+  <h2><span class="num">8</span> Yêu cầu phi chức năng — chi tiết kỹ thuật</h2>
+  <p class="lead">Mỗi NFR được gắn với cơ chế cụ thể đã hiện thực trong code, để có thể kiểm chứng thay vì chỉ khẳng định.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h4>Kiến trúc &amp; phân tách</h4>
+      <ul class="tight">
+        <li><b>Modular Monolith</b> — 5 module, 5 DbContext, 5 schema</li>
+        <li><b>Clean Architecture</b> — Domain → Application → Infrastructure</li>
+        <li>Domain thuần túy: không EF Core, không HTTP status code</li>
+        <li>Chỉ aggregate root được phát domain event</li>
+        <li>7 architecture test chặn rò rỉ tham chiếu</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Giao tiếp liên module</h4>
+      <ul class="tight">
+        <li><code>ICartContract</code> — đọc giỏ, đánh dấu CONVERTED</li>
+        <li><code>IInventoryContract</code> — đặt giữ / hoàn tồn kho</li>
+        <li><code>IProductPricingContract</code> — lấy giá server-side</li>
+        <li><code>IEventBus</code> + MediatR — <code>OrderCancelled</code></li>
+        <li>Contract nằm ở <code>BuildingBlocks/Contracts/</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Chất lượng &amp; kiểm thử</h4>
+      <ul class="tight">
+        <li>35 unit test — domain + application service</li>
+        <li>7 architecture test — ranh giới module</li>
+        <li>126 integration test — HTTP thật qua WebApplicationFactory</li>
+        <li>DB test random <code>phonestore_test_&lt;guid&gt;</code>, tự xoá</li>
+        <li>Tắt parallelization do override biến môi trường toàn cục</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Vận hành</h4>
+      <ul class="tight">
+        <li>docker-compose: PostgreSQL 16 (5433) + MinIO (9000/9001)</li>
+        <li>EF Core migration riêng cho từng schema</li>
+        <li>GitHub Actions: service postgres + 3 bước build/test</li>
+        <li>Swagger UI ở root, OpenAPI JSON kèm XML doc</li>
+        <li>Seeder idempotent cho môi trường Development</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9. TRUY VẾT ================= -->
+<section id="trace">
+  <h2><span class="num">9</span> Ma trận truy vết FR ↔ Jira Task ↔ Endpoint</h2>
+  <p class="lead">Bảng tra cứu nhanh: từ yêu cầu chức năng → task Jira → endpoint thực tế trong hệ thống.</p>
+
+  <table>
+    <thead><tr><th>FR</th><th>Jira task</th><th>Module</th><th>Endpoint</th><th>Đơn vị kiểm thử</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <tr><td>FR-01</td><td>N2LHTBLTT-8</td><td>Identity</td><td><code>POST /api/v1/auth/register</code></td><td>IdentityApiTests, CatalogAndIdentityRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-02</td><td>N2LHTBLTT-9</td><td>Identity</td><td><code>POST /api/v1/auth/login</code> · <code>logout</code></td><td>IdentityApiTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-03</td><td>N2LHTBLTT-15</td><td>Identity</td><td><code>/api/v1/me/*</code></td><td>IdentityApiTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-04</td><td>N2LHTBLTT-11</td><td>Catalog</td><td><code>GET /api/v1/products</code></td><td>CatalogQueryTests, CatalogAndIdentityRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-05</td><td>N2LHTBLTT-17</td><td>Catalog</td><td><code>GET /api/v1/products/{id}</code></td><td>CatalogQueryTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-06</td><td>N2LHTBLTT-19</td><td><b>Cart</b></td><td><code>GET|POST|PUT|DELETE /api/v1/cart</code></td><td>CartApiTests, BusinessFlowRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-07</td><td>N2LHTBLTT-20</td><td><b>Order</b></td><td><code>POST /api/v1/orders/checkout</code></td><td>CheckoutFlowTests, EndToEndOrderJourneyTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-08</td><td>N2LHTBLTT-25</td><td><b>Order</b></td><td><code>GET /api/v1/orders</code> · <code>{id}</code></td><td>OrderLifecycleTests, BusinessFlowRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-09</td><td>N2LHTBLTT-26</td><td><b>Order</b></td><td><code>POST /api/v1/orders/{id}/cancel</code></td><td>StockRestoreOnCancelTests, BusinessFlowRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-10</td><td>N2LHTBLTT-27</td><td>Order</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>FR-11</td><td>N2LHTBLTT-28</td><td>Order</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>FR-12</td><td>N2LHTBLTT-10</td><td>Catalog</td><td><code>/api/v1/categories</code> · <code>/api/v1/brands</code></td><td>CatalogQueryTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-13</td><td>N2LHTBLTT-18</td><td>Catalog</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>FR-14</td><td>N2LHTBLTT-21</td><td>Inventory</td><td><code>GET /api/v1/admin/inventory/movements</code></td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>FR-15</td><td>N2LHTBLTT-16</td><td>Identity</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>FR-16</td><td>N2LHTBLTT-32</td><td>Reporting</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>—</td><td>N2LHTBLTT-39</td><td>Toàn hệ thống</td><td>168 test tự động</td><td>BusinessFlowRegression (32) · CatalogAndIdentityRegression (30) · EndToEndOrderJourney (16) · IdentityApi (12) · CatalogQuery (10) · OrderLifecycle (10) · CartApi (8) · CheckoutFlow (7) · StockRestoreOnCancel (1)</td><td><span class="badge b-green">Xong</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout ok">
+    <b>Tổng kết:</b> 9/16 FR đã có đầy đủ endpoint + test. 7 FR còn lại đã có cơ chế domain sẵn — khi tách controller, phần nghiệp vụ gần như chỉ cần wiring lại logic đã viết. Ước tính khối lượng còn lại nhỏ hơn đáng kể so với 8 FR đầu.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  PhoneStore — Tài liệu phân tích yêu cầu &amp; phân rã chức năng · Nhóm 2 (Lazy) · Đồ án HP 608819 · cập nhật 26/10/2026
+</footer>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.top a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY+90,idx=0;
+    secs.forEach(function(s,i){ if(s&&s.offsetTop<=y)idx=i; });
+    links.forEach(function(a,i){a.classList.toggle('on',i===idx);});
+  });
+})();
+</script>
+</body>
+</html>
