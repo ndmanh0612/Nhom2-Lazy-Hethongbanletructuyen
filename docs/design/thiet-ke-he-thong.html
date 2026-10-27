@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhoneStore — Thiết kế hệ thống (Kiến trúc · CSDL · ERD)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Đồ án Phát Triển Ứng Dụng Phía Máy Chủ Nâng Cao · HP 608819</div>
+    <h1><span class="ticket">Thiết kế hệ thống</span> — Kiến trúc, CSDL &amp; Luồng kỹ thuật</h1>
+    <p class="subtitle">Tài liệu thiết kế kỹ thuật của PhoneStore. Nội dung bám sát source code hiện có: 5 module, 5 schema PostgreSQL, 23 endpoint nghiệp vụ (+1 health check), 13 bảng, 3 contract liên module, 1 event bus và 168 test tự động.</p>
+    <div class="meta-grid">
+      <div class="meta-card"><div class="label">Kiến trúc</div><div class="value sm">Modular Monolith</div></div>
+      <div class="meta-card"><div class="label">Framework</div><div class="value sm">.NET 10 / ASP.NET Core</div></div>
+      <div class="meta-card"><div class="label">CSDL</div><div class="value sm">PostgreSQL 16 · 5 schema</div></div>
+      <div class="meta-card"><div class="label">Bảng</div><div class="value">13</div></div>
+      <div class="meta-card"><div class="label">Endpoint</div><div class="value">23 + health</div></div>
+      <div class="meta-card"><div class="label">Test</div><div class="value">168</div></div>
+    </div>
+    <div class="meta-grid" style="margin-top:12px">
+      <div class="meta-card" style="grid-column:1/-1"><div class="label">Tài liệu này phục vụ</div><div class="value sm">N2LHTBLTT-3 (Thiết kế kiến trúc tổng thể) · N2LHTBLTT-4 (Thiết kế CSDL, bảng, quan hệ &amp; ERD) · N2LHTBLTT-7 (DbContext &amp; migrations theo module) · N2LHTBLTT-22 (Transaction, khoá tồn) · N2LHTBLTT-29 (In-memory Event Bus)</div></div>
+      <div class="meta-card" style="grid-column:1/-1;border-color:var(--accent)"><div class="label">Tài liệu liên quan</div><div class="value sm"><a href="phan-ra-chuc-nang.html">→ Phân tích yêu cầu &amp; Phân rã chức năng</a> · <a href="index.html">← Trang chỉ mục</a></div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="top">
+  <div class="wrap">
+    <a href="#kien-truc" class="on">1. Kiến trúc tổng thể</a>
+    <a href="#module">2. Ranh giới module</a>
+    <a href="#csdl">3. Thiết kế CSDL</a>
+    <a href="#erd">4. ERD</a>
+    <a href="#luong">5. Luồng kỹ thuật</a>
+    <a href="#hop">6. Giao tiếp liên module</a>
+    <a href="#middleware">7. Xử lý lỗi &amp; Validation</a>
+    <a href="#hdt">8. Hạ tầng &amp; triển khai</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= 1. KIẾN TRÚC ================= -->
+<section id="kien-truc">
+  <h2><span class="num">1</span> Kiến trúc tổng thể</h2>
+  <p class="lead">Hệ thống chọn <b>Modular Monolith</b> kết hợp <b>Clean Architecture</b>. Mỗi nghiệp vụ là một module độc lập với vòng đời, schema CSDL và contract riêng; các module chia sẻ một Shared Kernel ở tầng BuildingBlocks.</p>
+
+  <h3>1.1. Sơ đồ tầng kiến trúc</h3>
+  <div class="stack">
+    <div class="layer">
+      <div class="layer-t">Tầng Host — PhoneStore.Api</div>
+      <div class="row">
+        <div class="mod bb">Program.cs<small>Composition root</small></div>
+        <div class="mod bb">SwaggerRegistration<small>UI tại root /</small></div>
+        <div class="mod bb">AppExceptionMiddleware<small>Chuẩn hoá lỗi</small></div>
+        <div class="mod bb">DatabaseSeeder<small>Seed idempotent</small></div>
+        <div class="mod bb">MapControllers<small>/health</small></div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-t">Tầng Module — 5 nghiệp vụ độc lập</div>
+      <div class="row">
+        <div class="mod id">Identity<small>schema: identity</small></div>
+        <div class="mod cat">Catalog<small>schema: catalog</small></div>
+        <div class="mod cart">Cart<small>schema: cart</small></div>
+        <div class="mod ord">Order<small>schema: ordering</small></div>
+        <div class="mod inv">Inventory<small>schema: inventory</small></div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-t">Tầng Application — trong mỗi module</div>
+      <div class="row">
+        <div class="mod">DTOs<small>Request / Response</small></div>
+        <div class="mod">Services<small>CartService · OrderService</small></div>
+        <div class="mod">Validators<small>FluentValidation</small></div>
+        <div class="mod">Endpoints / Controllers<small>HTTP surface</small></div>
+        <div class="mod">EventHandlers<small>Inventory</small></div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-t">Tầng Domain — trong mỗi module (thuần túy)</div>
+      <div class="row">
+        <div class="mod">Entities<small>AggregateRoot / BaseEntity</small></div>
+        <div class="mod">Enums<small>CartStatus · OrderStatus</small></div>
+        <div class="mod">Business Rules<small>Không EF, không HTTP</small></div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-t">Tầng Infrastructure — trong mỗi module</div>
+      <div class="row">
+        <div class="mod">Persistence<small>DbContext + Migrations</small></div>
+        <div class="mod">Repositories<small>ICartRepository · IOrderRepository</small></div>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-t">Tầng BuildingBlocks — Shared Kernel dùng chung</div>
+      <div class="row">
+        <div class="mod bb">Domain<small>BaseEntity · AggregateRoot · Result&lt;T&gt;</small></div>
+        <div class="mod bb">Common<small>ApiResponse · ErrorResponse</small></div>
+        <div class="mod bb">Exceptions<small>AppException + 6 loại con</small></div>
+        <div class="mod bb">Contracts<small>3 contract liên module</small></div>
+        <div class="mod bb">Infrastructure<small>EventBus · Swagger · Filters</small></div>
+        <div class="mod bb">Validation<small>AppValidator · Filter</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Quy tắc phụ thuộc:</b> chỉ đi xuống. Domain không biết Application, Application không biết Infrastructure, Infrastructure không biết Host. Module chỉ biết BuildingBlocks và các Contract công khai — không bao giờ biết implementation của module khác.
+  </div>
+
+  <h3>1.2. Cấu trúc thư mục</h3>
+  <pre class="ascii">PhoneStore/
+├── src/
+│   ├── BuildingBlocks/
+│   │   └── PhoneStore.BuildingBlocks/
+│   │       ├── Application/       CQRS · ICurrentUser · IEventBus · PagedResult
+│   │       ├── Common/            ApiResponse&lt;T&gt; · ErrorResponse
+│   │       ├── Contracts/         Cart · Catalog · Inventory · Order
+│   │       ├── Domain/            BaseEntity · AggregateRoot · Result&lt;T&gt;
+│   │       ├── Exceptions/        AppException + 6 lớp con
+│   │       ├── Infrastructure/    EventBus · Identity · Web (Swagger, Filters)
+│   │       └── Validation/        AppValidator · ValidationRegistration
+│   │
+│   ├── Modules/
+│   │   ├── Identity/  PhoneStore.Modules.Identity/    → schema identity
+│   │   │   ├── Domain/Entities/         User · Address · UserRole
+│   │   │   ├── Application/              DTOs · IdentityService · Validators
+│   │   │   ├── Endpoints/                AuthController · MeController
+│   │   │   └── Infrastructure/           IdentityDbContext · Migrations
+│   │   │
+│   │   ├── Catalog/   PhoneStore.Modules.Catalog/     → schema catalog
+│   │   │   ├── Domain/Entities/         Product · ProductVariant · ProductImage
+│   │   │   │                            Category · Brand
+│   │   │   ├── Application/Services/     CatalogService · ProductPricingContract
+│   │   │   ├── Endpoints/                Products · Categories · Brands
+│   │   │   └── Infrastructure/           CatalogDbContext · Migrations
+│   │   │
+│   │   ├── Cart/      PhoneStore.Modules.Cart/        → schema cart
+│   │   │   ├── Domain/Entities/         Cart · CartItem
+│   │   │   │                            Enums: CartStatus
+│   │   │   ├── Application/              CartService · CartContract · Validators
+│   │   │   └── Infrastructure/           CartDbContext · CartRepository
+│   │   │
+│   │   ├── Order/     PhoneStore.Modules.Order/       → schema ordering
+│   │   │   ├── Domain/Entities/         Order · OrderItem · OrderItemDraft
+│   │   │   │                            OrderStatusHistory
+│   │   │   │                            Enums: OrderStatus
+│   │   │   ├── Application/              OrderService · Validators
+│   │   │   └── Infrastructure/           OrderDbContext · OrderRepository
+│   │   │
+│   │   └── Inventory/ PhoneStore.Modules.Inventory/   → schema inventory
+│   │       ├── Domain/Entities/         ProductStock
+│   │       ├── Application/              InventoryContract
+│   │       │                            EventHandlers/OrderCancelledHandler
+│   │       └── Infrastructure/           InventoryDbContext · Migrations
+│   │
+│   └── Host/
+│       └── PhoneStore.Api/              Program.cs · Seeding/ · Properties/
+│
+├── tests/
+│   ├── PhoneStore.UnitTests/            35 test
+│   ├── PhoneStore.ArchitectureTests/    7 test
+│   └── PhoneStore.IntegrationTests/     126 test
+│
+├── docker/
+│   └── docker-compose.yml               PostgreSQL 16 · MinIO
+├── .github/workflows/ci.yml             GitHub Actions
+├── GIT_WORKFLOW.md
+└── README.md</pre>
+</section>
+
+<!-- ================= 2. RANH GIỚI MODULE ================= -->
+<section id="module">
+  <h2><span class="num">2</span> Ranh giới module &amp; quy tắc phụ thuộc</h2>
+  <p class="lead">Mỗi module là một "hồ" độc lập: có schema riêng, DbContext riêng, contract riêng. Đây là ranh giới được <b>kiểm chứng tự động</b> bằng 7 architecture test, không phải chỉ quy ước trên giấy.</p>
+
+  <table>
+    <thead><tr><th>Module</th><th>Schema</th><th>DbContext</th><th>Aggregate roots</th><th>Contract cung cấp</th><th>Phụ thuộc vào</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Identity</b></td><td><code>identity</code></td><td><code>IdentityDbContext</code></td>
+        <td>User</td><td>—</td>
+        <td>BuildingBlocks</td>
+      </tr>
+      <tr>
+        <td><b>Catalog</b></td><td><code>catalog</code></td><td><code>CatalogDbContext</code></td>
+        <td>Product</td><td><code>IProductPricingContract</code></td>
+        <td>BuildingBlocks</td>
+      </tr>
+      <tr>
+        <td><b>Cart</b></td><td><code>cart</code></td><td><code>CartDbContext</code></td>
+        <td>Cart</td><td><code>ICartContract</code></td>
+        <td>BuildingBlocks · IProductPricingContract</td>
+      </tr>
+      <tr>
+        <td><b>Order</b></td><td><code>ordering</code></td><td><code>OrderDbContext</code></td>
+        <td>Order</td><td>— (phát event)</td>
+        <td>BuildingBlocks · ICartContract · IProductPricingContract</td>
+      </tr>
+      <tr>
+        <td><b>Inventory</b></td><td><code>inventory</code></td><td><code>InventoryDbContext</code></td>
+        <td>— (ProductStock là BaseEntity)</td><td><code>IInventoryContract</code></td>
+        <td>BuildingBlocks · IEventBus</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Ma trận phụ thuộc (✔ = có, ✘ = không bao giờ)</h3>
+  <table>
+    <thead><tr><th>Caller \ Callee</th><th>Identity</th><th>Catalog</th><th>Cart</th><th>Order</th><th>Inventory</th></tr></thead>
+    <tbody>
+      <tr><td><b>Identity</b></td><td>—</td><td>✘</td><td>✘</td><td>✘</td><td>✘</td></tr>
+      <tr><td><b>Catalog</b></td><td>✘</td><td>—</td><td>✘</td><td>✘</td><td>✘</td></tr>
+      <tr><td><b>Cart</b></td><td>✘</td><td>✔ <span class="muted">qua contract</span></td><td>—</td><td>✘</td><td>✘</td></tr>
+      <tr><td><b>Order</b></td><td>✘</td><td>✔ <span class="muted">qua contract</span></td><td>✔ <span class="muted">qua contract</span></td><td>—</td><td>✘</td></tr>
+      <tr><td><b>Inventory</b></td><td>✘</td><td>✘</td><td>✘</td><td>✘ <span class="muted">chỉ qua event</span></td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout ok">
+    <b>Quy tắc BR-20 — Không rò rỉ tham chiếu:</b> module không được <code>using</code> namespace Infrastructure hay DbContext của module khác. Thay vào đó:
+    <ul class="tight" style="margin:8px 0 0">
+      <li>Cần <b>đọc dữ liệu</b> → phụ thuộc vào Contract (interface do BuildingBlocks định nghĩa)</li>
+      <li>Cần <b>thông báo thay đổi</b> → phụ thuộc vào Domain Event + Event Bus</li>
+      <li>Không có trường hợp nào cần <b>biết DbContext</b> của module khác</li>
+    </ul>
+  </div>
+
+  <h3>2.1. Vì sao chọn Modular Monolith thay vì Microservice</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h4>Phù hợp với đồ án</h4>
+      <ul class="tight">
+        <li>Quy mô nhóm 5 người — microservice sẽ tốn quá nhiều thời gian vận hành</li>
+        <li>Chưa có yêu cầu scale độc lập theo từng nghiệp vụ</li>
+        <li>Cần giao dịch xuyên module (checkout ghi cả `ordering` và `cart`) — trong monolith dùng TransactionScope là gọn, trong microservice phải chấp nhận eventual consistency</li>
+        <li>Triển khai 1 lần, quan sát 1 chỗ — phù hợp môi trường đồ án</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Đường mở rộng sau này</h4>
+      <ul class="tight">
+        <li>Contract đã là điểm gắn sẵn — thay HTTP call thay vì in-process là <b>thay implementation</b>, không phải thiết kế lại</li>
+        <li>Inventory tách ra service riêng là ứng viên đầu tiên (tồn kho cần scale độc lập)</li>
+        <li>Event Bus đã dùng MediatR — có thể thay bằng RabbitMQ/Kafka mà không đổi code nghiệp vụ</li>
+        <li>Database đã tách schema — có thể tách instance dần</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. CSDL ================= -->
+<section id="csdl">
+  <h2><span class="num">3</span> Thiết kế cơ sở dữ liệu</h2>
+  <p class="lead">PostgreSQL 16 với <b>13 bảng</b> chia trên 5 schema. Mỗi module sở hữu hoàn toàn schema của mình, migration riêng, không bảng dùng chung.</p>
+
+  <h3>3.1. Danh mục bảng theo schema</h3>
+  <table>
+    <thead><tr><th>Schema</th><th>Bảng</th><th>Module</th><th>Mô tả</th><th>Khóa chính / ràng buộc</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="2"><code>identity</code></td><td><code>users</code></td><td rowspan="2">Identity</td><td>Tài khoản khách hàng / nhân viên / admin</td><td>PK Id · unique Email (max 254) · index Role, IsActive</td></tr>
+      <tr><td><code>addresses</code></td><td>Sổ địa chỉ giao hàng của khách</td><td>PK Id · FK UserId → users (Restrict) · index UserId</td></tr>
+
+      <tr><td rowspan="5"><code>catalog</code></td><td><code>categories</code></td><td rowspan="5">Catalog</td><td>Danh mục sản phẩm (Điện thoại, Tablet, Phụ kiện…)</td><td>PK Id · unique Name (max 100) · IsActive</td></tr>
+      <tr><td><code>brands</code></td><td>Thương hiệu (Apple, Samsung, Xiaomi…)</td><td>PK Id · unique Name (max 100) · IsActive</td></tr>
+      <tr><td><code>products</code></td><td>Sản phẩm gốc</td><td>PK Id · FK CategoryId, BrandId · index CategoryId, BrandId · IsActive</td></tr>
+      <tr><td><code>product_variants</code></td><td>Phiên bản SKU (màu + dung lượng) — mang giá</td><td>PK Id · FK ProductId (Restrict) · unique Sku (max 64) · unique (ProductId+Color+Capacity) · index Price, IsActive</td></tr>
+      <tr><td><code>product_images</code></td><td>Ảnh sản phẩm (MinIO/S3)</td><td>PK Id · FK ProductId (Cascade) · index ProductId · ImageUrl max 500</td></tr>
+
+      <tr><td rowspan="2"><code>cart</code></td><td><code>carts</code></td><td rowspan="2">Cart</td><td>Giỏ hàng của khách</td><td>PK Id · index UserId · index (UserId+Status)</td></tr>
+      <tr><td><code>cart_items</code></td><td>Dòng sản phẩm trong giỏ</td><td>PK Id · FK CartId → carts (cascade) · index CartId · unique (CartId+ProductVariantId)</td></tr>
+
+      <tr><td rowspan="3"><code>ordering</code></td><td><code>orders</code></td><td rowspan="3">Order</td><td>Đơn hàng</td><td>PK Id · <b>unique OrderNumber</b> (max 32) · index CustomerId · index (Status+CreatedAt)</td></tr>
+      <tr><td><code>order_items</code></td><td>Chi tiết sản phẩm trong đơn (snapshot giá & tên)</td><td>PK Id · FK OrderId → orders (cascade) · index OrderId · ProductName max 200, Sku max 64</td></tr>
+      <tr><td><code>order_status_histories</code></td><td>Lịch sử chuyển trạng thái</td><td>PK Id · FK OrderId → orders (cascade) · index OrderId · FromStatus/ToStatus max 20</td></tr>
+
+      <tr><td><code>inventory</code></td><td><code>product_stocks</code></td><td>Inventory</td><td>Tồn kho theo phiên bản sản phẩm</td><td>PK Id · <b>unique ProductVariantId</b></td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.2. Quy ước thiết kế CSDL</h3>
+  <div class="grid g3">
+    <div class="card">
+      <h4>Định danh</h4>
+      <ul class="tight">
+        <li>PK: <code>BIGINT</code> — <code>UseIdentityAlwaysColumn()</code> (identity always, không dùng serial)</li>
+        <li>Tiền tệ: <code>BIGINT</code> — lưu số nguyên VND, <b>không dùng float/double</b></li>
+        <li>Số lượng: <code>INTEGER</code></li>
+        <li>Thời gian: <code>TIMESTAMPTZ</code> — luôn UTC</li>
+        <li>Enum: lưu dạng <code>TEXT</code> qua <code>HasConversion&lt;string&gt;()</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Ràng buộc</h4>
+      <ul class="tight">
+        <li>Unique index cho dữ liệu định danh nghiệp vụ: Email, Sku, OrderNumber, Brand.Name</li>
+        <li>FK bắt buộc cho quan hệ sở hữu: Cart→CartItem, Order→OrderItem/History</li>
+        <li>DeleteBehavior.Cascade cho quan hệ sở hữu</li>
+        <li>Index phục vụ truy vấn: CustomerId, Status+CreatedAt, ProductVariantId</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Đặc biệt của Order</h4>
+      <ul class="tight">
+        <li><b>Snapshot</b>: <code>order_items</code> lưu ProductName, Sku, UnitPrice tại thời điểm mua — không join sang catalog khi xuất hóa đơn</li>
+        <li>Thêm giá mới không làm đơn cũ thay đổi giá trị</li>
+        <li>Đơn vị vị trí dữ liệu: <code>ProductVariantId</code> chỉ là tham chiếu logic, không FK chéo schema</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <b>Quyết định cần đánh giá lại khi tách module:</b> <code>order_items.ProductVariantId</code> và <code>cart_items.ProductVariantId</code> hiện là <b>tham chiếu logic</b> (không có FK vật lý) tới bảng <code>catalog.product_variants</code> — đây là chủ ý để giữ ranh giới schema. Đổi lại: không thể dùng FK cascade giữa các schema, và cần kiểm soát orphan record bằng logic ứng dụng.
+  </div>
+</section>
+
+<!-- ================= 4. ERD ================= -->
+<section id="erd">
+  <h2><span class="num">4</span> Sơ đồ quan hệ dữ liệu (ERD)</h2>
+  <p class="lead">Quan hệ dữ liệu được vẽ tách theo từng schema để thể hiện rõ ranh giới sở hữu. Mũi tên chỉ hướng FK vật lý; quan hệ logic giữa module được ghi chú bằng đường đứt.</p>
+
+  <h3>4.1. Schema <code>identity</code></h3>
+  <pre class="ascii">┌──────────────────────────────┐
+│      identity.users          │
+├──────────────────────────────┤
+│ PK Id           BIGINT       │
+│    Email        VARCHAR(254) │
+│                 UNIQUE INDEX │
+│    PasswordHash VARCHAR(255) │
+│    FullName     VARCHAR(100) │
+│    Phone        VARCHAR(20)  │
+│    Role         VARCHAR(20)  │  CUSTOMER | STAFF | ADMIN
+│    IsActive     BOOLEAN  DEF true
+│    CreatedAt    TIMESTAMPTZ   │
+│    UpdatedAt    TIMESTAMPTZ   │
+└──────┬───────────────────────┘
+       │ 1
+       │ N
+┌──────▼───────────────────┐
+│   identity.addresses    │
+├─────────────────────────┤
+│PK Id                    │
+│  UserId        FK RESTRICT│
+│  ReceiverName VARCHAR(100)│
+│  ReceiverPhone VARCHAR(20)│
+│  AddressText  VARCHAR(500)│
+│  CreatedAt/UpdatedAt      │
+└─────────────────────────┘
+
+ Ghi chú: vai trò lưu trực tiếp trong users.role (enum → VARCHAR),
+ chưa tách bảng user_roles. Enum UserRole đã có sẵn để mở rộng RBAC về sau.</pre>
+
+  <h3>4.2. Schema <code>catalog</code></h3>
+  <pre class="ascii">┌────────────────────┐      ┌────────────────────┐
+│  catalog.brands    │      │catalog.categories  │
+├────────────────────┤      ├────────────────────┤
+│PK Id               │      │PK Id               │
+│  Name VARCHAR(100) │      │  Name VARCHAR(100) │
+│       UNIQUE INDEX │      │       UNIQUE INDEX │
+│  IsActive BOOLEAN  │      │  IsActive BOOLEAN  │
+└─────────┬──────────┘      └────────────────────┘
+          │ 1
+          │ N
+┌─────────▼──────────┐
+│  catalog.products  │
+├────────────────────┤
+│PK Id               │
+│  CategoryId    FK  │
+│  BrandId       FK  │
+│  Name VARCHAR(200) │
+│  Description TEXT  │
+│  specifications    │  JSONB DEFAULT '{}'
+│  IsActive BOOLEAN  │
+│  CreatedAt/UpdatedAt│
+│  INDEX (CategoryId)│
+│  INDEX (BrandId)   │
+└──┬──────────────┬──┘
+   │ 1            │ 1
+   │ N            │ N
+┌──▼─────────────────────────┐  ┌──────────────────────────┐
+│ catalog.product_variants    │  │  catalog.product_images  │
+├────────────────────────────┤  ├──────────────────────────┤
+│PK Id                       │  │PK Id                     │
+│  ProductId    FK RESTRICT  │  │  ProductId    FK CASCADE │
+│  Sku VARCHAR(64)  UNIQUE   │  │  ImageUrl VARCHAR(500)   │
+│  Color VARCHAR(50)         │  │  SortOrder INT   DEFAULT 0
+│  Capacity VARCHAR(50)      │  │  CreatedAt/UpdatedAt      │
+│  Price        BIGINT       │  │  INDEX (ProductId)       │
+│  StockQuantity INT DEFAULT0│  └──────────────────────────┘
+│  IsActive BOOLEAN          │
+│  CreatedAt/UpdatedAt       │
+│  UNIQUE (ProductId,Color,  │
+│           Capacity)        │
+└────────────────────────────┘</pre>
+
+  <h3>4.3. Schema <code>cart</code> và <code>ordering</code></h3>
+  <pre class="ascii">   ┌──────────────────────┐              ┌──────────────────────┐
+   │    cart.carts        │              │  ordering.orders     │
+   ├──────────────────────┤              ├──────────────────────┤
+   │PK Id                 │              │PK Id                 │
+   │  UserId              │─── logic ──→ │  CustomerId          │
+   │  Status VARCHAR(20)  │              │  OrderNumber V(32)   │
+   │    ACTIVE|CONVERTED  │  identity.   │         UNIQUE INDEX  │
+   │    |ABANDONED        │  users       │  Status VARCHAR(20)  │
+   │  CreatedAt/UpdatedAt │              │    PENDING|CONFIRMED │
+   │  INDEX (UserId)      │              │    |SHIPPING|DELIVERED │
+   │  INDEX (UserId,Status)│             │    |DELIVERY_FAILED    │
+   └──────┬───────────────┘              │    |CANCELLED          │
+          │ 1                            │  PaymentMethod  COD  │
+          │                             │  Subtotal     BIGINT │
+          │ N                           │  ShippingFee  BIGINT │
+   ┌──────▼───────────────────┐         │  TotalAmount  BIGINT │
+   │    cart.cart_items       │         │  ReceiverName V(100) │
+   ├──────────────────────────┤         │  ReceiverPhone V(20) │
+   │PK Id                     │         │  ShippingAddress V500│
+   │  CartId              FK  │         │  Note        V(500)  │
+   │    (CASCADE)            │         │  CancelReason V(500) │
+   │  ProductVariantId  logic │         │  CancelledAt  NULL   │
+   │  ProductName     V(200) │         │  DeliveredAt  NULL   │
+   │  Sku             V(64)  │         │  CreatedAt/UpdatedAt │
+   │  UnitPrice      BIGINT  │         │  INDEX (CustomerId)  │
+   │  Quantity      INTEGER  │         │  INDEX (Status,       │
+   │  CreatedAt/UpdatedAt    │         │          CreatedAt)  │
+   │  INDEX (CartId)         │         └───┬──────────────┬───┘
+   │  UNIQUE (CartId,        │             │ 1            │ 1
+   │          ProductVariantId) │         │ N            │ N
+   └──────────────────────────┘  ┌──────────────▼──────┐  ┌────▼──────────────────┐
+                              │ordering.order_items │  │ordering.order_status_ │
+                              ├─────────────────────┤  │      histories        │
+                              │PK Id                │  ├─────────────────────┤
+                              │  OrderId    FK CASCADE│ │PK Id                │
+                              │  ProductVariantId    │  │  OrderId    FK CASCADE│
+                              │  ProductName V(200) snap│ │  FromStatus V(20) NULL│
+                              │  Sku         V(64)  snap│ │  ToStatus   V(20)   │
+                              │  UnitPrice   BIGINT snap│ │  Note       V(500)   │
+                              │  Quantity    INTEGER│  │  ChangedAt  TIMESTAMPTZ
+                              │  CreatedAt/UpdatedAt│  │  CreatedAt/UpdatedAt │
+                              │  INDEX (OrderId)     │  │  INDEX (OrderId)     │
+                              └─────────────────────┘  └─────────────────────┘</pre>
+
+  <h3>4.4. Schema <code>inventory</code> và quan hệ logic liên module</h3>
+  <pre class="ascii">   ┌────────────────────────────┐
+   │  inventory.product_stocks  │
+   ├────────────────────────────┤
+   │PK Id                       │
+   │  ProductVariantId  UNIQUE │─── logic ──→ catalog.product_variants.Id
+   │  StockQuantity    INTEGER  │
+   │  CreatedAt/UpdatedAt       │
+   └────────────────────────────┘
+
+   ═══════════════════ QUAN HỆ LOGIC LIÊN MODULE ═══════════════════
+
+   cart.cart_items.ProductVariantId     ──→  catalog.product_variants.Id
+   ordering.order_items.ProductVariantId ─→  catalog.product_variants.Id
+   inventory.product_stocks.ProductVariantId ─→ catalog.product_variants.Id
+   ordering.orders.CustomerId  ──→  identity.users.Id
+   identity.addresses.UserId   ──→  identity.users.Id
+
+   Ghi chú: các quan hệ trên là tham chiếu logic (không FK vật lý) nhằm giữ
+   ranh giới schema độc lập của từng module.</pre>
+
+  <div class="callout">
+    <b>Vòng đời dữ liệu đơn hàng:</b> giỏ (cart schema) → checkout → đơn (ordering schema) với <b>snapshot</b> ProductName/Sku/UnitPrice. Nhờ snapshot, in lại hoá đơn sau này vẫn ra đúng giá tại thời điểm mua, kể cả khi Catalog đã đổi giá hoặc sản phẩm bị ẩn.
+  </div>
+</section>
+
+<!-- ================= 5. LUỒNG KỸ THUẬT ================= -->
+<section id="luong">
+  <h2><span class="num">5</span> Luồng kỹ thuật chính</h2>
+
+  <h3>5.1. Vòng đời một request HTTP</h3>
+  <pre class="ascii"> Client
+   │  POST /api/v1/orders/checkout  { receiverName, receiverPhone, shippingAddress }
+   ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ 1. CORS middleware                    AllowAll                   │
+│ 2. AppExceptionMiddleware             bọc toàn bộ pipeline       │
+│ 3. Routing → OrdersController.Checkout                          │
+│ 4. Model binding → CheckoutRequest                             │
+│ 5. FluentValidationFilter            → 400 VALIDATION_ERROR     │
+│ 6. OrderService.CheckoutAsync                                   │
+│    ├─ ICartContract.GetActiveCartAsync       (module Cart)       │
+│    ├─ IProductPricingContract.GetVariantPricingAsync  (Catalog) │
+│    ├─ GenerateOrderNumberAsync               ORD-yyyyMMdd-XXXXXX │
+│    ├─ TransactionScope ───────────────────────────┐              │
+│    │   ├─ Order.Create (domain rules)            │              │
+│    │   ├─ IOrderRepository.AddAsync + Save      │              │
+│    │   └─ ICartContract.MarkAsConvertedAsync    │              │
+│    └─ Complete() ──── commit ───────────────────┘              │
+│ 7. StandardResponseOperationFilter      mô tả Swagger         │
+│ 8. Response 201 + ApiResponse&lt;OrderDto&gt;                     │
+└─────────────────────────────────────────────────────────────────┘
+   │  Nếu bất kỳ bước nào ném exception:
+   ▼  TransactionScope dispose mà không Complete() → ROLLBACK
+   │  AppExceptionMiddleware bắt → ErrorResponse JSON chuẩn
+   ▼  { code, message, fieldErrors?, requestId, timestamp }</pre>
+
+  <h3>5.2. Chuỗi hủy đơn — có hoàn tồn kho</h3>
+  <pre class="ascii"> Khách: POST /api/v1/orders/{id}/cancel { reason }
+   │
+   ▼
+ OrderService.CancelOrderAsync
+   │
+   ├─ Kiểm tra quyền sở hữu    → 403 nếu không phải chủ đơn
+   ├─ order.Cancel(reason)      → 409 nếu trạng thái không hợp lệ
+   │     ├─ Status = CANCELLED, CancelReason, CancelledAt
+   │     ├─ thêm OrderStatusHistory
+   │     └─ AddDomainEvent(new OrderCancelled(Id, CustomerId, OrderNumber, items))
+   │
+   ├─ SaveChangesAsync()  ◄── ghi đơn TRƯỚC
+   │
+   ├─ DomainEventDispatcher.DispatchAsync(order.DomainEvents)
+   │     └─ IEventBus.PublishAsync  →  InMemoryEventBus  →  Mediator.Publish
+   │           └─ OrderCancelledHandler  (module Inventory)
+   │                 └─ IInventoryContract.RestoreStockAsync(items)
+   │                       └─ ProductStock.Restore(quantity)
+   │
+   └─ order.ClearDomainEvents()
+
+ ⚠ Thứ tự Save → Dispatch là bắt buộc: nếu dispatch trước mà transaction
+   rollback sau, tồn kho đã bị hoàn trong khi đơn vẫn còn → dữ liệu lệch.</pre>
+
+  <h3>5.3. Vòng đời entity — Aggregate Root</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h4>BaseEntity</h4>
+      <pre style="margin:0">public abstract class BaseEntity&lt;TId&gt;
+{
+    public TId Id { get; protected set; }
+    public DateTimeOffset CreatedAt { get; protected set; }
+    public DateTimeOffset UpdatedAt { get; protected set; }
+    public void Touch() =&gt; UpdatedAt = DateTimeOffset.UtcNow;
+}</pre>
+      <p class="muted" style="margin-top:10px">Áp dụng cho: CartItem, OrderItem, OrderStatusHistory, Address, ProductVariant, ProductImage, ProductStock</p>
+    </div>
+    <div class="card">
+      <h4>AggregateRoot — thêm cơ chế event</h4>
+      <pre style="margin:0">public abstract class AggregateRoot&lt;TId&gt; : BaseEntity&lt;TId&gt;
+{
+    private readonly List&lt;IDomainEvent&gt; _domainEvents = [];
+    public IReadOnlyCollection&lt;IDomainEvent&gt; DomainEvents
+        =&gt; _domainEvents.AsReadOnly();
+
+    public void AddDomainEvent(IDomainEvent e) =&gt; _domainEvents.Add(e);
+    public void ClearDomainEvents() =&gt; _domainEvents.Clear();
+}</pre>
+      <p class="muted" style="margin-top:10px">Áp dụng cho: User, Product, Cart, Order — chỉ aggregate root được phát domain event</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. HỢP ĐỒNG LIÊN MODULE ================= -->
+<section id="hop">
+  <h2><span class="num">6</span> Cơ chế giao tiếp liên module</h2>
+  <p class="lead">Hai cơ chế duy nhất được phép để một module gọi module khác. Cả hai đều nằm ở BuildingBlocks, đảm bảo chiều phụ thuộc luôn hướng về trung tâm.</p>
+
+  <h3>6.1. Contract (gọi trực tiếp, đồng bộ)</h3>
+  <table>
+    <thead><tr><th>Contract</th><th>Cung cấp bởi</th><th>Phương thức</th><th>Người gọi</th><th>Mục đích</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>ICartContract</code></td><td>Cart</td>
+        <td><code>GetActiveCartAsync(userId)</code><br><code>MarkAsConvertedAsync(cartId)</code></td>
+        <td>Order</td>
+        <td>Đọc giỏ khi checkout; đánh dấu giỏ đã chuyển thành đơn</td>
+      </tr>
+      <tr>
+        <td><code>IProductPricingContract</code></td><td>Catalog</td>
+        <td><code>GetVariantPricingAsync(variantId)</code></td>
+        <td>Cart, Order</td>
+        <td>Lấy giá/tên/SKU server-side — nguồn giá duy nhất được tin cậy</td>
+      </tr>
+      <tr>
+        <td><code>IInventoryContract</code></td><td>Inventory</td>
+        <td><code>TryReserveStockAsync(items)</code> → bool<br><code>RestoreStockAsync(items)</code></td>
+        <td>Order (tương lai), Inventory handler</td>
+        <td>Đặt giữ và hoàn trả tồn kho</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>6.2. Domain Event (thông báo bất đồng bộ, loose coupling)</h3>
+  <pre class="ascii">┌──────────────────┐
+│  Module Order     │
+│                  │
+│ order.Cancel()   │
+│   └─ AddDomainEvent(new OrderCancelled(...))
+│          │
+│          │  SaveChangesAsync()
+│          ▼
+│   DomainEventDispatcher.DispatchAsync()
+│          │
+│          ▼
+│   IEventBus.PublishAsync(event)
+│   ┌──────────────────────────┐
+│   │  InMemoryEventBus        │
+│   │  dùng Mediator.Publish    │
+│   │  (event là INotification) │
+│   └──────────┬───────────────┘
+│              ▼
+│   ┌──────────────────────────┐
+│   │  Module Inventory        │
+│   │  OrderCancelledHandler   │
+│   │  : INotificationHandler  │
+│   │    &lt;OrderCancelled&gt;    │
+│   │  → RestoreStockAsync()   │
+│   └──────────────────────────┘</pre>
+
+  <div class="callout ok">
+    <b>Điểm mạnh của cách dùng event này:</b> module Order <b>không hề biết</b> module Inventory tồn tại. Nếu sau này thay InMemoryEventBus bằng RabbitMQ, hoặc chuyển Inventory thành microservice riêng, code trong <code>OrderService</code> và <code>Order.Cancel</code> <b>không đổi một dòng</b>.
+  </div>
+
+  <h3>6.3. Bảng quyết định — khi nào dùng gì</h3>
+  <table>
+    <thead><tr><th>Tiêu chí</th><th>Contract</th><th>Domain Event</th></tr></thead>
+    <tbody>
+      <tr><td>Cần kết quả ngay để tiếp tục luồng</td><td><b>✔</b> — ví dụ đọc giỏ rồi tính tiền</td><td>✘</td></tr>
+      <tr><td>Phải thành công cùng transaction</td><td><b>✔</b> — tạo đơn + chuyển giỏ</td><td>✘</td></tr>
+      <tr><td>Phía nhận không cần biết phía gửi tồn tại</td><td>✘</td><td><b>✔</b> — Order ↛ Inventory</td></tr>
+      <tr><td>Xử lý chạy sau, tách lỗi độc lập</td><td>✘</td><td><b>✔</b> — hoàn tồn không làm fail hủy đơn</td></tr>
+      <tr><td>Cần truy vết đầy đủ thao tác</td><td>✘</td><td><b>✔</b> — lịch sử trạng thái trong DB</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 7. MIDDLEWARE ================= -->
+<section id="middleware">
+  <h2><span class="num">7</span> Xử lý lỗi, Validation &amp; Response</h2>
+
+  <h3>7.1. Phân tầng xử lý lỗi</h3>
+  <pre class="ascii">   Lỗi phát sinh
+        │
+        ▼
+┌──────────────────────────────────────────────────────┐
+│  Tầng 1 — FluentValidationFilter                   │
+│  Validator sai → ValidationException                │
+│  → 400 + fieldErrors map theo field                 │
+├──────────────────────────────────────────────────────┤
+│  Tầng 2 — Domain rules                             │
+│  Cart/Order ném ValidationException                 │
+│  / ConflictException / NotFoundException             │
+├──────────────────────────────────────────────────────┤
+│  Tầng 3 — AppExceptionMiddleware                    │
+│  AppException → HttpStatusCode của exception        │
+│  Exception (không lường trước) → 500 chung          │
+│  Log Error + trả ErrorResponse JSON chuẩn           │
+└──────────────────────────────────────────────────────┘</pre>
+
+  <h3>7.2. Bảng ánh xạ exception → HTTP</h3>
+  <table>
+    <thead><tr><th>Exception</th><th>HTTP</th><th>Code</th><th>Ví dụ trong hệ thống</th></tr></thead>
+    <tbody>
+      <tr><td><code>ValidationException</code></td><td>400</td><td><code>VALIDATION_ERROR</code></td><td>Thêm quá 10 đơn vị/sản phẩm; checkout khi giỏ rỗng</td></tr>
+      <tr><td><code>NotFoundException</code></td><td>404</td><td><code>NOT_FOUND</code><br><code>ORDER_NOT_FOUND</code><br><code>CART_ITEM_NOT_FOUND</code><br><code>PRODUCT_VARIANT_NOT_FOUND</code><br><code>PRODUCT_NOT_FOUND</code><br><code>USER_NOT_FOUND</code></td><td>Đơn không tồn tại; sản phẩm đã ngừng bán</td></tr>
+      <tr><td><code>ConflictException</code></td><td>409</td><td><code>CONFLICT</code><br><code>INVALID_ORDER_STATUS</code><br><code>EMAIL_ALREADY_EXISTS</code><br><code>CATEGORY_ALREADY_EXISTS</code><br><code>BRAND_ALREADY_EXISTS</code></td><td>Hủy đơn đã giao; email trùng</td></tr>
+      <tr><td><code>UnauthorizedException</code></td><td>401</td><td><code>UNAUTHORIZED</code><br><code>INVALID_CREDENTIALS</code></td><td>Thiếu header <code>X-User-Id</code>; sai email/mật khẩu</td></tr>
+      <tr><td><code>ForbiddenException</code></td><td>403</td><td><code>FORBIDDEN</code><br><code>ACCOUNT_LOCKED</code></td><td>Xem đơn của khách khác; tài khoản bị khoá</td></tr>
+      <tr><td><code>Exception</code></td><td>500</td><td><code>INTERNAL_SERVER_ERROR</code></td><td>Lỗi không lường trước — log, trả message trung tính</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <b>Bài học đã gặp trong dự án:</b> <code>CartItem.SetQuantity</code> ban đầu ném <code>ArgumentException</code> — exception của .NET, không kế thừa <code>AppException</code> → middleware không map được → rơi vào <code>catch(Exception)</code> → trả <b>500</b> cho lỗi nghiệp vụ. Đã đổi sang <code>ValidationException</code> → <b>400</b> kèm fieldErrors. Nguyên tắc: <b>mọi lỗi nghiệp vụ phải dùng exception của hệ thống, không dùng exception .NET gốc.</b>
+  </div>
+
+  <h3>7.3. Chuẩn response</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h4>Thành công</h4>
+      <pre style="margin:0">{
+  "success": true,
+  "message": "Tạo đơn hàng thành công.",
+  "data": { /* OrderDto */ },
+  "timestamp": "2026-10-26T06:00:00+00:00"
+}</pre>
+    </div>
+    <div class="card">
+      <h4>Lỗi</h4>
+      <pre style="margin:0">{
+  "code": "VALIDATION_ERROR",
+  "message": "Mỗi sản phẩm chỉ được thêm tối đa 10 đơn vị.",
+  "fieldErrors": {
+    "quantity": ["Mỗi sản phẩm chỉ được thêm tối đa 10 đơn vị."]
+  },
+  "requestId": "0HN7S2K3M9PQ:00000021",
+  "timestamp": "2026-10-26T06:00:00+00:00"
+}</pre>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>Ý nghĩa <code>requestId</code>:</b> khớp với <code>context.TraceIdentifier</code> trong log server. Khi khách báo lỗi, chỉ cần dán requestId là tra được đúng stack trace — không cần đoán lỗi nào xảy ra.
+  </div>
+</section>
+
+<!-- ================= 8. HẠ TẦNG ================= -->
+<section id="hdt">
+  <h2><span class="num">8</span> Hạ tầng, triển khai &amp; kiểm thử</h2>
+
+  <h3>8.1. Môi trường chạy</h3>
+  <table>
+    <thead><tr><th>Thành phần</th><th>Công nghệ</th><th>Cổng local</th><th>Thông tin</th></tr></thead>
+    <tbody>
+      <tr><td>PostgreSQL</td><td>postgres:16-alpine</td><td><code>5433</code></td><td>DB <code>phonestore_db</code> · user/pass <code>postgres</code> · healthcheck <code>pg_isready</code></td></tr>
+      <tr><td>MinIO</td><td>minio/minio</td><td><code>9000</code> API · <code>9001</code> console</td><td>admin / password123 — lưu ảnh sản phẩm</td></tr>
+      <tr><td>Web API</td><td>ASP.NET Core 10</td><td><code>5122</code> http · <code>7168</code> https</td><td>Swagger UI tại root <code>/</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <b>Vì sao PostgreSQL dùng port 5433 (không phải 5432)?</b> Nhiều máy dev đã có PostgreSQL cài sẵn ở 5432 — dùng chung sẽ đụng độ. Đổi sang 5433 tránh xung đột. Vì vậy connection string của test <b>phải suy ra động</b> từ biến môi trường, không hardcode — CI dùng port chuẩn 5432.
+  </div>
+
+  <h3>8.2. Ma trận test tự động</h3>
+  <table>
+    <thead><tr><th>Project</th><th>Số test</th><th>Phạm vi</th><th>Cơ chế</th></tr></thead>
+    <tbody>
+      <tr><td><code>PhoneStore.UnitTests</code></td><td>35</td><td>Domain rules + application service</td><td>Test thuần, không cần DB</td></tr>
+      <tr><td><code>PhoneStore.ArchitectureTests</code></td><td>7</td><td>Ranh giới module — không rò rỉ tham chiếu</td><td>Quét assembly + namespace</td></tr>
+      <tr><td><code>PhoneStore.IntegrationTests</code></td><td>126</td><td>E2E qua HTTP thật</td><td>WebApplicationFactory + PostgreSQL thật</td></tr>
+      <tr style="background:rgba(79,156,249,.06)"><td><b>Tổng</b></td><td><b>168</b></td><td colspan="2">Tất cả chạy trong CI GitHub Actions</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Chi tiết 9 file integration test</h4>
+  <table>
+    <thead><tr><th>File</th><th>Số test</th><th>Phủ</th></tr></thead>
+    <tbody>
+      <tr><td><code>BusinessFlowRegressionTests</code></td><td>32</td><td>Hồi quy luồng giỏ / checkout / hủy đơn / phân quyền</td></tr>
+      <tr><td><code>CatalogAndIdentityRegressionTests</code></td><td>30</td><td>Hồi quy lọc, sắp xếp, phân trang Catalog + đăng ký / đăng nhập</td></tr>
+      <tr><td><code>EndToEndOrderJourneyTests</code></td><td>16</td><td>Hành trình đặt hàng đầu-cuối</td></tr>
+      <tr><td><code>IdentityApiTests</code></td><td>12</td><td>Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ</td></tr>
+      <tr><td><code>CatalogQueryTests</code></td><td>10</td><td>Tìm kiếm, lọc giá/danh mục, sắp xếp, phân trang</td></tr>
+      <tr><td><code>OrderLifecycleTests</code></td><td>10</td><td>Danh sách / chi tiết / lọc trạng thái / hủy đơn</td></tr>
+      <tr><td><code>CartApiTests</code></td><td>8</td><td>Thêm, gộp, sửa, xoá, vượt giới hạn, xác thực</td></tr>
+      <tr><td><code>CheckoutFlowTests</code></td><td>7</td><td>Health, catalog, checkout COD, validation</td></tr>
+      <tr><td><code>StockRestoreOnCancelTests</code></td><td>1</td><td>Hủy đơn → hoàn tồn kho <code>inventory.product_stocks</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>8.3. Cơ chế test tích hợp</h3>
+  <pre class="ascii"> PhoneStoreApiFactory : WebApplicationFactory&lt;Program&gt;
+   │
+   ├─ 1. Đọc PHONESTORE_TEST_ADMIN_CONNECTION
+   │      (mặc định: Host=localhost;Port=5433;Database=postgres)
+   │
+   ├─ 2. Sinh tên DB ngẫu nhiên:  phonestore_test_{guid}
+   │
+   ├─ 3. Suy ra connection string DB test từ admin string
+   │      bằng NpgsqlConnectionStringBuilder { Database = dbName }
+   │      → giữ nguyên host/port/user/pass (động theo môi trường)
+   │
+   ├─ 4. Override env:  ConnectionStrings__DefaultConnection
+   │
+   ├─ 5. Chạy migration cho CẢ 5 DbContext vào DB test
+   │
+   ├─ 6. Khởi tạo WebApplicationFactory → HTTP client
+   │
+   └─ 7. Dispose:  DROP DATABASE  → không đụng phonestore_db
+
+ ⚠ [assembly: CollectionBehavior(DisableTestParallelization = true)]
+   Lý do: connection string override bằng biến môi trường TOÀN CỤC.
+   Chạy song song sẽ khiến test này trỏ nhầm database của test khác.
+   Hệ quả: không chạy 2 tiến trình `dotnet test` cùng lúc.</pre>
+
+  <h3>8.4. CI Pipeline</h3>
+  <p class="lead">Repo hiện có pipeline GitHub Actions tại <code>.github/workflows/ci.yml</code>; theo kế hoạch Jira sẽ bổ sung thêm Jenkins Pipeline (task N2LHTBLTT-37) cho môi trường triển khai.</p>
+  <pre class="ascii"> GitHub Actions — .github/workflows/ci.yml
+   │
+   ├─ services:
+   │    postgres:
+   │      image: postgres:16-alpine
+   │      env: POSTGRES_PASSWORD: postgres
+   │      ports: [ 5432:5432 ]
+   │      options: --health-cmd pg_isready --health-interval 10s
+   │
+   ├─ env:
+   │    PHONESTORE_TEST_ADMIN_CONNECTION:
+   │      "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=postgres"
+   │
+   └─ steps:
+        1. checkout
+        2. setup-dotnet (v10.x)
+        3. dotnet restore
+        4. dotnet build   --no-restore
+        5. dotnet test    --no-build   (168 test)
+
+ Jenkins Pipeline (N2LHTBLTT-37) — dự kiến
+   ├─ Stage Build   : dotnet restore → dotnet build --configuration Release
+   ├─ Stage Test    : dotnet test (cần PostgreSQL service)
+   ├─ Stage Image   : docker build (multi-stage Dockerfile, N2LHTBLTT-35)
+   └─ Stage Deploy  : đẩy image lên registry + rollout</pre>
+
+  <div class="callout ok">
+    <b>Bài học từ lần CI fail đầu tiên:</b> toàn bộ 48 integration test chết vì <code>NpgsqlConnector.ConnectAsync</code> — GitHub Actions không có PostgreSQL. Unit + Architecture vẫn xanh (41/41) nên nhìn từ summary dễ tưởng là lỗi code. Bài học: <b>CI phải có hạ tầng giống local</b>, nếu không thì tách unit test sang job riêng để phân biệt lỗi hạ tầng với lỗi logic.
+  </div>
+
+  <h3>8.5. Quy trình Git của nhóm</h3>
+  <table>
+    <thead><tr><th>Bước</th><th>Lệnh / Quy tắc</th></tr></thead>
+    <tbody>
+      <tr><td>Đồng bộ</td><td><code>git checkout develop &amp;&amp; git pull</code></td></tr>
+      <tr><td>Tạo branch</td><td><code>git checkout -b feature/N2LHTBLTT-&lt;số&gt;-&lt;tên&gt;</code></td></tr>
+      <tr><td>Commit</td><td><code>&lt;type&gt;(&lt;scope&gt;): &lt;mô tả&gt; [N2LHTBLTT-&lt;số&gt;]</code></td></tr>
+      <tr><td>Type cho phép</td><td><code>feat</code> · <code>fix</code> · <code>refactor</code> · <code>test</code> · <code>docs</code> · <code>chore</code></td></tr>
+      <tr><td>Kiểm tra trước push</td><td><code>dotnet build PhoneStore.slnx</code> + <code>dotnet test PhoneStore.slnx</code></td></tr>
+      <tr><td>PR</td><td>Target <code>develop</code> · ≥1 reviewer khác · CI phải xanh</td></tr>
+      <tr><td>Merge</td><td>Squash and Merge hoặc Rebase</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  PhoneStore — Tài liệu thiết kế hệ thống · Nhóm 2 (Lazy) · Đồ án HP 608819 · cập nhật 26/10/2026
+</footer>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.top a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY+90,idx=0;
+    secs.forEach(function(s,i){ if(s&&s.offsetTop<=y)idx=i; });
+    links.forEach(function(a,i){a.classList.toggle('on',i===idx);});
+  });
+})();
+</script>
+</body>
+</html>
