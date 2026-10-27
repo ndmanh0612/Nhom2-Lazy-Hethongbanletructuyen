@@ -58,7 +58,10 @@ public class IdentityApiTests : IAsyncLifetime
         data.GetProperty("email").GetString().Should().Be(email);
         data.GetProperty("role").GetString().Should().Be("CUSTOMER");
         data.GetProperty("userId").GetInt64().Should().BeGreaterThan(0);
-        data.GetProperty("token").GetString().Should().NotBeNullOrWhiteSpace();
+        data.GetProperty("accessToken").GetString().Should().NotBeNullOrWhiteSpace();
+
+        // Refresh token phải nằm trong cookie HttpOnly, không lộ ra body.
+        data.TryGetProperty("refreshToken", out _).Should().BeFalse();
     }
 
     [Fact]
@@ -127,7 +130,7 @@ public class IdentityApiTests : IAsyncLifetime
         var data = payload.GetProperty("data");
 
         data.GetProperty("email").GetString().Should().Be(email);
-        data.GetProperty("token").GetString().Should().NotBeNullOrWhiteSpace();
+        data.GetProperty("accessToken").GetString().Should().NotBeNullOrWhiteSpace();
     }
 
     [Fact]
@@ -169,10 +172,10 @@ public class IdentityApiTests : IAsyncLifetime
     [Fact]
     public async Task Get_profile_returns_user_information()
     {
-        var userId = await RegisterAndGetUserIdAsync();
+        var email = NewEmail();
+        var userId = await RegisterAndGetUserIdAsync(email);
 
-        using var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
+        using var client = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var response = await client.GetAsync("/api/v1/me");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -182,16 +185,16 @@ public class IdentityApiTests : IAsyncLifetime
 
         profile.GetProperty("id").GetInt64().Should().Be(userId);
         profile.GetProperty("role").GetString().Should().Be("CUSTOMER");
-        profile.GetProperty("email").GetString().Should().NotBeNullOrWhiteSpace();
+        profile.GetProperty("email").GetString().Should().Be(email);
     }
 
     [Fact]
     public async Task Update_profile_changes_full_name_and_phone()
     {
-        var userId = await RegisterAndGetUserIdAsync();
+        var email = NewEmail();
+        await RegisterAndGetUserIdAsync(email);
 
-        using var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
+        using var client = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var response = await client.PatchAsJsonAsync(
             "/api/v1/me",
@@ -210,10 +213,10 @@ public class IdentityApiTests : IAsyncLifetime
     [Fact]
     public async Task Change_password_then_login_with_new_password_succeeds()
     {
-        var userId = await RegisterAndGetUserIdAsync();
+        var email = NewEmail();
+        await RegisterAndGetUserIdAsync(email);
 
-        using var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
+        using var client = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var changeResponse = await client.PostAsJsonAsync(
             "/api/v1/me/change-password",
@@ -222,23 +225,42 @@ public class IdentityApiTests : IAsyncLifetime
 
         changeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
+        // Đổi mật khẩu xong thì đăng nhập bằng mật khẩu mới phải thành công.
         var loginResponse = await _client.PostAsJsonAsync(
             "/api/v1/auth/login",
-            new { email = "khong-ro-email@example.com", password = "MatKhauMoi@2026" },
+            new { email, password = "MatKhauMoi@2026" },
             Json);
 
-        // Email đăng kẻ ngẫu nhiên nên login này luôn thất bại — chỉ để xác nhận
-        // endpoint không trả 500 sau khi đổi mật khẩu.
-        loginResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Change_password_revokes_existing_sessions()
+    {
+        var email = NewEmail();
+        await RegisterAndGetUserIdAsync(email);
+
+        using var client = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
+
+        var changeResponse = await client.PostAsJsonAsync(
+            "/api/v1/me/change-password",
+            new { currentPassword = "Pass@123", newPassword = "MatKhauMoi@2026" },
+            Json);
+
+        changeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Refresh token cũ đã bị thu hồi nên không thể dùng để làm mới token.
+        var refreshResponse = await _client.PostAsJsonAsync("/api/v1/auth/refresh", new { }, Json);
+        refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
     public async Task Addresses_can_be_added_and_listed()
     {
-        var userId = await RegisterAndGetUserIdAsync();
+        var email = NewEmail();
+        await RegisterAndGetUserIdAsync(email);
 
-        using var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
+        using var client = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var addResponse = await client.PostAsJsonAsync(
             "/api/v1/me/addresses",
@@ -265,11 +287,12 @@ public class IdentityApiTests : IAsyncLifetime
     [Fact]
     public async Task Addresses_are_scoped_per_user()
     {
-        var userA = await RegisterAndGetUserIdAsync();
-        var userB = await RegisterAndGetUserIdAsync();
+        var emailA = NewEmail();
+        var emailB = NewEmail();
+        await RegisterAndGetUserIdAsync(emailA);
+        await RegisterAndGetUserIdAsync(emailB);
 
-        using var clientA = _factory.CreateClient();
-        clientA.DefaultRequestHeaders.Add("X-User-Id", userA.ToString());
+        using var clientA = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, emailA, "Pass@123");
 
         await clientA.PostAsJsonAsync(
             "/api/v1/me/addresses",
@@ -281,8 +304,7 @@ public class IdentityApiTests : IAsyncLifetime
             },
             Json);
 
-        using var clientB = _factory.CreateClient();
-        clientB.DefaultRequestHeaders.Add("X-User-Id", userB.ToString());
+        using var clientB = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, emailB, "Pass@123");
 
         var listResponse = await clientB.GetAsync("/api/v1/me/addresses");
         var payload = await listResponse.Content.ReadFromJsonAsync<JsonElement>(Json);
@@ -293,11 +315,11 @@ public class IdentityApiTests : IAsyncLifetime
     private static string NewEmail() =>
         $"user{Interlocked.Increment(ref _emailCounter)}.{Guid.NewGuid():N}@example.com";
 
-    private async Task<long> RegisterAndGetUserIdAsync()
+    private async Task<long> RegisterAndGetUserIdAsync(string? email = null)
     {
         var response = await _client.PostAsJsonAsync(
             "/api/v1/auth/register",
-            new { email = NewEmail(), fullName = "Nguyễn Test", phone = "0912345678", password = "Pass@123" },
+            new { email = email ?? NewEmail(), fullName = "Nguyễn Test", phone = "0912345678", password = "Pass@123" },
             Json);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);

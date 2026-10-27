@@ -103,29 +103,83 @@ Dữ liệu mẫu được seed tự động khi app khởi động ở môi tr�
 
 | Email | Mật khẩu | Vai trò |
 |---|---|---|
-| `customer@phonestore.vn` | `Customer@123` | CUSTOMER |
+| `admin@phonestore.vn` | `Admin@123` | ADMIN |
 | `staff@phonestore.vn` | `Staff@123` | STAFF |
+| `customer@phonestore.vn` | `Customer@123` | CUSTOMER |
 | `demo@phonestore.vn` | `Demo@123` | CUSTOMER |
 
-### 6. Cơ chế xác thực tạm thời
-JWT thật đang chờ task `N2LHTBLTT-8` / `N2LHTBLTT-9` (Identity & Auth). Hiện API nhận danh tính
-qua header tạm thời:
+### 6. Cơ chế xác thực (JWT thật)
+
+> Hoàn thành tại task `N2LHTBLTT-8` / `N2LHTBLTT-9`. Cơ chế `X-User-Id` tạm thời **đã bị gỡ bỏ**.
+
+#### 6.1. Luồng đăng nhập
+
+```text
+POST /api/v1/auth/register  hoặc  POST /api/v1/auth/login
+        │
+        ├─ Body  : { userId, email, fullName, role, accessToken, expiresAt }
+        └─ Cookie: phonestore_refresh (HttpOnly)  ← refresh token, JS không đọc được
+                 phonestore_csrf    (đọc được)  ← CSRF token cho endpoint dùng cookie
+```
+
+Access token là JWT (HS256) mang claim `sub` (user id), `email`, `role`, `jti`.
+Client gửi kèm mọi request:
 
 ```
-X-User-Id: 2001
+Authorization: Bearer <accessToken>
 ```
 
-Thiếu header → API trả **401**. Khi Identity hoàn tất sẽ đổi sang claim `sub` / `NameIdentifier`;
-chi tiết ở [`docs/reviews/ASK-TRI-AUTH-TOKEN-ISSUE.md`](docs/reviews/ASK-TRI-AUTH-TOKEN-ISSUE.md).
+#### 6.2. Vòng đời token
+
+| Endpoint | Mô tả |
+|---|---|
+| `POST /api/v1/auth/register` | FR-01 — đăng ký khách hàng, trả token ngay |
+| `POST /api/v1/auth/login` | FR-02 — đăng nhập, trả token + cookie phiên |
+| `POST /api/v1/auth/refresh` | FR-09 — làm mới access token từ cookie (cần header `X-CSRF-TOKEN`) |
+| `POST /api/v1/auth/logout` | FR-02 — thu hồi refresh token, xoá cookie phiên |
+| `GET /api/v1/auth/csrf` | Lấy CSRF token (dùng cho endpoint refresh / logout) |
+
+**Token rotation:** mỗi lần refresh, refresh token cũ bị thu hồi vĩnh viễn và được
+thay bằng token mới. Nếu client gửi lại token đã dùng → bị từ chối `401`
+(chống đánh cắp token).
+
+**Thu hồi phiên tự động** khi: đổi mật khẩu, khoá tài khoản, đổi vai trò.
+
+#### 6.3. Phân quyền theo vai trò
+
+| Policy | Ai được phép | Ví dụ endpoint |
+|---|---|---|
+| `RequireAuthenticated` | Mọi người đã đăng nhập | `GET /api/v1/me`, `GET /api/v1/cart` |
+| `RequireCustomer` | Khách hàng | `POST /api/v1/orders/checkout` |
+| `RequireStaff` | Nhân viên + Admin | `POST /api/v1/admin/products`, `POST /api/v1/orders/{id}/confirm` |
+| `RequireAdmin` | Chỉ Admin | `POST /api/v1/admin/staff`, `PATCH /api/v1/admin/staff/{id}/lock` |
+
+#### 6.4. Cấu hình
+
+Mục `Authentication` trong `appsettings.json`:
+
+| Khóa | Mặc định | Ý nghĩa |
+|---|---|---|
+| `Issuer` | `PhoneStore` | Issuer của JWT |
+| `Audience` | `PhoneStoreClient` | Audience của JWT |
+| `SigningKey` | *(rỗng)* | Khoá ký — **bắt buộc ≥ 32 ký tự** ở Production |
+| `AccessTokenMinutes` | `30` | Thời hạn access token |
+| `RefreshTokenDays` | `7` | Thời hạn refresh token |
+| `AllowDevelopmentSigningKey` | `true` | Chỉ bật ở Development; Production bắt buộc set `SigningKey` |
+
+Override ở Production bằng biến môi trường:
+```bash
+Authentication__SigningKey="<chuỗi-ngẫu-nhiên-ít-nhất-32-ký-tự>"
+```
 
 ### 7. Tình trạng test hiện tại
 
 | Project | Số test | Loại |
 |---|---:|---|
-| `PhoneStore.UnitTests` | 35 | Unit test nghiệp vụ domain + application service |
+| `PhoneStore.UnitTests` | 73 | Unit test nghiệp vụ domain + application service |
 | `PhoneStore.ArchitectureTests` | 7 | Ranh giới module (không rò rỉ tham chiếu) |
-| `PhoneStore.IntegrationTests` | 126 | E2E qua HTTP thật với `WebApplicationFactory` + PostgreSQL |
-| **Tổng** | **168** | |
+| `PhoneStore.IntegrationTests` | 168 | E2E qua HTTP thật với `WebApplicationFactory` + PostgreSQL |
+| **Tổng** | **248** | |
 
 Bộ integration test gồm các file chính:
 
@@ -134,7 +188,11 @@ Bộ integration test gồm các file chính:
 | `BusinessFlowRegressionTests` | 32 | Hồi quy luồng giỏ / checkout / hủy đơn / phân quyền |
 | `CatalogAndIdentityRegressionTests` | 30 | Hồi quy lọc, sắp xếp, phân trang Catalog + đăng ký / đăng nhập |
 | `EndToEndOrderJourneyTests` | 16 | Hành trình đặt hàng đầu-cuối |
-| `IdentityApiTests` | 12 | Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ |
+| `IdentityApiTests` | 13 | Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ |
+| `AuthAndStaffApiTests` | 12 | JWT, refresh token rotation, CSRF, quản lý tài khoản nhân viên (FR-15) |
+| `OrderFulfillmentApiTests` | 9 | Xác nhận → giao hàng → thu COD → giao thất bại (FR-10, FR-11) |
+| `InventoryApiTests` | 9 | Nhập kho, điều chỉnh tồn, nhật ký biến động (FR-14) |
+| `CatalogAdminApiTests` | 9 | Quản trị danh mục / thương hiệu / sản phẩm / SKU (FR-12, FR-13) |
 | `CatalogQueryTests` | 10 | Tìm kiếm, lọc giá/danh mục, sắp xếp, phân trang |
 | `OrderLifecycleTests` | 10 | Danh sách / chi tiết / lọc trạng thái / hủy đơn |
 | `CartApiTests` | 8 | Thêm, gộp, sửa, xóa, vượt giới hạn, xác thực |
@@ -177,40 +235,65 @@ dotnet test tests/PhoneStore.IntegrationTests --filter "FullyQualifiedName~Check
 # Health
 curl http://localhost:5122/health
 
-# Danh sách sản phẩm (lọc / sắp xếp / phân trang)
+# Danh sách sản phẩm (lọc / sắp xếp / phân trang) — không cần token
 curl "http://localhost:5122/api/v1/products?search=iphone&sortBy=price_asc&page=1&pageSize=10"
 curl http://localhost:5122/api/v1/categories
 curl http://localhost:5122/api/v1/brands
 
-# Đăng ký → lấy userId trong response
+# --- Lấy access token ---
 curl -X POST http://localhost:5122/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"khach@example.com","fullName":"Khách Hàng","phone":"0912345678","password":"Pass@123"}'
 
-# Đăng nhập
 curl -X POST http://localhost:5122/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"customer@phonestore.vn","password":"Customer@123"}'
 
-# Giỏ hàng (cần header X-User-Id tạm thời)
-curl -H "X-User-Id: 2001" http://localhost:5122/api/v1/cart
+# Lưu access token vào biến (PowerShell)
+$token = (Invoke-RestMethod -Method Post -Uri http://localhost:5122/api/v1/auth/login `
+  -ContentType 'application/json' `
+  -Body '{"email":"customer@phonestore.vn","password":"Customer@123"}').data.accessToken
+
+# --- Giỏ hàng (cần Bearer token) ---
+curl -H "Authorization: Bearer $token" http://localhost:5122/api/v1/cart
 
 curl -X POST http://localhost:5122/api/v1/cart/items \
-  -H "X-User-Id: 2001" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $token" -H "Content-Type: application/json" \
   -d '{"productVariantId":1,"quantity":2}'
 
-# Checkout COD
+# --- Checkout COD ---
 curl -X POST http://localhost:5122/api/v1/orders/checkout \
-  -H "X-User-Id: 2001" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $token" -H "Content-Type: application/json" \
   -d '{"receiverName":"Nguyễn Văn A","receiverPhone":"0912345678","shippingAddress":"123 Nguyễn Huệ, Quận 1, TP.HCM"}'
 
-# Đơn hàng
-curl -H "X-User-Id: 2001" http://localhost:5122/api/v1/orders
-curl -H "X-User-Id: 2001" "http://localhost:5122/api/v1/orders?status=PENDING"
+# --- Đơn hàng ---
+curl -H "Authorization: Bearer $token" http://localhost:5122/api/v1/orders
+curl -H "Authorization: Bearer $token" "http://localhost:5122/api/v1/orders?status=PENDING"
 
 curl -X POST http://localhost:5122/api/v1/orders/1/cancel \
-  -H "X-User-Id: 2001" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $token" -H "Content-Type: application/json" \
   -d '{"reason":"Khách đổi ý."}'
+
+# --- Luồng nhân viên: xác nhận → giao hàng → giao thành công (thu COD) ---
+curl -X POST http://localhost:5122/api/v1/orders/1/confirm \
+  -H "Authorization: Bearer $adminToken" -H "Content-Type: application/json" \
+  -d '{"note":"Xác nhận đơn"}'
+
+curl -X POST http://localhost:5122/api/v1/orders/1/ship \
+  -H "Authorization: Bearer $adminToken" -H "Content-Type: application/json" \
+  -d '{"carrier":"Giao Hàng Nhanh","trackingNumber":"GHN001","note":"Bàn giao"}'
+
+curl -X POST http://localhost:5122/api/v1/orders/1/deliver \
+  -H "Authorization: Bearer $adminToken" -H "Content-Type: application/json" \
+  -d '{"collectedAmount":25000000,"note":"Đã thu tiền COD"}'
+
+# --- Quản trị tồn kho (FR-14) ---
+curl -X POST http://localhost:5122/api/v1/admin/inventory/stocks/import \
+  -H "Authorization: Bearer $adminToken" -H "Content-Type: application/json" \
+  -d '{"productVariantId":1,"quantity":100,"note":"Nhập kho đầu kỳ"}'
+
+curl -H "Authorization: Bearer $adminToken" \
+  "http://localhost:5122/api/v1/admin/inventory/movements?page=1&pageSize=20"
 ```
 
 **Quy ước response**: mọi response (thành công và lỗi) dùng chung envelope
@@ -219,9 +302,11 @@ curl -X POST http://localhost:5122/api/v1/orders/1/cancel \
 | HTTP | Mã lỗi (`code`) | Ý nghĩa |
 |---:|---|---|
 | 400 | `VALIDATION_ERROR` | Dữ liệu gửi lên không hợp lệ |
-| 401 | `UNAUTHORIZED` | Thiếu hoặc sai thông tin xác thực |
+| 401 | `UNAUTHORIZED`, `INVALID_CREDENTIALS`, `REFRESH_TOKEN_INVALID` | Thiếu / sai / hết hạn thông tin xác thực |
+| 403 | `FORBIDDEN`, `ACCOUNT_LOCKED` | Đã xác thực nhưng không đủ quyền |
 | 404 | `PRODUCT_NOT_FOUND`, `CART_ITEM_NOT_FOUND`, `USER_NOT_FOUND` | Không tìm thấy dữ liệu |
-| 409 | `EMAIL_ALREADY_EXISTS`, `CATEGORY_ALREADY_EXISTS`, `INVALID_ORDER_STATUS` | Xung đột trạng thái / dữ liệu trùng |
+| 409 | `EMAIL_ALREADY_EXISTS`, `CATEGORY_ALREADY_EXISTS`, `SKU_ALREADY_EXISTS`, `INVALID_ORDER_STATUS`, `INSUFFICIENT_STOCK` | Xung đột trạng thái / dữ liệu trùng |
+| 500 | `INTERNAL_ERROR` | Lỗi hệ thống — luôn có `requestId` để tra cứu log |
 
 ---
 

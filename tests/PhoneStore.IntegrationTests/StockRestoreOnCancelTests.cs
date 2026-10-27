@@ -27,12 +27,10 @@ public class StockRestoreOnCancelTests : IAsyncLifetime
         _factory = factory;
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        var userId = Interlocked.Increment(ref _userIdCounter);
-        _client = _factory.CreateClient();
-        _client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
-        return Task.CompletedTask;
+        // N2LHTBLTT-8 / N2LHTBLTT-9: xac thuc bang JWT that.
+        _client = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
     }
 
     public Task DisposeAsync()

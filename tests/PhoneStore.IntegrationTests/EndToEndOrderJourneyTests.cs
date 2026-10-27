@@ -28,11 +28,10 @@ public class EndToEndOrderJourneyTests : IAsyncLifetime
         _factory = factory;
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        var userId = Interlocked.Increment(ref _userIdCounter);
-        _client = ApiTestHelper.CreateUserClient(_factory, userId);
-        return Task.CompletedTask;
+        // N2LHTBLTT-8 / N2LHTBLTT-9: xac thuc bang JWT that.
+        _client = await ApiTestHelper.CreateUserClient(_factory, 0);
     }
 
     public Task DisposeAsync()
