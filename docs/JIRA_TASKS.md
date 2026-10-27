@@ -136,4 +136,4 @@ Jira hiện đã lên tới Sprint 5, Board "Order Management & System" là nhó
 | N2LHTBLTT-20 | Toàn | ✅ PR #1 |
 | N2LHTBLTT-25 | Toàn | ✅ PR #1 |
 | N2LHTBLTT-26 | Toàn | ✅ PR #1 |
-| N2LHTBLTT-39 | Toàn | 🔄 PR #2 (`feature/N2LHTBLTT-39-integration-regression-test`) |
+| N2LHTBLTT-39 | Toàn | 🔄 PR #2 (`feature/N2LHTBLTT-39-integration-regression-test`) — stack trên PR #1 |
