@@ -81,10 +81,14 @@ public class StockRestoreOnCancelTests : IAsyncLifetime
 
         cancelResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 
-        // 5. Tồn kho phải được hoàn lại đúng 2 đơn vị.
+        // 5. Ton kho phai duoc hoan lai VE DUNG MUC BAN DAU.
+        //
+        // Luu do: ton kho bi giu (100 -> 98) ngay tai buoc checkout, khong phai
+        // luc dat hang. Nen sau khi huy don, ton kho phai quay ve "stockBefore",
+        // khong phai "stockBefore + 2".
         var stockAfter = await GetStockAsync(variantId);
 
-        stockAfter.Should().Be(stockBefore + 2);
+        stockAfter.Should().Be(stockBefore);
     }
 
     private async Task<int> GetStockAsync(long productVariantId)

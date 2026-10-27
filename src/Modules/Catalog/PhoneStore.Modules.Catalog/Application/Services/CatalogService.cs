@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PhoneStore.BuildingBlocks.Application;
+using PhoneStore.BuildingBlocks.Contracts.Catalog;
 using PhoneStore.BuildingBlocks.Domain;
 using PhoneStore.BuildingBlocks.Exceptions;
 using PhoneStore.Modules.Catalog.Application.DTOs;
@@ -38,10 +39,12 @@ public interface ICatalogService
 public class CatalogService : ICatalogService
 {
     private readonly CatalogDbContext _dbContext;
+    private readonly IEventBus _eventBus;
 
-    public CatalogService(CatalogDbContext dbContext)
+    public CatalogService(CatalogDbContext dbContext, IEventBus eventBus)
     {
         _dbContext = dbContext;
+        _eventBus = eventBus;
     }
 
     // -----------------------------------------------------------------------
@@ -365,6 +368,15 @@ public class CatalogService : ICatalogService
         _dbContext.Products.Add(product);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
+        // N2LHTBLTT-23: thong bao cho Inventory khoi tao ton kho cho cac SKU moi,
+        // neu khong thi san pham tao tu API quan tri se khong ban duoc (khong co ton kho).
+        foreach (var variant in product.Variants)
+        {
+            await _eventBus.PublishAsync(
+                new ProductVariantCreated(variant.Id, product.Id, variant.Sku, variant.StockQuantity),
+                cancellationToken);
+        }
+
         var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
         var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
 
@@ -437,6 +449,11 @@ public class CatalogService : ICatalogService
 
         product.AddVariant(variant);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // N2LHTBLTT-23: Inventory can ton kho cho SKU moi.
+        await _eventBus.PublishAsync(
+            new ProductVariantCreated(variant.Id, productId, variant.Sku, variant.StockQuantity),
+            cancellationToken);
 
         return Result.Success(ToVariantDto(variant));
     }

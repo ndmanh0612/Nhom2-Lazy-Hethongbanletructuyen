@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using FluentAssertions;
+using PhoneStore.BuildingBlocks.Common;
 
 namespace PhoneStore.IntegrationTests;
 
@@ -47,6 +48,10 @@ internal static class AuthTestHelper
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
+        // N2LHTBLTT-38: client da nhan cookie CSRF đâ gửi kèm header X-CSRF-TOKEN
+        // để các endpoint dùng cookie để xác thực (refresh, logout).
+        AttachCsrfHeader(client, response);
+
         return client;
     }
 
@@ -74,6 +79,9 @@ internal static class AuthTestHelper
 
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        // N2LHTBLTT-38: gửi kèm header CSRF cho client.
+        AttachCsrfHeader(client, response);
 
         return client;
     }
@@ -111,6 +119,31 @@ internal static class AuthTestHelper
     /// <summary>
     /// Tạo client đã xác thực bằng tài khoản ADMIN.
     /// </summary>
+    /// <summary>
+    /// N2LHTBLTT-38: gan header X-CSRF-TOKEN cho client dua tren cookie
+    /// phonestore_csrf vua duoc cap trong response (register / login / csrf).
+    ///
+    /// Cac endpoint dung cookie de xac thuc (refresh, logout) bat buoc co header nay.
+    /// </summary>
+    internal static void AttachCsrfHeader(HttpClient client, HttpResponseMessage response)
+    {
+        var csrfCookie = response.Headers.TryGetValues("Set-Cookie", out var cookies)
+            ? cookies.FirstOrDefault(c => c.StartsWith(AuthCookies.CsrfToken + "=", StringComparison.Ordinal))
+            : null;
+
+        if (csrfCookie is null)
+        {
+            return;
+        }
+
+        // Server giai ma gia tri cookie khi doc request, nen header phai gui
+        // cung dang giai ma de khop voi gia tri server so sanh.
+        var raw = csrfCookie.Split(';')[0].Split('=', 2)[1];
+        var value = Uri.UnescapeDataString(raw);
+        client.DefaultRequestHeaders.Remove(AuthHeaders.CsrfToken);
+        client.DefaultRequestHeaders.Add(AuthHeaders.CsrfToken, value);
+    }
+
     internal static Task<HttpClient> CreateAuthenticatedAdminAsync(
         PhoneStoreApiFactory factory,
         string email = "admin@phonestore.vn",

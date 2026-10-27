@@ -39,11 +39,27 @@ builder.Services.AddOrderModule(builder.Configuration);
 builder.Services.AddInventoryModule(builder.Configuration);
 
 // CORS
+// N2LHTBLTT-38: API dùng cookie phiên (refresh token) nên bắt buộc AllowCredentials.
+// Vì vậy không dùng AllowAnyOrigin (bị CORS chặn) — dùng SetIsOriginAllowed để
+// cho phép mọi origin nhưng vẫn gửi kèm cookie.
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowApp", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins);
+        }
+        else
+        {
+            policy.SetIsOriginAllowed(_ => true);
+        }
+
+        policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
 
@@ -68,7 +84,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowAll");
+app.UseCors("AllowApp");
 
 // N2LHTBLTT-9: Xác thực + phân quyền phải chạy trước middleware xử lý lỗi
 // để lỗi 401/403 trả về đúng envelope ErrorResponse.

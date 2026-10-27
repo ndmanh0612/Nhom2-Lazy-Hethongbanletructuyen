@@ -36,8 +36,11 @@ public class InventoryContract : IInventoryContract
 
         // Khóa dòng theo thứ tự id tăng dần để tránh deadlock khi hai giao
         // dịch chạy song song với tập phiên bản khác nhau.
+        //
+        // Lưu ý: tên cột trong database do EF tạo là PascalCase ("ProductVariantId"),
+        // nên raw SQL phải dùng đúng tên cột — không dùng naming convention snake_case.
         var stocks = await _dbContext.ProductStocks
-            .FromSqlInterpolated($"SELECT * FROM inventory.product_stocks WHERE product_variant_id = ANY ({variantIds.ToArray()}) ORDER BY product_variant_id FOR UPDATE")
+            .FromSqlInterpolated($"SELECT * FROM inventory.product_stocks WHERE \"ProductVariantId\" = ANY ({variantIds.ToArray()}) ORDER BY \"ProductVariantId\" FOR UPDATE")
             .ToListAsync(cancellationToken);
 
         // Phiên bản chưa có bản ghi tồn kho tức là chưa được thiết lập tồn kho.

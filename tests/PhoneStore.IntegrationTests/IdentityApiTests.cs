@@ -250,7 +250,9 @@ public class IdentityApiTests : IAsyncLifetime
         changeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Refresh token cũ đã bị thu hồi nên không thể dùng để làm mới token.
-        var refreshResponse = await _client.PostAsJsonAsync("/api/v1/auth/refresh", new { }, Json);
+        // N2LHTBLTT-38: endpoint refresh xac thuc bang cookie nen can CSRF header.
+        // Client nay da duoc gan cookie refresh token khi dang nhap.
+        var refreshResponse = await client.PostAsJsonAsync("/api/v1/auth/refresh", new { }, Json);
         refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 

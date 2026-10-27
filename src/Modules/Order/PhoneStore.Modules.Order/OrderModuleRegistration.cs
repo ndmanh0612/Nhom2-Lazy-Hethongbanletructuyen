@@ -72,7 +72,11 @@ public class OrdersController : ControllerBase
     public async Task<IActionResult> GetOrder(long orderId, CancellationToken cancellationToken)
     {
         var userId = RequireUserId();
-        var result = await _orderService.GetOrderAsync(orderId, userId, cancellationToken);
+
+        // N2LHTBLTT-27: nhan vien / quan tri duoc xem don hang cua khach hang.
+        var isStaff = _currentUser.IsInRole(AppRoles.Staff) || _currentUser.IsInRole(AppRoles.Admin);
+
+        var result = await _orderService.GetOrderAsync(orderId, userId, isStaff, cancellationToken);
         return Ok(ApiResponse<OrderDetailDto>.Ok(result.Value));
     }
 

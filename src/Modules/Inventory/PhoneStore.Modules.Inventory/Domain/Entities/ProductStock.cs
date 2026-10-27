@@ -1,4 +1,5 @@
 using PhoneStore.BuildingBlocks.Domain;
+using PhoneStore.BuildingBlocks.Exceptions;
 
 namespace PhoneStore.Modules.Inventory.Domain.Entities;
 
@@ -96,7 +97,9 @@ public class ProductStock : BaseEntity<long>
         var newQuantity = StockQuantity + delta;
         if (newQuantity < 0)
         {
-            throw new InvalidOperationException(
+            // N2LHTBLTT-21: vi pham quy tac nghiep vu ton kho -> loi 400 chu khong phai 500.
+            throw new ValidationException(
+                "delta",
                 $"Tồn kho không đủ để điều chỉnh. Hiện có {StockQuantity}, yêu cầu giảm {-delta}.");
         }
 

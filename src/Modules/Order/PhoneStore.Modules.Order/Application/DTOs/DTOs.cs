@@ -34,6 +34,11 @@ public record OrderDto(
     string? CancelReason,
     DateTimeOffset? CancelledAt,
     DateTimeOffset? DeliveredAt,
+    // FR-10 / FR-11: thong tin van chuyen va thu tien COD.
+    string? Carrier,
+    string? TrackingNumber,
+    long? CollectedAmount,
+    DateTimeOffset? CollectedAt,
     IReadOnlyList<OrderItemDto> Items,
     DateTimeOffset CreatedAt);
 
@@ -53,6 +58,11 @@ public record OrderDetailDto(
     string? CancelReason,
     DateTimeOffset? CancelledAt,
     DateTimeOffset? DeliveredAt,
+    // FR-10 / FR-11: thong tin van chuyen va thu tien COD.
+    string? Carrier,
+    string? TrackingNumber,
+    long? CollectedAmount,
+    DateTimeOffset? CollectedAt,
     IReadOnlyList<OrderItemDto> Items,
     IReadOnlyList<OrderStatusHistoryDto> StatusHistories,
     DateTimeOffset CreatedAt);
