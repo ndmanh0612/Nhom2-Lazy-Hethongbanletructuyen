@@ -1,4 +1,5 @@
 using FluentAssertions;
+using PhoneStore.BuildingBlocks.Exceptions;
 using PhoneStore.Modules.Cart.Domain.Entities;
 using PhoneStore.Modules.Cart.Domain.Enums;
 using Xunit;
@@ -61,7 +62,26 @@ public class CartTests
 
         var action = () => cart.AddItem(100, "iPhone 17 Pro", "IP17P-256-BLK", 25_000_000, CartItem.MaxQuantityPerItem + 1);
 
-        action.Should().Throw<ArgumentException>();
+        // N2LHTBLTT-39: domain ném ValidationException (AppException) để
+        // AppExceptionMiddleware map về 400 VALIDATION_ERROR thay vì 500.
+        action.Should().Throw<ValidationException>()
+            .Which.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public void AddItem_ExceedingMaximumViaMerge_ShouldBeRejected()
+    {
+        var cart = Cart.Create(1);
+        cart.AddItem(100, "iPhone 17 Pro", "IP17P-256-BLK", 25_000_000, 6);
+
+        var action = () => cart.AddItem(100, "iPhone 17 Pro", "IP17P-256-BLK", 25_000_000, 6);
+
+        action.Should().Throw<ValidationException>()
+            .Which.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+
+        // Giỏ giữ nguyên số lượng cũ.
+        cart.Items.Should().ContainSingle();
+        cart.TotalQuantity.Should().Be(6);
     }
 
     [Fact]
@@ -84,7 +104,8 @@ public class CartTests
 
         var action = () => cart.UpdateItemQuantity(cartItem, 0);
 
-        action.Should().Throw<ArgumentException>();
+        action.Should().Throw<ValidationException>()
+            .Which.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -117,6 +138,7 @@ public class CartTests
 
         var action = () => cart.AddItem(100, "iPhone 17 Pro", "IP17P-256-BLK", 25_000_000, 1);
 
-        action.Should().Throw<InvalidOperationException>();
+        action.Should().Throw<ValidationException>()
+            .Which.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
     }
 }
