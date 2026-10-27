@@ -76,30 +76,152 @@ docker compose -f docker/docker-compose.yml up -d
 # Build toàn bộ Solution
 dotnet build PhoneStore.slnx
 
-# Chạy toàn bộ test (unit + architecture + integration E2E)
-dotnet test PhoneStore.slnx
-
-# Chạy Web API Backend
+# Chạy Web API Backend (Development)
 dotnet run --project src/Host/PhoneStore.Api/PhoneStore.Api.csproj
 ```
 
-> **Lưu ý về integration test**: `PhoneStore.IntegrationTests` cần PostgreSQL chạy sẵn ở port 5433.
-> Test tự tạo database riêng (tên random) cho từng lần chạy và xoá sau khi hoàn tất —
-> không đụng tới `phonestore_db`. Biến môi trường `PHONESTORE_TEST_ADMIN_CONNECTION`
-> có thể override connection string quản trị (mặc định `postgres` trên `postgres`).
+> Chi tiết về cách chạy test: xem [mục 8](#8-chạy-test).
+> Chi tiết về cổng (Swagger): xem [mục 4](#4-truy-cập-swagger-ui).
 
 ### 4. Truy cập Swagger UI
-Mở trình duyệt: `http://localhost:5000/` hoặc `https://localhost:5001/` để xem toàn bộ danh mục API của các module.
+Mở trình duyệt: `http://localhost:5122/` (profile `http`) hoặc `https://localhost:7168/` (profile `https`).
+Port này lấy từ `src/Host/PhoneStore.Api/Properties/launchSettings.json`. Muốn đổi port khi chạy thủ công:
+
+```bash
+# Windows (PowerShell)
+$env:ASPNETCORE_URLS="http://localhost:5099"; dotnet run --project src/Host/PhoneStore.Api/PhoneStore.Api.csproj
+
+# macOS / Linux
+ASPNETCORE_URLS="http://localhost:5099" dotnet run --project src/Host/PhoneStore.Api/PhoneStore.Api.csproj
+```
+
 Ở môi trường Development, Swagger UI nằm ở root (`/`), còn OpenAPI JSON ở `/swagger/v1/swagger.json`.
 
-### 5. Tình trạng test hiện tại
+### 5. Tài khoản seed sẵn
+Dữ liệu mẫu được seed tự động khi app khởi động ở môi trường Development
+(`src/Host/PhoneStore.Api/Seeding/DatabaseSeeder.cs`, idempotent — chạy lại không nhân bản):
+
+| Email | Mật khẩu | Vai trò |
+|---|---|---|
+| `customer@phonestore.vn` | `Customer@123` | CUSTOMER |
+| `staff@phonestore.vn` | `Staff@123` | STAFF |
+| `demo@phonestore.vn` | `Demo@123` | CUSTOMER |
+
+### 6. Cơ chế xác thực tạm thời
+JWT thật đang chờ task `N2LHTBLTT-8` / `N2LHTBLTT-9` (Identity & Auth). Hiện API nhận danh tính
+qua header tạm thời:
+
+```
+X-User-Id: 2001
+```
+
+Thiếu header → API trả **401**. Khi Identity hoàn tất sẽ đổi sang claim `sub` / `NameIdentifier`;
+chi tiết ở [`docs/reviews/ASK-TRI-AUTH-TOKEN-ISSUE.md`](docs/reviews/ASK-TRI-AUTH-TOKEN-ISSUE.md).
+
+### 7. Tình trạng test hiện tại
 
 | Project | Số test | Loại |
 |---|---:|---|
-| `PhoneStore.UnitTests` | 34 | Unit test nghiệp vụ domain + application service |
+| `PhoneStore.UnitTests` | 35 | Unit test nghiệp vụ domain + application service |
 | `PhoneStore.ArchitectureTests` | 7 | Ranh giới module (không rò rỉ tham chiếu) |
-| `PhoneStore.IntegrationTests` | 48 | E2E qua HTTP thật với `WebApplicationFactory` + PostgreSQL |
-| **Tổng** | **89** | |
+| `PhoneStore.IntegrationTests` | 126 | E2E qua HTTP thật với `WebApplicationFactory` + PostgreSQL |
+| **Tổng** | **168** | |
+
+Bộ integration test gồm các file chính:
+
+| File | Số test | Phủ |
+|---|---:|---|
+| `BusinessFlowRegressionTests` | 32 | Hồi quy luồng giỏ / checkout / hủy đơn / phân quyền |
+| `CatalogAndIdentityRegressionTests` | 30 | Hồi quy lọc, sắp xếp, phân trang Catalog + đăng ký / đăng nhập |
+| `EndToEndOrderJourneyTests` | 16 | Hành trình đặt hàng đầu-cuối |
+| `IdentityApiTests` | 12 | Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ |
+| `CatalogQueryTests` | 10 | Tìm kiếm, lọc giá/danh mục, sắp xếp, phân trang |
+| `OrderLifecycleTests` | 10 | Danh sách / chi tiết / lọc trạng thái / hủy đơn |
+| `CartApiTests` | 8 | Thêm, gộp, sửa, xóa, vượt giới hạn, xác thực |
+| `CheckoutFlowTests` | 7 | Health, catalog, checkout COD, validation |
+| `StockRestoreOnCancelTests` | 1 | Hủy đơn → hoàn tồn kho `inventory.product_stocks` |
+
+### 8. Chạy test
+
+```bash
+# Build trước
+dotnet build PhoneStore.slnx
+
+# Toàn bộ test (khoảng 40s, vì integration test cần PostgreSQL thật)
+dotnet test PhoneStore.slnx
+
+# Từng bộ riêng
+dotnet test tests/PhoneStore.UnitTests/PhoneStore.UnitTests.csproj
+dotnet test tests/PhoneStore.ArchitectureTests/PhoneStore.ArchitectureTests.csproj
+dotnet test tests/PhoneStore.IntegrationTests/PhoneStore.IntegrationTests.csproj
+
+# Chạy 1 test / 1 class cụ thể
+dotnet test tests/PhoneStore.IntegrationTests --filter "FullyQualifiedName~BusinessFlowRegressionTests"
+dotnet test tests/PhoneStore.IntegrationTests --filter "FullyQualifiedName~Checkout_clears_the_cart"
+```
+
+> **Bắt buộc cho integration test**: PostgreSQL phải chạy sẵn ở `localhost:5433` (user/pass `postgres`).
+> Test tự tạo database riêng (tên random `phonestore_test_<guid>`) rồi xoá sau khi hoàn tất —
+> không đụng tới `phonestore_db`. Nếu PostgreSQL của bạn ở port khác, override biến môi trường:
+>
+> ```bash
+> export PHONESTORE_TEST_ADMIN_CONNECTION="Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=postgres"
+> ```
+>
+> Test đã tắt parallelization (`AssemblyInfo.cs`) vì connection string được override bằng biến môi
+> trường toàn cục — không chạy song song 2 tiến trình `dotnet test` cùng lúc.
+
+### 9. Gọi API bằng `curl`
+
+```bash
+# Health
+curl http://localhost:5122/health
+
+# Danh sách sản phẩm (lọc / sắp xếp / phân trang)
+curl "http://localhost:5122/api/v1/products?search=iphone&sortBy=price_asc&page=1&pageSize=10"
+curl http://localhost:5122/api/v1/categories
+curl http://localhost:5122/api/v1/brands
+
+# Đăng ký → lấy userId trong response
+curl -X POST http://localhost:5122/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"khach@example.com","fullName":"Khách Hàng","phone":"0912345678","password":"Pass@123"}'
+
+# Đăng nhập
+curl -X POST http://localhost:5122/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"customer@phonestore.vn","password":"Customer@123"}'
+
+# Giỏ hàng (cần header X-User-Id tạm thời)
+curl -H "X-User-Id: 2001" http://localhost:5122/api/v1/cart
+
+curl -X POST http://localhost:5122/api/v1/cart/items \
+  -H "X-User-Id: 2001" -H "Content-Type: application/json" \
+  -d '{"productVariantId":1,"quantity":2}'
+
+# Checkout COD
+curl -X POST http://localhost:5122/api/v1/orders/checkout \
+  -H "X-User-Id: 2001" -H "Content-Type: application/json" \
+  -d '{"receiverName":"Nguyễn Văn A","receiverPhone":"0912345678","shippingAddress":"123 Nguyễn Huệ, Quận 1, TP.HCM"}'
+
+# Đơn hàng
+curl -H "X-User-Id: 2001" http://localhost:5122/api/v1/orders
+curl -H "X-User-Id: 2001" "http://localhost:5122/api/v1/orders?status=PENDING"
+
+curl -X POST http://localhost:5122/api/v1/orders/1/cancel \
+  -H "X-User-Id: 2001" -H "Content-Type: application/json" \
+  -d '{"reason":"Khách đổi ý."}'
+```
+
+**Quy ước response**: mọi response (thành công và lỗi) dùng chung envelope
+`{ success, message, data, timestamp }`. Response lỗi có thêm `code` và `requestId`.
+
+| HTTP | Mã lỗi (`code`) | Ý nghĩa |
+|---:|---|---|
+| 400 | `VALIDATION_ERROR` | Dữ liệu gửi lên không hợp lệ |
+| 401 | `UNAUTHORIZED` | Thiếu hoặc sai thông tin xác thực |
+| 404 | `PRODUCT_NOT_FOUND`, `CART_ITEM_NOT_FOUND`, `USER_NOT_FOUND` | Không tìm thấy dữ liệu |
+| 409 | `EMAIL_ALREADY_EXISTS`, `CATEGORY_ALREADY_EXISTS`, `INVALID_ORDER_STATUS` | Xung đột trạng thái / dữ liệu trùng |
 
 ---
 

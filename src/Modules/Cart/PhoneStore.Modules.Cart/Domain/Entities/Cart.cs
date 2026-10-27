@@ -1,4 +1,5 @@
 using PhoneStore.BuildingBlocks.Domain;
+using PhoneStore.BuildingBlocks.Exceptions;
 using PhoneStore.Modules.Cart.Domain.Enums;
 
 namespace PhoneStore.Modules.Cart.Domain.Entities;
@@ -38,12 +39,14 @@ public class Cart : AggregateRoot<long>
     {
         if (Status != CartStatus.ACTIVE)
         {
-            throw new InvalidOperationException("Chỉ giỏ hàng đang hoạt động mới được thêm sản phẩm.");
+            throw new ValidationException("cart", "Chỉ giỏ hàng đang hoạt động mới được thêm sản phẩm.");
         }
 
         if (_items.Count >= MaxItemsPerCart && _items.All(item => item.ProductVariantId != productVariantId))
         {
-            throw new InvalidOperationException($"Giỏ hàng không được vượt quá {MaxItemsPerCart} sản phẩm khác nhau.");
+            throw new ValidationException(
+                "cart",
+                $"Giỏ hàng không được vượt quá {MaxItemsPerCart} sản phẩm khác nhau.");
         }
 
         var existingItem = _items.FirstOrDefault(item => item.ProductVariantId == productVariantId);
@@ -90,7 +93,7 @@ public class Cart : AggregateRoot<long>
     {
         if (!_items.Contains(cartItem))
         {
-            throw new InvalidOperationException("Sản phẩm không thuộc giỏ hàng hiện tại.");
+            throw new ValidationException("cartItem", "Sản phẩm không thuộc giỏ hàng hiện tại.");
         }
     }
 }
