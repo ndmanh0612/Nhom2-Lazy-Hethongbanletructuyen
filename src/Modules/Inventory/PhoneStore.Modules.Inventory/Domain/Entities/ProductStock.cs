@@ -33,6 +33,9 @@ public class ProductStock : BaseEntity<long>
         };
     }
 
+    /// <summary>
+    /// N2LHTBLTT-21 (FR-14): Đặt giữ tồn kho (khi đặt hàng).
+    /// </summary>
     public void Reserve(int quantity)
     {
         if (quantity <= 0)
@@ -49,6 +52,9 @@ public class ProductStock : BaseEntity<long>
         Touch();
     }
 
+    /// <summary>
+    /// N2LHTBLTT-21 (FR-14): Hoàn trả tồn kho đã đặt giữ (khi hủy đơn).
+    /// </summary>
     public void Restore(int quantity)
     {
         if (quantity <= 0)
@@ -58,5 +64,44 @@ public class ProductStock : BaseEntity<long>
 
         StockQuantity += quantity;
         Touch();
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-21 (FR-14): Nhập kho — tăng tồn theo số lượng nhập.
+    /// </summary>
+    public int Import(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentException("Số lượng nhập kho phải lớn hơn 0.", nameof(quantity));
+        }
+
+        StockQuantity += quantity;
+        Touch();
+        return quantity;
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-21 (FR-14): Điều chỉnh tồn kho thủ công.
+    /// Delta dương = tăng, delta âm = giảm. Tồn kho không được âm.
+    /// Trả về delta thực tế đã áp dụng.
+    /// </summary>
+    public int Adjust(int delta)
+    {
+        if (delta == 0)
+        {
+            throw new ArgumentException("Số lượng điều chỉnh không được bằng 0.", nameof(delta));
+        }
+
+        var newQuantity = StockQuantity + delta;
+        if (newQuantity < 0)
+        {
+            throw new InvalidOperationException(
+                $"Tồn kho không đủ để điều chỉnh. Hiện có {StockQuantity}, yêu cầu giảm {-delta}.");
+        }
+
+        StockQuantity = newQuantity;
+        Touch();
+        return delta;
     }
 }

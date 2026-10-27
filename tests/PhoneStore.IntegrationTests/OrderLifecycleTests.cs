@@ -28,12 +28,10 @@ public class OrderLifecycleTests : IAsyncLifetime
         _factory = factory;
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        var userId = Interlocked.Increment(ref _userIdCounter);
-        _client = _factory.CreateClient();
-        _client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
-        return Task.CompletedTask;
+        // N2LHTBLTT-8 / N2LHTBLTT-9: xac thuc bang JWT that.
+        _client = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
     }
 
     public Task DisposeAsync()
@@ -171,8 +169,7 @@ public class OrderLifecycleTests : IAsyncLifetime
         var orderId = await CreateOrderAsync();
 
         // Client khác (không phải chủ đơn) xem đơn hàng.
-        using var otherClient = _factory.CreateClient();
-        otherClient.DefaultRequestHeaders.Add("X-User-Id", "9999");
+        using var otherClient = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
 
         var response = await otherClient.GetAsync($"/api/v1/orders/{orderId}");
 
@@ -187,8 +184,7 @@ public class OrderLifecycleTests : IAsyncLifetime
     {
         var orderId = await CreateOrderAsync();
 
-        using var otherClient = _factory.CreateClient();
-        otherClient.DefaultRequestHeaders.Add("X-User-Id", "9999");
+        using var otherClient = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
 
         var response = await otherClient.PostAsJsonAsync(
             $"/api/v1/orders/{orderId}/cancel",

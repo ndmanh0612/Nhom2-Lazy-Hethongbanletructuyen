@@ -30,6 +30,6 @@ public class OrderCancelledHandler : INotificationHandler<OrderCancelled>
             .Select(item => new StockChangeItem(item.ProductVariantId, item.Quantity))
             .ToList();
 
-        await _inventoryContract.RestoreStockAsync(items, cancellationToken);
+        await _inventoryContract.RestoreStockAsync(items, notification.OrderId, cancellationToken);
     }
 }

@@ -72,3 +72,65 @@ public class OrderFilterQueryValidator : AppValidator<OrderFilterQuery>
             .WithMessage("Trạng thái đơn hàng không hợp lệ.");
     }
 }
+
+// ---------------------------------------------------------------------------
+// FR-10 (N2LHTBLTT-27) / FR-11 (N2LHTBLTT-28): Validation cho nghiệp vụ vận chuyển.
+// ---------------------------------------------------------------------------
+
+public class ConfirmOrderRequestValidator : AppValidator<ConfirmOrderRequest>
+{
+    public ConfirmOrderRequestValidator()
+    {
+        RuleFor(request => request.Note)
+            .MaximumLength(500)
+            .When(request => request.Note is not null)
+            .WithMessage("Ghi chú tối đa 500 ký tự.");
+    }
+}
+
+public class ShipOrderRequestValidator : AppValidator<ShipOrderRequest>
+{
+    public ShipOrderRequestValidator()
+    {
+        RuleFor(request => request.Carrier)
+            .MaximumLength(100)
+            .When(request => request.Carrier is not null)
+            .WithMessage("Tên đơn vị vận chuyển tối đa 100 ký tự.");
+
+        RuleFor(request => request.TrackingNumber)
+            .MaximumLength(64)
+            .When(request => request.TrackingNumber is not null)
+            .WithMessage("Mã vận đơn tối đa 64 ký tự.");
+
+        RuleFor(request => request.Note)
+            .MaximumLength(500)
+            .When(request => request.Note is not null)
+            .WithMessage("Ghi chú tối đa 500 ký tự.");
+    }
+}
+
+public class DeliverOrderRequestValidator : AppValidator<DeliverOrderRequest>
+{
+    public DeliverOrderRequestValidator()
+    {
+        RuleFor(request => request.CollectedAmount)
+            .GreaterThan(0)
+            .WithMessage("Số tiền COD thu được phải lớn hơn 0.");
+
+        RuleFor(request => request.Note)
+            .MaximumLength(500)
+            .When(request => request.Note is not null)
+            .WithMessage("Ghi chú tối đa 500 ký tự.");
+    }
+}
+
+public class DeliveryFailedRequestValidator : AppValidator<DeliveryFailedRequest>
+{
+    public DeliveryFailedRequestValidator()
+    {
+        RuleFor(request => request.Reason)
+            .NotEmpty()
+            .MaximumLength(500)
+            .WithMessage("Lý do giao thất bại không được để trống và tối đa 500 ký tự.");
+    }
+}

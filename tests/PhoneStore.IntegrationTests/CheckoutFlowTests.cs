@@ -28,14 +28,11 @@ public class CheckoutFlowTests : IAsyncLifetime
     {
         _factory = factory;
     }
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        // Mỗi test dùng một user id riêng để giỏ hàng không bị chia sẻ giữa các test.
-        var userId = Interlocked.Increment(ref _userIdCounter);
-
-        _client = _factory.CreateClient();
-        _client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
-        return Task.CompletedTask;
+        // Mỗi test dùng một tài khoản riêng để giỏ hàng không bị chia sẻ giữa các test.
+        // N2LHTBLTT-8 / N2LHTBLTT-9: xac thuc bang JWT that.
+        _client = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
     }
 
     public Task DisposeAsync()

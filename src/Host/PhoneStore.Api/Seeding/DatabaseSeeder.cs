@@ -38,7 +38,8 @@ public static class DatabaseSeeder
         dbContext.Users.AddRange(
             User.CreateCustomer("customer@phonestore.vn", passwordHasher.HashPassword("Customer@123"), "Nguyễn Văn Khách", "0912345678"),
             User.CreateStaff("staff@phonestore.vn", passwordHasher.HashPassword("Staff@123"), "Trần Nhân Viên", "0912345679"),
-            User.CreateCustomer("demo@phonestore.vn", passwordHasher.HashPassword("Demo@123"), "Tài Khoản Demo", "0900000000"));
+            User.CreateCustomer("demo@phonestore.vn", passwordHasher.HashPassword("Demo@123"), "Tài Khoản Demo", "0900000000"),
+            User.CreateWithRole("admin@phonestore.vn", passwordHasher.HashPassword("Admin@123"), "Quản Trị Hệ Thống", UserRole.ADMIN, "0900000001"));
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }

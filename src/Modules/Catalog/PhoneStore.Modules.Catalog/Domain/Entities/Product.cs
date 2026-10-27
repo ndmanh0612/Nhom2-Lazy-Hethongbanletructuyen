@@ -97,6 +97,22 @@ public class ProductVariant : BaseEntity<long>
         Touch();
     }
 
+    /// <summary>
+    /// FR-13: Cập nhật thông tin phiên bản (SKU, màu, dung lượng, giá, trạng thái).
+    /// </summary>
+    public void UpdateInfo(string sku, string color, string capacity, long price, bool isActive)
+    {
+        if (price <= 0)
+            throw new ArgumentException("Giá phải lớn hơn 0.", nameof(price));
+
+        Sku = sku.Trim().ToUpperInvariant();
+        Color = color.Trim();
+        Capacity = capacity.Trim();
+        Price = price;
+        IsActive = isActive;
+        Touch();
+    }
+
     public void AdjustStock(int delta)
     {
         var newStock = StockQuantity + delta;

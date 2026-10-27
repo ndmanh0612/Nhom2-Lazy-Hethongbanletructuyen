@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +34,7 @@ public static class CartModuleRegistration
 
 [ApiController]
 [Route("api/v1/cart")]
+[Authorize(Policy = AuthorizationPolicies.RequireAuthenticated)]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;

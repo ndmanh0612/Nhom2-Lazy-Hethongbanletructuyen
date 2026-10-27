@@ -54,6 +54,62 @@ namespace PhoneStore.Modules.Inventory.Infrastructure.Persistence.Migrations
 
                     b.ToTable("product_stocks", "inventory");
                 });
+
+            modelBuilder.Entity("PhoneStore.Modules.Inventory.Domain.Entities.StockMovement", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long?>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("PerformedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductVariantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityAfter")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuantityBefore")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.HasIndex("Type", "CreatedAt");
+
+                    b.ToTable("stock_movements", "inventory");
+                });
 #pragma warning restore 612, 618
         }
     }

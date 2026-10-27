@@ -30,11 +30,10 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         _factory = factory;
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        var userId = Interlocked.Increment(ref _userIdCounter);
-        _client = ApiTestHelper.CreateUserClient(_factory, userId);
-        return Task.CompletedTask;
+        // N2LHTBLTT-8 / N2LHTBLTT-9: xac thuc bang JWT that.
+        _client = await ApiTestHelper.CreateUserClient(_factory, 0);
     }
 
     public Task DisposeAsync()
@@ -61,7 +60,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         myCart.GetProperty("totalQuantity").GetInt32().Should().Be(2);
 
         // Khách khác không được thấy giỏ của khách này.
-        using var otherClient = ApiTestHelper.CreateUserClient(_factory, 999_001);
+        using var otherClient = await ApiTestHelper.CreateUserClient(_factory, 0);
         var otherCart = await ApiTestHelper.GetDataAsync(otherClient, "/api/v1/cart");
 
         otherCart.GetProperty("totalQuantity").GetInt32().Should().Be(0);
@@ -73,7 +72,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
     {
         var (variantId, price, _) = await ApiTestHelper.GetFirstVariantAsync(_client);
 
-        using var otherClient = ApiTestHelper.CreateUserClient(_factory, 999_002);
+        using var otherClient = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         await _client.PostAsJsonAsync(
             "/api/v1/cart/items",
@@ -479,7 +478,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         registerStatus.Should().Be(HttpStatusCode.Created);
         var userId = registerBody.GetProperty("data").GetProperty("userId").GetInt64();
 
-        using var customerClient = ApiTestHelper.CreateUserClient(_factory, userId);
+        using var customerClient = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var (variantId, price, _) = await ApiTestHelper.GetFirstVariantAsync(customerClient);
 
@@ -501,7 +500,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
 
         var userId = registerBody.GetProperty("data").GetProperty("userId").GetInt64();
 
-        using var customerClient = ApiTestHelper.CreateUserClient(_factory, userId);
+        using var customerClient = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var (updateStatus, _) = await ApiTestHelper.SendAsync(
             customerClient,
@@ -530,7 +529,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
 
         var userId = registerBody.GetProperty("data").GetProperty("userId").GetInt64();
 
-        using var customerClient = ApiTestHelper.CreateUserClient(_factory, userId);
+        using var customerClient = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var (status, body) = await ApiTestHelper.SendAsync(
             customerClient,
@@ -555,7 +554,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
 
         var userId = registerBody.GetProperty("data").GetProperty("userId").GetInt64();
 
-        using var customerClient = ApiTestHelper.CreateUserClient(_factory, userId);
+        using var customerClient = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var (status, body) = await ApiTestHelper.SendAsync(
             customerClient,
@@ -580,7 +579,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
 
         var userId = registerBody.GetProperty("data").GetProperty("userId").GetInt64();
 
-        using var customerClient = ApiTestHelper.CreateUserClient(_factory, userId);
+        using var customerClient = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
 
         var (changeStatus, _) = await ApiTestHelper.SendAsync(
             customerClient,
@@ -622,8 +621,8 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
 
         var userId = registerBody.GetProperty("data").GetProperty("userId").GetInt64();
 
-        using var customerClient = ApiTestHelper.CreateUserClient(_factory, userId);
-        using var otherClient = ApiTestHelper.CreateUserClient(_factory, 999_003);
+        using var customerClient = await AuthTestHelper.CreateAuthenticatedClientAsync(_factory, email, "Pass@123");
+        using var otherClient = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         var (addStatus, addBody) = await ApiTestHelper.SendAsync(
             customerClient,
@@ -673,7 +672,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         var cart = await ApiTestHelper.GetDataAsync(_client, "/api/v1/cart");
         var cartItemId = cart.GetProperty("items")[0].GetProperty("id").GetInt64();
 
-        using var otherClient = ApiTestHelper.CreateUserClient(_factory, 999_004);
+        using var otherClient = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         var (status, body) = await ApiTestHelper.SendAsync(
             otherClient,
@@ -698,7 +697,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         var cart = await ApiTestHelper.GetDataAsync(_client, "/api/v1/cart");
         var cartItemId = cart.GetProperty("items")[0].GetProperty("id").GetInt64();
 
-        using var otherClient = ApiTestHelper.CreateUserClient(_factory, 999_005);
+        using var otherClient = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         var (status, body) = await ApiTestHelper.SendAsync(
             otherClient,
@@ -716,7 +715,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         var order = await ApiTestHelper.CheckoutAsync(_client, variantId);
         var orderId = order.GetProperty("id").GetInt64();
 
-        using var otherClient = ApiTestHelper.CreateUserClient(_factory, 999_006);
+        using var otherClient = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         var list = await ApiTestHelper.GetDataAsync(otherClient, "/api/v1/orders");
         list.GetProperty("items").EnumerateArray()

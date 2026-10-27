@@ -17,14 +17,23 @@ internal static class ApiTestHelper
     internal static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
     /// <summary>
-    /// Tạo client có gắn sẵn header danh tính tạm thời (X-User-Id) — cơ chế này sẽ
-    /// được thay bằng JWT thật khi Identity xong task N2LHTBLTT-8/9.
+    /// N2LHTBLTT-8 / N2LHTBLTT-9: Tạo client đã xác thực bằng JWT thật.
+    ///
+    /// Tham số <paramref name="userId"/> được giữ lại để các test cũ không phải
+    /// sửa lời gọi, nhưng giá trị này KHÔNG còn dùng để mạo danh — client luôn
+    /// được cấp token của một tài khoản khách hàng đã đăng ký thật.
     /// </summary>
-    internal static HttpClient CreateUserClient(PhoneStoreApiFactory factory, long userId)
+    internal static Task<HttpClient> CreateUserClient(PhoneStoreApiFactory factory, long userId)
     {
-        var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
-        return client;
+        return AuthTestHelper.CreateAuthenticatedCustomerAsync(factory);
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-8 / N2LHTBLTT-9: Tạo client đã xác thực bằng JWT thật.
+    /// </summary>
+    internal static Task<HttpClient> CreateAuthenticatedCustomerAsync(PhoneStoreApiFactory factory)
+    {
+        return AuthTestHelper.CreateAuthenticatedCustomerAsync(factory);
     }
 
     /// <summary>

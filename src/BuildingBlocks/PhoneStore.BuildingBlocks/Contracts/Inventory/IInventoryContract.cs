@@ -15,6 +15,7 @@ public interface IInventoryContract
     /// </summary>
     Task<bool> TryReserveStockAsync(
         IReadOnlyCollection<StockChangeItem> items,
+        long? orderId = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -22,5 +23,6 @@ public interface IInventoryContract
     /// </summary>
     Task RestoreStockAsync(
         IReadOnlyCollection<StockChangeItem> items,
+        long? orderId = null,
         CancellationToken cancellationToken = default);
 }

@@ -46,3 +46,7 @@ Jira.csv
 
 ## Cursor local config
 .cursor/
+
+## PostgreSQL cài đặt cục bộ (không đẩy lên GitHub)
+pg17-installer.exe
+pg17-bin.zip

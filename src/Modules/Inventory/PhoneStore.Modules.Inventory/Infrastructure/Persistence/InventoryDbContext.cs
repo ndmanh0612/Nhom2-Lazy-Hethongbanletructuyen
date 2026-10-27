@@ -11,6 +11,7 @@ public class InventoryDbContext : DbContext
     public const string Schema = "inventory";
 
     public DbSet<ProductStock> ProductStocks => Set<ProductStock>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
 
     public InventoryDbContext(DbContextOptions<InventoryDbContext> options) : base(options) { }
 
@@ -31,6 +32,23 @@ public class InventoryDbContext : DbContext
             entity.HasIndex(e => e.ProductVariantId).IsUnique();
         });
 
-        // Đạt (Backend / DevOps) sẽ cấu hình chi tiết InventoryMovements tại đây (S2-09)
+        // N2LHTBLTT-21 (FR-14): Nhật ký tồn kho.
+        modelBuilder.Entity<StockMovement>(entity =>
+        {
+            entity.ToTable("stock_movements");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+            entity.Property(e => e.Quantity).IsRequired();
+            entity.Property(e => e.QuantityBefore).IsRequired();
+            entity.Property(e => e.QuantityAfter).IsRequired();
+            entity.Property(e => e.Type).HasConversion<string>().HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Note).HasMaxLength(500);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();
+
+            entity.HasIndex(e => e.ProductVariantId);
+            entity.HasIndex(e => e.OrderId);
+            entity.HasIndex(e => new { e.Type, e.CreatedAt });
+        });
     }
 }

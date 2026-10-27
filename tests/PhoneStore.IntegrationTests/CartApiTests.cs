@@ -21,8 +21,6 @@ public class CartApiTests : IAsyncLifetime
     private readonly PhoneStoreApiFactory _factory;
     private HttpClient _client = null!;
 
-    private static int _userIdCounter = 700;
-
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
     public CartApiTests(PhoneStoreApiFactory factory)
@@ -30,12 +28,10 @@ public class CartApiTests : IAsyncLifetime
         _factory = factory;
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        var userId = Interlocked.Increment(ref _userIdCounter);
-        _client = _factory.CreateClient();
-        _client.DefaultRequestHeaders.Add("X-User-Id", userId.ToString());
-        return Task.CompletedTask;
+        // N2LHTBLTT-8 / N2LHTBLTT-9: client được xác thực bằng JWT thật.
+        _client = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
     }
 
     public Task DisposeAsync()

@@ -12,10 +12,27 @@ public interface ICatalogService
 {
     Task<Result<IReadOnlyList<CategoryDto>>> GetCategoriesAsync(bool includeInactive = false, CancellationToken cancellationToken = default);
     Task<Result<CategoryDto>> CreateCategoryAsync(CreateCategoryRequest request, CancellationToken cancellationToken = default);
+    Task<Result<CategoryDto>> UpdateCategoryAsync(long categoryId, UpdateCategoryRequest request, CancellationToken cancellationToken = default);
+    Task<Result> DeleteCategoryAsync(long categoryId, CancellationToken cancellationToken = default);
+
     Task<Result<IReadOnlyList<BrandDto>>> GetBrandsAsync(bool includeInactive = false, CancellationToken cancellationToken = default);
     Task<Result<BrandDto>> CreateBrandAsync(CreateBrandRequest request, CancellationToken cancellationToken = default);
+    Task<Result<BrandDto>> UpdateBrandAsync(long brandId, UpdateBrandRequest request, CancellationToken cancellationToken = default);
+    Task<Result> DeleteBrandAsync(long brandId, CancellationToken cancellationToken = default);
+
     Task<Result<PagedResult<ProductDto>>> GetProductsAsync(ProductFilterQuery query, CancellationToken cancellationToken = default);
     Task<Result<ProductDetailDto>> GetProductByIdAsync(long id, CancellationToken cancellationToken = default);
+
+    // FR-13 (N2LHTBLTT-18): CRUD sản phẩm / SKU / giá / thông số kỹ thuật.
+    Task<Result<ProductDetailDto>> CreateProductAsync(CreateProductRequest request, CancellationToken cancellationToken = default);
+    Task<Result<ProductDetailDto>> UpdateProductAsync(long productId, UpdateProductRequest request, CancellationToken cancellationToken = default);
+    Task<Result> DeleteProductAsync(long productId, CancellationToken cancellationToken = default);
+    Task<Result<ProductVariantDto>> CreateVariantAsync(long productId, CreateVariantRequest request, CancellationToken cancellationToken = default);
+    Task<Result<ProductVariantDto>> UpdateVariantAsync(long variantId, UpdateVariantRequest request, CancellationToken cancellationToken = default);
+    Task<Result> DeleteVariantAsync(long variantId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductVariantDto>>> GetVariantsAsync(VariantFilterQuery query, CancellationToken cancellationToken = default);
+    Task<Result<ProductImageDto>> AddProductImageAsync(long productId, CreateProductImageRequest request, CancellationToken cancellationToken = default);
+    Task<Result> DeleteProductImageAsync(long imageId, CancellationToken cancellationToken = default);
 }
 
 public class CatalogService : ICatalogService
@@ -26,6 +43,10 @@ public class CatalogService : ICatalogService
     {
         _dbContext = dbContext;
     }
+
+    // -----------------------------------------------------------------------
+    // FR-12 (N2LHTBLTT-10): Danh mục.
+    // -----------------------------------------------------------------------
 
     public async Task<Result<IReadOnlyList<CategoryDto>>> GetCategoriesAsync(bool includeInactive = false, CancellationToken cancellationToken = default)
     {
@@ -59,6 +80,59 @@ public class CatalogService : ICatalogService
         return Result.Success(new CategoryDto(category.Id, category.Name, category.IsActive));
     }
 
+    public async Task<Result<CategoryDto>> UpdateCategoryAsync(long categoryId, UpdateCategoryRequest request, CancellationToken cancellationToken = default)
+    {
+        var category = await _dbContext.Categories.FindAsync([categoryId], cancellationToken);
+        if (category is null)
+        {
+            throw new NotFoundException("Không tìm thấy danh mục.", "CATEGORY_NOT_FOUND");
+        }
+
+        var trimmedName = request.Name.Trim();
+
+        // Tên danh mục là duy nhất — kiểm tra trùng với danh mục khác.
+        var duplicate = await _dbContext.Categories
+            .AnyAsync(c => c.Name == trimmedName && c.Id != categoryId, cancellationToken);
+        if (duplicate)
+        {
+            throw new ConflictException("Tên danh mục đã tồn tại.", "CATEGORY_ALREADY_EXISTS");
+        }
+
+        category.Update(trimmedName, request.IsActive);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(new CategoryDto(category.Id, category.Name, category.IsActive));
+    }
+
+    public async Task<Result> DeleteCategoryAsync(long categoryId, CancellationToken cancellationToken = default)
+    {
+        var category = await _dbContext.Categories.FindAsync([categoryId], cancellationToken);
+        if (category is null)
+        {
+            throw new NotFoundException("Không tìm thấy danh mục.", "CATEGORY_NOT_FOUND");
+        }
+
+        // Không xoá cứng nếu còn sản phẩm thuộc danh mục — dữ liệu lịch sử đơn hàng
+        // cần giữ lại danh mục. Thay vào đó ẩn danh mục đi.
+        var hasProducts = await _dbContext.Products.AnyAsync(p => p.CategoryId == categoryId, cancellationToken);
+        if (hasProducts)
+        {
+            category.Update(category.Name, isActive: false);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+
+        _dbContext.Categories.Remove(category);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    // -----------------------------------------------------------------------
+    // FR-12 (N2LHTBLTT-10): Thương hiệu.
+    // -----------------------------------------------------------------------
+
     public async Task<Result<IReadOnlyList<BrandDto>>> GetBrandsAsync(bool includeInactive = false, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Brands.AsNoTracking();
@@ -90,6 +164,56 @@ public class CatalogService : ICatalogService
 
         return Result.Success(new BrandDto(brand.Id, brand.Name, brand.IsActive));
     }
+
+    public async Task<Result<BrandDto>> UpdateBrandAsync(long brandId, UpdateBrandRequest request, CancellationToken cancellationToken = default)
+    {
+        var brand = await _dbContext.Brands.FindAsync([brandId], cancellationToken);
+        if (brand is null)
+        {
+            throw new NotFoundException("Không tìm thấy thương hiệu.", "BRAND_NOT_FOUND");
+        }
+
+        var trimmedName = request.Name.Trim();
+
+        var duplicate = await _dbContext.Brands
+            .AnyAsync(b => b.Name == trimmedName && b.Id != brandId, cancellationToken);
+        if (duplicate)
+        {
+            throw new ConflictException("Tên thương hiệu đã tồn tại.", "BRAND_ALREADY_EXISTS");
+        }
+
+        brand.Update(trimmedName, request.IsActive);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(new BrandDto(brand.Id, brand.Name, brand.IsActive));
+    }
+
+    public async Task<Result> DeleteBrandAsync(long brandId, CancellationToken cancellationToken = default)
+    {
+        var brand = await _dbContext.Brands.FindAsync([brandId], cancellationToken);
+        if (brand is null)
+        {
+            throw new NotFoundException("Không tìm thấy thương hiệu.", "BRAND_NOT_FOUND");
+        }
+
+        var hasProducts = await _dbContext.Products.AnyAsync(p => p.BrandId == brandId, cancellationToken);
+        if (hasProducts)
+        {
+            brand.Update(brand.Name, isActive: false);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+
+        _dbContext.Brands.Remove(brand);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    // -----------------------------------------------------------------------
+    // FR-04 / FR-05: Truy vấn sản phẩm.
+    // -----------------------------------------------------------------------
 
     public async Task<Result<PagedResult<ProductDto>>> GetProductsAsync(ProductFilterQuery query, CancellationToken cancellationToken = default)
     {
@@ -175,11 +299,7 @@ public class CatalogService : ICatalogService
 
     public async Task<Result<ProductDetailDto>> GetProductByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var product = await _dbContext.Products
-            .AsNoTracking()
-            .Include(p => p.Variants)
-            .Include(p => p.Images)
-            .FirstOrDefaultAsync(p => p.Id == id && p.IsActive, cancellationToken);
+        var product = await LoadProductAsync(id, includeInactive: false, cancellationToken);
 
         if (product == null)
         {
@@ -189,9 +309,309 @@ public class CatalogService : ICatalogService
         var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
         var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
 
+        return Result.Success(ToDetailDto(product, category?.Name, brand?.Name));
+    }
+
+    // -----------------------------------------------------------------------
+    // FR-13 (N2LHTBLTT-18): CRUD sản phẩm / SKU / giá / thông số.
+//    // -----------------------------------------------------------------------
+
+    public async Task<Result<ProductDetailDto>> CreateProductAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
+    {
+        await EnsureCategoryAndBrandExistAsync(request.CategoryId, request.BrandId, cancellationToken);
+
+        var product = Product.Create(
+            request.CategoryId,
+            request.BrandId,
+            request.Name,
+            request.Description,
+            request.SpecificationsJson ?? "{}");
+
+        // SKU phải duy nhất trong toàn hệ thống — kiểm tra trước khi thêm.
+        if (request.Variants is not null && request.Variants.Count > 0)
+        {
+            var skus = request.Variants.Select(v => v.Sku.Trim().ToUpperInvariant()).ToList();
+            if (skus.Distinct(StringComparer.Ordinal).Count() != skus.Count)
+            {
+                throw new ValidationException("variants", "Trong một sản phẩm không được trùng SKU.");
+            }
+
+            var existing = await _dbContext.ProductVariants
+                .Where(v => skus.Contains(v.Sku))
+                .Select(v => v.Sku)
+                .ToListAsync(cancellationToken);
+
+            if (existing.Count > 0)
+            {
+                throw new ConflictException(
+                    $"SKU đã tồn tại: {string.Join(", ", existing)}.",
+                    "SKU_ALREADY_EXISTS");
+            }
+
+            foreach (var variantRequest in request.Variants)
+            {
+                var variant = ProductVariant.Create(
+                    product.Id,
+                    variantRequest.Sku,
+                    variantRequest.Color,
+                    variantRequest.Capacity,
+                    variantRequest.Price,
+                    variantRequest.StockQuantity);
+
+                product.AddVariant(variant);
+            }
+        }
+
+        _dbContext.Products.Add(product);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
+        var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
+
+        return Result.Success(ToDetailDto(product, category?.Name, brand?.Name));
+    }
+
+    public async Task<Result<ProductDetailDto>> UpdateProductAsync(long productId, UpdateProductRequest request, CancellationToken cancellationToken = default)
+    {
+        var product = await LoadProductAsync(productId, includeInactive: true, tracking: true, cancellationToken);
+        if (product == null)
+        {
+            throw new NotFoundException("Không tìm thấy sản phẩm.", "PRODUCT_NOT_FOUND");
+        }
+
+        await EnsureCategoryAndBrandExistAsync(request.CategoryId, request.BrandId, cancellationToken);
+
+        product.UpdateInfo(
+            request.Name,
+            request.Description,
+            request.SpecificationsJson ?? "{}",
+            request.IsActive);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
+        var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
+
+        return Result.Success(ToDetailDto(product, category?.Name, brand?.Name));
+    }
+
+    public async Task<Result> DeleteProductAsync(long productId, CancellationToken cancellationToken = default)
+    {
+        var product = await LoadProductAsync(productId, includeInactive: true, tracking: true, cancellationToken);
+        if (product == null)
+        {
+            throw new NotFoundException("Không tìm thấy sản phẩm.", "PRODUCT_NOT_FOUND");
+        }
+
+        // Sản phẩm đã bán (có phiên bản trong giỏ/đơn) không xoá cứng để giữ
+        // tính toàn vẹn dữ liệu lịch sử — ẩn sản phẩm đi.
+        product.UpdateInfo(product.Name, product.Description, product.SpecificationsJson, isActive: false);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result<ProductVariantDto>> CreateVariantAsync(long productId, CreateVariantRequest request, CancellationToken cancellationToken = default)
+    {
+        var product = await LoadProductAsync(productId, includeInactive: false, cancellationToken);
+        if (product == null)
+        {
+            throw new NotFoundException("Không tìm thấy sản phẩm.", "PRODUCT_NOT_FOUND");
+        }
+
+        var normalizedSku = request.Sku.Trim().ToUpperInvariant();
+
+        var skuExists = await _dbContext.ProductVariants.AnyAsync(v => v.Sku == normalizedSku, cancellationToken);
+        if (skuExists)
+        {
+            throw new ConflictException($"SKU \"{normalizedSku}\" đã tồn tại.", "SKU_ALREADY_EXISTS");
+        }
+
+        var variant = ProductVariant.Create(
+            productId,
+            request.Sku,
+            request.Color,
+            request.Capacity,
+            request.Price,
+            request.StockQuantity);
+
+        product.AddVariant(variant);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(ToVariantDto(variant));
+    }
+
+    public async Task<Result<ProductVariantDto>> UpdateVariantAsync(long variantId, UpdateVariantRequest request, CancellationToken cancellationToken = default)
+    {
+        var variant = await _dbContext.ProductVariants.FindAsync([variantId], cancellationToken);
+        if (variant is null)
+        {
+            throw new NotFoundException("Không tìm thấy phiên bản sản phẩm.", "PRODUCT_VARIANT_NOT_FOUND");
+        }
+
+        var normalizedSku = request.Sku.Trim().ToUpperInvariant();
+
+        var skuExists = await _dbContext.ProductVariants
+            .AnyAsync(v => v.Sku == normalizedSku && v.Id != variantId, cancellationToken);
+        if (skuExists)
+        {
+            throw new ConflictException($"SKU \"{normalizedSku}\" đã tồn tại.", "SKU_ALREADY_EXISTS");
+        }
+
+        variant.UpdateInfo(normalizedSku, request.Color, request.Capacity, request.Price, request.IsActive);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(ToVariantDto(variant));
+    }
+
+    public async Task<Result> DeleteVariantAsync(long variantId, CancellationToken cancellationToken = default)
+    {
+        var variant = await _dbContext.ProductVariants.FindAsync([variantId], cancellationToken);
+        if (variant is null)
+        {
+            throw new NotFoundException("Không tìm thấy phiên bản sản phẩm.", "PRODUCT_VARIANT_NOT_FOUND");
+        }
+
+        // Phiên bản đã bán không xoá cứng — ẩn đi để giữ dữ liệu đơn hàng.
+        variant.SetActive(false);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result<PagedResult<ProductVariantDto>>> GetVariantsAsync(VariantFilterQuery query, CancellationToken cancellationToken = default)
+    {
+        var page = query.Page < 1 ? 1 : query.Page;
+        var pageSize = query.PageSize is < 1 or > 100 ? 20 : query.PageSize;
+
+        var baseQuery = _dbContext.ProductVariants.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(query.Sku))
+        {
+            var sku = query.Sku.Trim().ToUpperInvariant();
+            baseQuery = baseQuery.Where(v => v.Sku.Contains(sku));
+        }
+
+        if (query.ProductId.HasValue)
+        {
+            baseQuery = baseQuery.Where(v => v.ProductId == query.ProductId.Value);
+        }
+
+        if (query.IsActive.HasValue)
+        {
+            baseQuery = baseQuery.Where(v => v.IsActive == query.IsActive.Value);
+        }
+
+        var totalCount = await baseQuery.LongCountAsync(cancellationToken);
+
+        var variants = await baseQuery
+            .OrderBy(v => v.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        var dtos = variants.Select(ToVariantDto).ToList();
+
+        return Result.Success(PagedResult<ProductVariantDto>.Create(dtos, page, pageSize, totalCount));
+    }
+
+    public async Task<Result<ProductImageDto>> AddProductImageAsync(long productId, CreateProductImageRequest request, CancellationToken cancellationToken = default)
+    {
+        var product = await LoadProductAsync(productId, includeInactive: false, cancellationToken);
+        if (product == null)
+        {
+            throw new NotFoundException("Không tìm thấy sản phẩm.", "PRODUCT_NOT_FOUND");
+        }
+
+        var image = ProductImage.Create(productId, request.ImageUrl, request.SortOrder);
+        product.AddImage(image);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(new ProductImageDto(image.Id, image.ImageUrl, image.SortOrder));
+    }
+
+    public async Task<Result> DeleteProductImageAsync(long imageId, CancellationToken cancellationToken = default)
+    {
+        var image = await _dbContext.ProductImages.FindAsync([imageId], cancellationToken);
+        if (image is null)
+        {
+            throw new NotFoundException("Không tìm thấy ảnh sản phẩm.", "PRODUCT_IMAGE_NOT_FOUND");
+        }
+
+        _dbContext.ProductImages.Remove(image);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
+
+    private Task<Product?> LoadProductAsync(long id, bool includeInactive, CancellationToken cancellationToken)
+    {
+        return LoadProductAsync(id, includeInactive, tracking: false, cancellationToken);
+    }
+
+    /// <summary>
+    /// Nạp sản phẩm kèm variants và images.
+    /// tracking = true dùng cho các thao tác cập nhật (cần EF theo dõi thay đổi).
+    /// </summary>
+    private Task<Product?> LoadProductAsync(long id, bool includeInactive, bool tracking, CancellationToken cancellationToken)
+    {
+        IQueryable<Product> query = _dbContext.Products
+            .Include(p => p.Variants)
+            .Include(p => p.Images);
+
+        if (!tracking)
+        {
+            query = query.AsNoTracking();
+        }
+
+        if (!includeInactive)
+        {
+            query = query.Where(p => p.IsActive);
+        }
+
+        return query.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+    }
+
+    private async Task EnsureCategoryAndBrandExistAsync(long categoryId, long brandId, CancellationToken cancellationToken)
+    {
+        var categoryExists = await _dbContext.Categories
+            .AnyAsync(c => c.Id == categoryId && c.IsActive, cancellationToken);
+        if (!categoryExists)
+        {
+            throw new ValidationException("categoryId", "Danh mục không tồn tại hoặc đã bị ẩn.");
+        }
+
+        var brandExists = await _dbContext.Brands
+            .AnyAsync(b => b.Id == brandId && b.IsActive, cancellationToken);
+        if (!brandExists)
+        {
+            throw new ValidationException("brandId", "Thương hiệu không tồn tại hoặc đã bị ẩn.");
+        }
+    }
+
+    private static ProductVariantDto ToVariantDto(ProductVariant variant)
+    {
+        return new ProductVariantDto(
+            variant.Id,
+            variant.ProductId,
+            variant.Sku,
+            variant.Color,
+            variant.Capacity,
+            variant.Price,
+            variant.StockQuantity,
+            variant.IsActive);
+    }
+
+    private static ProductDetailDto ToDetailDto(Product product, string? categoryName, string? brandName)
+    {
         var variantDtos = product.Variants
             .Where(v => v.IsActive)
-            .Select(v => new ProductVariantDto(v.Id, v.ProductId, v.Sku, v.Color, v.Capacity, v.Price, v.StockQuantity, v.IsActive))
+            .Select(ToVariantDto)
             .ToList();
 
         var imageDtos = product.Images
@@ -199,20 +619,17 @@ public class CatalogService : ICatalogService
             .Select(i => new ProductImageDto(i.Id, i.ImageUrl, i.SortOrder))
             .ToList();
 
-        var detail = new ProductDetailDto(
+        return new ProductDetailDto(
             product.Id,
             product.CategoryId,
-            category?.Name ?? "Chưa phân loại",
+            categoryName ?? "Chưa phân loại",
             product.BrandId,
-            brand?.Name ?? "Chưa phân loại",
+            brandName ?? "Chưa phân loại",
             product.Name,
             product.Description,
             product.SpecificationsJson,
             product.IsActive,
             variantDtos,
-            imageDtos
-        );
-
-        return Result.Success(detail);
+            imageDtos);
     }
 }
