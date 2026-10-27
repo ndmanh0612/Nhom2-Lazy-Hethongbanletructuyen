@@ -48,11 +48,10 @@ public class EndToEndOrderJourneyTests : IAsyncLifetime
         products.GetProperty("items").EnumerateArray().Should().NotBeEmpty();
 
         // 2. Chọn sản phẩm và xem chi tiết.
-        var productId = products.GetProperty("items")[0].GetProperty("id").GetInt64();
-        var detail = await ApiTestHelper.GetDataAsync(_client, $"/api/v1/products/{productId}");
-        var variant = detail.GetProperty("variants")[0];
-        var variantId = variant.GetProperty("id").GetInt64();
-        var price = variant.GetProperty("price").GetInt64();
+        //
+        // N2LHTBLTT-23: dùng variant seed "iPhone 15" để có đủ tồn kho lớn, tránh
+        // việc chẽn variant của sản phẩm vừa test quản trị tạo (tồn thấp).
+        var (variantId, price, _) = await ApiTestHelper.GetFirstVariantAsync(_client);
 
         // 3. Thêm vào giỏ.
         var addResponse = await _client.PostAsJsonAsync(
@@ -189,8 +188,9 @@ public class EndToEndOrderJourneyTests : IAsyncLifetime
         // Đơn hàng chưa trừ kho (xem ghi chú trong PR #1), nên tồn kho ở thời điểm
         // này vẫn bằng giá trị ban đầu. Test này chốt lại hành vi hiện tại để khi
         // Inventory được nối vào checkout, thay đổi đó sẽ lộ ra ngay.
+        // N2LHTBLTT-22: ton kho da bi giu ngay tai buoc checkout.
         var stockAfterCheckout = await GetStockAsync(variantId);
-        stockAfterCheckout.Should().Be(stockBefore);
+        stockAfterCheckout.Should().Be(stockBefore - 2);
 
         await ApiTestHelper.SendAsync(
             _client,
@@ -201,7 +201,7 @@ public class EndToEndOrderJourneyTests : IAsyncLifetime
         var stockAfterCancel = await GetStockAsync(variantId);
 
         // Hủy đơn hoàn lại đúng số lượng đã đặt.
-        stockAfterCancel.Should().Be(stockBefore + 2);
+        stockAfterCancel.Should().Be(stockBefore);
     }
 
     [Fact]
@@ -228,8 +228,10 @@ public class EndToEndOrderJourneyTests : IAsyncLifetime
 
         secondStatus.Should().Be(HttpStatusCode.Conflict);
 
+        // Ton kho chi duoc hoan MOT lan: lan huy thu hai bi tu choi nen
+        // ton kho phai quay ve dung muc truoc khi dat hang.
         var stockAfter = await GetStockAsync(variantId);
-        stockAfter.Should().Be(stockBefore + 2);
+        stockAfter.Should().Be(stockBefore);
     }
 
     [Fact]

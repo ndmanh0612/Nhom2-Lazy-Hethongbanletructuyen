@@ -126,12 +126,9 @@ public class CheckoutFlowTests : IAsyncLifetime
     public async Task Checkout_creates_order_with_cod_total_from_cart()
     {
         // Chuẩn bị giỏ hàng.
-        var products = await _client.GetFromJsonAsync<JsonElement>("/api/v1/products", Json);
-        var productId = products.GetProperty("data").GetProperty("items")[0].GetProperty("id").GetInt64();
-        var detail = await _client.GetFromJsonAsync<JsonElement>($"/api/v1/products/{productId}", Json);
-        var variant = detail.GetProperty("data").GetProperty("variants")[0];
-        var variantId = variant.GetProperty("id").GetInt64();
-        var expectedPrice = variant.GetProperty("price").GetInt64();
+        // N2LHTBLTT-23: dung variant seed "iPhone 15" de co du ton kho lon, tranh
+        // viec chon variant cua san pham vua test quan tri tao (ton thap).
+        var (variantId, expectedPrice, _) = await ApiTestHelper.GetFirstVariantAsync(_client);
 
         await _client.PostAsJsonAsync(
             "/api/v1/cart/items",

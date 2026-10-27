@@ -23,6 +23,12 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
     private readonly PhoneStoreApiFactory _factory;
     private HttpClient _client = null!;
 
+    /// <summary>
+    /// N2LHTBLTT-16: cac endpoint quan tri (danh muc / thuong hieu) yeu cau
+    /// vai tro STAFF hoac ADMIN, nen can client rieng thay vi client khach hang.
+    /// </summary>
+    private HttpClient _staffClient = null!;
+
     private static int _userIdCounter = 2000;
 
     public BusinessFlowRegressionTests(PhoneStoreApiFactory factory)
@@ -34,11 +40,13 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
     {
         // N2LHTBLTT-8 / N2LHTBLTT-9: xac thuc bang JWT that.
         _client = await ApiTestHelper.CreateUserClient(_factory, 0);
+        _staffClient = await AuthTestHelper.CreateAuthenticatedAdminAsync(_factory);
     }
 
     public Task DisposeAsync()
     {
         _client.Dispose();
+        _staffClient.Dispose();
         return Task.CompletedTask;
     }
 
@@ -400,7 +408,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         var name = $"Danh mục regression {Guid.NewGuid():N}";
 
         var (createdStatus, createdBody) = await ApiTestHelper.SendAsync(
-            _client,
+            _staffClient,
             HttpMethod.Post,
             "/api/v1/admin/categories",
             new { name });
@@ -409,7 +417,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         var categoryId = createdBody.GetProperty("data").GetProperty("id").GetInt64();
 
         var (duplicateStatus, duplicateBody) = await ApiTestHelper.SendAsync(
-            _client,
+            _staffClient,
             HttpMethod.Post,
             "/api/v1/admin/categories",
             new { name });
@@ -427,7 +435,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
     public async Task Creating_a_category_with_blank_name_returns_validation_error()
     {
         var (status, body) = await ApiTestHelper.SendAsync(
-            _client,
+            _staffClient,
             HttpMethod.Post,
             "/api/v1/admin/categories",
             new { name = "   " });
@@ -442,7 +450,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         var name = $"Thương hiệu regression {Guid.NewGuid():N}";
 
         var (createdStatus, _) = await ApiTestHelper.SendAsync(
-            _client,
+            _staffClient,
             HttpMethod.Post,
             "/api/v1/admin/brands",
             new { name });
@@ -450,7 +458,7 @@ public class BusinessFlowRegressionTests : IAsyncLifetime
         createdStatus.Should().Be(HttpStatusCode.Created);
 
         var (duplicateStatus, duplicateBody) = await ApiTestHelper.SendAsync(
-            _client,
+            _staffClient,
             HttpMethod.Post,
             "/api/v1/admin/brands",
             new { name });

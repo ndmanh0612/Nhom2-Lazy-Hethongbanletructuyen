@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using FluentAssertions;
+using PhoneStore.BuildingBlocks.Common;
 
 namespace PhoneStore.IntegrationTests;
 
@@ -64,7 +65,7 @@ public class AuthAndStaffApiTests : IAsyncLifetime
 
         // Refresh token phải nằm trong cookie HttpOnly, không lộ ra body.
         var refreshCookie = response.Headers.TryGetValues("Set-Cookie", out var cookies)
-            ? cookies.FirstOrDefault(c => c.Contains("phonestore_refresh"))
+            ? cookies.FirstOrDefault(c => c.Contains(AuthCookies.RefreshToken))
             : null;
 
         refreshCookie.Should().NotBeNull("đăng ký phải trả cookie refresh token");
@@ -128,7 +129,7 @@ public class AuthAndStaffApiTests : IAsyncLifetime
         loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var refreshCookie = loginResponse.Headers.TryGetValues("Set-Cookie", out var cookies)
-            ? cookies.FirstOrDefault(c => c.Contains("phonestore_refresh"))
+            ? cookies.FirstOrDefault(c => c.Contains(AuthCookies.RefreshToken))
             : null;
 
         refreshCookie.Should().NotBeNull();
@@ -138,6 +139,9 @@ public class AuthAndStaffApiTests : IAsyncLifetime
             .Split(';')[0]
             .Split('=', 2)[1];
 
+        // N2LHTBLTT-38: endpoint refresh xac thuc bang cookie nen can CSRF header.
+        AuthTestHelper.AttachCsrfHeader(client, loginResponse);
+
         // CookieContainer tự gửi cookie khi dùng client này.
         var firstRefresh = await client.PostAsJsonAsync("/api/v1/auth/refresh", new { }, Json);
         firstRefresh.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -145,8 +149,35 @@ public class AuthAndStaffApiTests : IAsyncLifetime
         var refreshed = await firstRefresh.Content.ReadFromJsonAsync<JsonElement>(Json);
         refreshed.GetProperty("data").GetProperty("accessToken").GetString().Should().NotBeNullOrWhiteSpace();
 
-        // Refresh lần thứ hai với token cũ phải bị từ chối (token rotation).
-        var secondRefresh = await client.PostAsJsonAsync("/api/v1/auth/refresh", new { }, Json);
+        // Token rotation: gui LAI token cu (da bi thu hoi sau lan refresh dau)
+        // phai bi tu choi. Dung client moi de khong bi CookieContainer tu gan
+        // cookie moi thay the cookie cu.
+        using var replayClient = _factory.CreateClient();
+
+        // Client replay can gui lai cookie refresh token CU (da bi thu hoi) kem
+        // cookie CSRF + header CSRF tuong ung, de request duoc qua lop bao ve CSRF
+        // va den duoc buoc kiem tra token rotation.
+        var csrfCookie = loginResponse.Headers.TryGetValues("Set-Cookie", out var setCookies)
+            ? setCookies.FirstOrDefault(c => c.StartsWith(AuthCookies.CsrfToken + "=", StringComparison.Ordinal))
+            : null;
+
+        var csrfValue = csrfCookie is null
+            ? null
+            : Uri.UnescapeDataString(csrfCookie.Split(';')[0].Split('=', 2)[1]);
+
+        replayClient.DefaultRequestHeaders.Add(
+            "Cookie",
+            $"{AuthCookies.RefreshToken}={refreshValue}");
+
+        if (csrfValue is not null)
+        {
+            replayClient.DefaultRequestHeaders.Add(
+                "Cookie",
+                $"{AuthCookies.CsrfToken}={csrfValue}");
+            replayClient.DefaultRequestHeaders.Add(AuthHeaders.CsrfToken, csrfValue);
+        }
+
+        var secondRefresh = await replayClient.PostAsJsonAsync("/api/v1/auth/refresh", new { }, Json);
         secondRefresh.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
@@ -172,6 +203,9 @@ public class AuthAndStaffApiTests : IAsyncLifetime
 
         client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+        // N2LHTBLTT-38: endpoint logout xac thuc bang cookie nen can CSRF header.
+        AuthTestHelper.AttachCsrfHeader(client, loginResponse);
 
         var logoutResponse = await client.PostAsJsonAsync("/api/v1/auth/logout", new { }, Json);
         logoutResponse.StatusCode.Should().Be(HttpStatusCode.OK);

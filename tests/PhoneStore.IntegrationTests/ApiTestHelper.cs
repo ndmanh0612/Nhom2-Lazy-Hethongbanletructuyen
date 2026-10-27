@@ -109,12 +109,24 @@ internal static class ApiTestHelper
     }
 
     /// <summary>
-    /// Lấy phiên bản sản phẩm đầu tiên trong catalog kèm giá và SKU.
+    /// Lấy một phiên bản sản phẩm CỐ ĐỆN để dùng cho các test checkout.
+    ///
+    /// N2LHTBLTT-22 / N2LHTBLTT-23: danh sách sản phẩm mặc sắp xếp theo "newest", nên
+    /// phçn tấu tiên thường là sản phẩm do test quản trị vừa tạo (tồn kho rát thấp,
+    /// dễ bệ cạn tốn khi test khác cùng hết). Helper này cố định chọn sản phẩm seed
+    /// "iPhone 15" — luôn có đủ tồn kho lớn nên các test checkout không bị cạn tốn.
     /// </summary>
     internal static async Task<(long VariantId, long Price, string Sku)> GetFirstVariantAsync(HttpClient client)
     {
-        var products = await GetDataAsync(client, "/api/v1/products");
-        var productId = products.GetProperty("items")[0].GetProperty("id").GetInt64();
+        var products = await GetDataAsync(client, "/api/v1/products?search=iPhone%2015");
+        var items = products.GetProperty("items");
+
+        if (items.GetArrayLength() == 0)
+        {
+            throw new InvalidOperationException("Không tìm thấy sản phẩm seed \"iPhone 15\" trong catalog.");
+        }
+
+        var productId = items[0].GetProperty("id").GetInt64();
 
         var detail = await GetDataAsync(client, $"/api/v1/products/{productId}");
         var variant = detail.GetProperty("variants")[0];

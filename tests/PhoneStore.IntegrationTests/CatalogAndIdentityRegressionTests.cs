@@ -486,7 +486,8 @@ public class CatalogAndIdentityRegressionTests : IAsyncLifetime
             });
 
         status.Should().Be(HttpStatusCode.Created);
-        body.GetProperty("data").GetProperty("token").GetString().Should().NotBeNullOrWhiteSpace();
+        // N2LHTBLTT-8: response dang ky tra ve accessToken (JWT) + refresh token trong cookie.
+        body.GetProperty("data").GetProperty("accessToken").GetString().Should().NotBeNullOrWhiteSpace();
     }
 
     [Fact]
@@ -514,20 +515,31 @@ public class CatalogAndIdentityRegressionTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Profile_of_an_unknown_user_returns_not_found()
+    public async Task Profile_of_the_authenticated_user_returns_their_own_information()
     {
+        // N2LHTBLTT-8 / N2LHTBLTT-15: /api/v1/me lay danh tinh tu claim "sub" cua JWT,
+        // nen luon tra thong tin cua chinh nguoi dang dang nhap (khong con tra 404
+        // cho "user khong ton tai" nhu khi con dung header X-User-Id gia).
         using var client = await ApiTestHelper.CreateUserClient(_factory, 0);
 
         var (status, body) = await ApiTestHelper.SendAsync(client, HttpMethod.Get, "/api/v1/me");
 
-        status.Should().Be(HttpStatusCode.NotFound);
-        ApiTestHelper.AssertErrorEnvelope(body, "USER_NOT_FOUND");
+        status.Should().Be(HttpStatusCode.OK);
+        var profile = body.GetProperty("data");
+        profile.GetProperty("email").GetString().Should().NotBeNullOrWhiteSpace();
+        profile.GetProperty("role").GetString().Should().Be("CUSTOMER");
     }
 
     [Fact]
     public async Task Logout_returns_a_successful_envelope()
     {
-        var (status, body) = await ApiTestHelper.SendAsync(_client, HttpMethod.Post, "/api/v1/auth/logout");
+        // N2LHTBLTT-8: endpoint logout yeu cau access token hop le.
+        using var authenticated = await AuthTestHelper.CreateAuthenticatedCustomerAsync(_factory);
+
+        var (status, body) = await ApiTestHelper.SendAsync(
+            authenticated,
+            HttpMethod.Post,
+            "/api/v1/auth/logout");
 
         status.Should().Be(HttpStatusCode.OK);
         body.GetProperty("success").GetBoolean().Should().BeTrue();
