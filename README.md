@@ -110,7 +110,7 @@ Dữ liệu mẫu được seed tự động khi app khởi động ở môi tr�
 
 ### 6. Cơ chế xác thực (JWT thật)
 
-> Hoàn thành tại task `N2LHTBLTT-8` / `N2LHTBLTT-9`. Cơ chế `X-User-Id` tạm thời **đã bị gỡ bỏ**.
+> Xác thực JWT là nền tảng dùng chung, được triển khai trong phạm vi `N2LHTBLTT-12` / `N2LHTBLTT-14` để phục vụ API Cart/Order. Cơ chế `X-User-Id` tạm thời **đã bị gỡ bỏ**.
 
 #### 6.1. Luồng đăng nhập
 
