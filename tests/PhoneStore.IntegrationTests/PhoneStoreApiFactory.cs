@@ -24,13 +24,30 @@ public class PhoneStoreApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
         _databaseName = $"phonestore_test_{Guid.NewGuid():N}";
         _adminConnectionString = Environment.GetEnvironmentVariable("PHONESTORE_TEST_ADMIN_CONNECTION")
             ?? "Host=localhost;Port=5433;Database=postgres;Username=postgres;Password=postgres";
-        _testConnectionString =
-            $"Host=localhost;Port=5433;Database={_databaseName};Username=postgres;Password=postgres";
+        _testConnectionString = BuildTestConnectionString(_adminConnectionString, _databaseName);
 
         // Program.cs đọc connection string NGAY khi đăng ký DbContext, tức là trước khi
         // ConfigureWebHost của WebApplicationFactory được áp dụng. Vì vậy phải override
         // qua biến môi trường (Configuration mặc định đọc EnvironmentVariables).
         Environment.SetEnvironmentVariable("ConnectionStrings__DefaultConnection", _testConnectionString);
+    }
+
+    /// <summary>
+    /// Dựng connection string trỏ tới database test, giữ nguyên host/port/user/pass
+    /// của connection string quản trị.
+    ///
+    /// N2LHTBLTT-39: trước đây port bị hardcode 5433 nên CI (GitHub Actions dùng port
+    /// chuẩn 5432) không kết nối được. Giờ suy ra port từ connection string quản trị
+    /// để cùng một bộ test chạy được ở local (5433) và CI (5432).
+    /// </summary>
+    private static string BuildTestConnectionString(string adminConnectionString, string databaseName)
+    {
+        var builder = new Npgsql.NpgsqlConnectionStringBuilder(adminConnectionString)
+        {
+            Database = databaseName,
+        };
+
+        return builder.ConnectionString;
     }
 
     public string DatabaseName => _databaseName;
