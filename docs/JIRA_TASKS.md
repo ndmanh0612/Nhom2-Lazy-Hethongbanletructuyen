@@ -126,12 +126,15 @@ README trong repo ghi Sprint 2 với mã nội bộ `S2-03`…`S2-10`. Đối ch
 
 Jira hiện đã lên tới Sprint 5, Board "Order Management & System" là nhóm nghiệp vụ Order mới nhất. Tên branch/commit phải dùng mã Jira dạng số (`N2LHTBLTT-<số>`), không dùng mã `S2-xx`.
 
-## Trạng thái triển khai (26/10/2026)
+## Trạng thái triển khai (27/10/2026)
+
+Các commit trên nhánh `toandev` chỉ ghi nhận phần việc `N2LHTBLTT-12` và `N2LHTBLTT-14`
+(phạm vi học kỳ này). Các task còn lại của `toanlion24` được phân công ở các nhánh/PR riêng.
 
 | Task | Người | Trạng thái |
 |---|---|---|
-| N2LHTBLTT-12 | Toàn | ✅ PR #1 (`feature/N2LHTBLTT-12-cart-order-entities`) |
-| N2LHTBLTT-14 | Toàn | ✅ PR #1 |
+| N2LHTBLTT-12 | Toàn | ✅ PR #1 (`feature/N2LHTBLTT-12-cart-order-entities`) — đã merge vào `toandev` |
+| N2LHTBLTT-14 | Toàn | ✅ PR #1 — đã merge vào `toandev` |
 | N2LHTBLTT-19 | Toàn | ✅ PR #1 |
 | N2LHTBLTT-20 | Toàn | ✅ PR #1 |
 | N2LHTBLTT-25 | Toàn | ✅ PR #1 |
