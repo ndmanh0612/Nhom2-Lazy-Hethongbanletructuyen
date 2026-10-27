@@ -93,8 +93,51 @@ public class CatalogService : ICatalogService
 
     public async Task<Result<PagedResult<ProductDto>>> GetProductsAsync(ProductFilterQuery query, CancellationToken cancellationToken = default)
     {
-        var page = query.Page < 1 ? 1 : query.Page;
-        var pageSize = query.PageSize is < 1 or > 50 ? 20 : query.PageSize;
+        var errors = new Dictionary<string, string[]>();
+
+        if (query.Page < 1)
+        {
+            errors["Page"] = ["Số trang phải lớn hơn hoặc bằng 1."];
+        }
+
+        if (query.PageSize is < 1 or > 50)
+        {
+            errors["PageSize"] = ["Số lượng phần tử trên mỗi trang phải từ 1 đến 50."];
+        }
+
+        if (query.MinPrice.HasValue && query.MinPrice.Value < 0)
+        {
+            errors["MinPrice"] = ["Giá tối thiểu không được nhỏ hơn 0."];
+        }
+
+        if (query.MaxPrice.HasValue && query.MaxPrice.Value < 0)
+        {
+            errors["MaxPrice"] = ["Giá tối đa không được nhỏ hơn 0."];
+        }
+
+        if (query.MinPrice.HasValue && query.MaxPrice.HasValue &&
+            query.MinPrice.Value >= 0 && query.MaxPrice.Value >= 0 &&
+            query.MinPrice.Value > query.MaxPrice.Value)
+        {
+            errors["MaxPrice"] = ["Giá tối đa phải lớn hơn hoặc bằng giá tối thiểu."];
+        }
+
+        var normalizedSort = query.SortBy?.Trim().ToLowerInvariant();
+        if (!string.IsNullOrEmpty(normalizedSort) &&
+            normalizedSort != "newest" &&
+            normalizedSort != "price_asc" &&
+            normalizedSort != "price_desc")
+        {
+            errors["SortBy"] = ["Kiểu sắp xếp không hợp lệ. Chỉ chấp nhận: newest, price_asc, price_desc."];
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new ValidationException(errors);
+        }
+
+        var page = query.Page;
+        var pageSize = query.PageSize;
 
         var baseQuery = _dbContext.Products
             .AsNoTracking()
@@ -116,18 +159,65 @@ public class CatalogService : ICatalogService
             baseQuery = baseQuery.Where(p => p.BrandId == query.BrandId.Value);
         }
 
-        var totalCount = await baseQuery.LongCountAsync(cancellationToken);
+        if (query.MinPrice.HasValue && query.MaxPrice.HasValue)
+        {
+            baseQuery = baseQuery.Where(p => p.Variants.Any(v => v.IsActive && v.Price >= query.MinPrice.Value && v.Price <= query.MaxPrice.Value));
+        }
+        else if (query.MinPrice.HasValue)
+        {
+            baseQuery = baseQuery.Where(p => p.Variants.Any(v => v.IsActive && v.Price >= query.MinPrice.Value));
+        }
+        else if (query.MaxPrice.HasValue)
+        {
+            baseQuery = baseQuery.Where(p => p.Variants.Any(v => v.IsActive && v.Price <= query.MaxPrice.Value));
+        }
 
-        var categories = await _dbContext.Categories.AsNoTracking().ToDictionaryAsync(c => c.Id, c => c.Name, cancellationToken);
-        var brands = await _dbContext.Brands.AsNoTracking().ToDictionaryAsync(b => b.Id, b => b.Name, cancellationToken);
+        var totalCount = await baseQuery.LongCountAsync(cancellationToken);
+        if (totalCount == 0)
+        {
+            return Result.Success(PagedResult<ProductDto>.Create([], page, pageSize, 0));
+        }
+
+        switch (normalizedSort)
+        {
+            case "price_asc":
+                baseQuery = baseQuery
+                    .OrderBy(p => p.Variants.Where(v => v.IsActive).Min(v => (long?)v.Price) ?? long.MaxValue)
+                    .ThenBy(p => p.Id);
+                break;
+
+            case "price_desc":
+                baseQuery = baseQuery
+                    .OrderByDescending(p => p.Variants.Where(v => v.IsActive).Min(v => (long?)v.Price) ?? -1)
+                    .ThenByDescending(p => p.Id);
+                break;
+
+            default:
+                baseQuery = baseQuery
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ThenByDescending(p => p.Id);
+                break;
+        }
 
         var products = await baseQuery
             .Include(p => p.Variants)
             .Include(p => p.Images)
-            .OrderByDescending(p => p.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
+
+        var categoryIds = products.Select(p => p.CategoryId).Distinct().ToList();
+        var brandIds = products.Select(p => p.BrandId).Distinct().ToList();
+
+        var categories = await _dbContext.Categories
+            .AsNoTracking()
+            .Where(c => categoryIds.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id, c => c.Name, cancellationToken);
+
+        var brands = await _dbContext.Brands
+            .AsNoTracking()
+            .Where(b => brandIds.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id, b => b.Name, cancellationToken);
 
         var dtoList = products.Select(p =>
         {
