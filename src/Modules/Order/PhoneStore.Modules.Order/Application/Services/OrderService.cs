@@ -19,7 +19,7 @@ public interface IOrderService
 {
     Task<Result<OrderDto>> CheckoutAsync(long customerId, CheckoutRequest request, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<OrderDto>>> GetOrdersAsync(long customerId, OrderFilterQuery query, CancellationToken cancellationToken = default);
-    Task<Result<OrderDetailDto>> GetOrderAsync(long orderId, long customerId, CancellationToken cancellationToken = default);
+    Task<Result<OrderDetailDto>> GetOrderAsync(long orderId, long customerId, bool isStaff = false, CancellationToken cancellationToken = default);
     Task<Result<OrderDetailDto>> CancelOrderAsync(long orderId, long customerId, CancelOrderRequest request, CancellationToken cancellationToken = default);
 
     // FR-10 (N2LHTBLTT-27): Xác nhận và giao hàng.
@@ -172,6 +172,7 @@ public class OrderService : IOrderService
     public async Task<Result<OrderDetailDto>> GetOrderAsync(
         long orderId,
         long customerId,
+        bool isStaff = false,
         CancellationToken cancellationToken = default)
     {
         var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken);
@@ -180,7 +181,9 @@ public class OrderService : IOrderService
             throw new NotFoundException("Không tìm thấy đơn hàng.", "ORDER_NOT_FOUND");
         }
 
-        if (order.CustomerId != customerId)
+        // N2LHTBLTT-27: nhan vien (STAFF/ADMIN) can xem don cua khach hang de thuc
+        // hien xac nhan / giao hang / thu tien COD.
+        if (!isStaff && order.CustomerId != customerId)
         {
             throw new ForbiddenException("Bạn không có quyền xem đơn hàng này.");
         }
@@ -372,6 +375,10 @@ public class OrderService : IOrderService
             order.CancelReason,
             order.CancelledAt,
             order.DeliveredAt,
+            order.Carrier,
+            order.TrackingNumber,
+            order.CollectedAmount,
+            order.CollectedAt,
             order.Items
                 .OrderBy(item => item.Id)
                 .Select(item => new OrderItemDto(
@@ -404,6 +411,10 @@ public class OrderService : IOrderService
             order.CancelReason,
             order.CancelledAt,
             order.DeliveredAt,
+            order.Carrier,
+            order.TrackingNumber,
+            order.CollectedAmount,
+            order.CollectedAt,
             order.Items
                 .OrderBy(item => item.Id)
                 .Select(item => new OrderItemDto(

@@ -104,16 +104,22 @@ public static class CsrfTokenProvider
 {
     /// <summary>
     /// Lấy CSRF token hiện có trong cookie, nếu chưa có thì sinh mới và set cookie.
+    ///
+    /// N2LHTBLTT-38: cookie luôn được ghi lại trong response, kể cả khi token đã
+    /// tồn tại từ request trước. Nhờ vậy client luôn đọc được token hiện hành
+    /// từ header Set-Cookie của bất kỳ response nào (đăng nhập, đăng ký, /csrf)
+    /// thay vì phải tự nhớ lại giá trị cũ.
     /// </summary>
     public static string GetOrCreate(HttpContext httpContext)
     {
         var existing = httpContext.Request.Cookies[AuthCookies.CsrfToken];
-        if (!string.IsNullOrWhiteSpace(existing))
-        {
-            return existing;
-        }
+        // Dung hex (chu 0-9, A-F) thay vi Base64 de gia tri cookie khong bi
+        // URL-encode khi truyen qua header, tranh lech gia tri giữa request
+        // (server tu decode) va header (client gui nguyen ban).
+        var token = string.IsNullOrWhiteSpace(existing)
+            ? Convert.ToHexString(RandomNumberGenerator.GetBytes(32))
+            : existing;
 
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         httpContext.Response.Cookies.Append(AuthCookies.CsrfToken, token, new CookieOptions
         {
             HttpOnly = false,

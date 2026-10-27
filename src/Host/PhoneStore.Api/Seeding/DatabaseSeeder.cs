@@ -101,7 +101,14 @@ public static class DatabaseSeeder
             return;
         }
 
-        dbContext.ProductStocks.AddRange(missing.Select(id => ProductStock.Create(id, 100)));
+        // N2LHTBLTT-21: mức tồn kho khởi tạo. Đặt cao để các luồng đặt hàng
+        // thử nghiệm (seed dùng chung cho nhiều test class) không bị cạn tồn.
+        dbContext.ProductStocks.AddRange(missing.Select(id => ProductStock.Create(id, SeedStockQuantity)));
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>
+    /// Số lượng tồn khởi tạo cho mỗi phiên bản sản phẩm.
+    /// </summary>
+    private const int SeedStockQuantity = 10_000;
 }

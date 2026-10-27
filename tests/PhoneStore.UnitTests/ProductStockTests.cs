@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Xunit;
 using PhoneStore.Modules.Inventory.Domain.Entities;
+using PhoneStore.BuildingBlocks.Exceptions;
 
 namespace PhoneStore.UnitTests;
 
@@ -104,14 +105,14 @@ public class ProductStockTests
     }
 
     [Fact]
-    public void Adjust_below_zero_throws_invalid_operation()
+    public void Adjust_below_zero_throws_validation_error()
     {
         var stock = ProductStock.Create(1, 2);
 
         var action = () => stock.Adjust(-5);
 
-        action.Should().Throw<InvalidOperationException>()
-            .WithMessage("*không đủ*");
+        action.Should().Throw<ValidationException>()
+            .Which.Errors["delta"][0].Should().Contain("không đủ");
         stock.StockQuantity.Should().Be(2);
     }
 

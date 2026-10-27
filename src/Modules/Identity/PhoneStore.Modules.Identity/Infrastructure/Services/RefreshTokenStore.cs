@@ -38,8 +38,10 @@ public class RefreshTokenStore : IRefreshTokenStore
 
         // Khóa dòng để chống token reuse: hai request refresh song song sẽ được
         // serialize, request thứ hai thấy token đã bị thu hồi nên bị từ chối.
+        //
+        // Lưu ý: tên cột trong database do EF tạo là PascalCase ("TokenHash").
         var token = await _dbContext.RefreshTokens
-            .FromSqlInterpolated($"SELECT * FROM identity.refresh_tokens WHERE token_hash = {tokenHash} FOR UPDATE")
+            .FromSqlInterpolated($"SELECT * FROM identity.refresh_tokens WHERE \"TokenHash\" = {tokenHash} FOR UPDATE")
             .FirstOrDefaultAsync(cancellationToken);
 
         if (token is null || !token.IsUsable(now))
