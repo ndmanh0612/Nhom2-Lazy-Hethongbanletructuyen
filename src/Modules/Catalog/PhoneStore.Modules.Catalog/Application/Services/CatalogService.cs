@@ -456,8 +456,56 @@ public class CatalogService : ICatalogService
             request.Description,
             request.SpecificationsJson);
 
+        if (request.Variants is not null && request.Variants.Count > 0)
+        {
+            var seenSkus = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var seenCombos = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var vReq in request.Variants)
+            {
+                var normalizedSku = vReq.Sku.Trim().ToUpperInvariant();
+                if (!seenSkus.Add(normalizedSku))
+                {
+                    throw new ConflictException($"Mã SKU '{normalizedSku}' bị trùng.", "SKU_ALREADY_EXISTS");
+                }
+
+                var skuExists = await _dbContext.ProductVariants
+                    .AnyAsync(v => v.Sku == normalizedSku, cancellationToken);
+                if (skuExists)
+                {
+                    throw new ConflictException("Mã SKU đã tồn tại.", "SKU_ALREADY_EXISTS");
+                }
+
+                var normalizedColor = vReq.Color?.Trim() ?? string.Empty;
+                var normalizedCapacity = vReq.Capacity?.Trim() ?? string.Empty;
+                var comboKey = $"{normalizedColor}|{normalizedCapacity}";
+                if (!seenCombos.Add(comboKey))
+                {
+                    throw new ConflictException("Tổ hợp màu và dung lượng này đã tồn tại trên sản phẩm.", "DUPLICATE_VARIANT_COMBINATION");
+                }
+
+                var variant = ProductVariant.Create(
+                    product.Id,
+                    normalizedSku,
+                    normalizedColor,
+                    normalizedCapacity,
+                    vReq.Price,
+                    vReq.StockQuantity);
+
+                product.AddVariant(variant);
+            }
+        }
+
         _dbContext.Products.Add(product);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        if (_eventBus is not null)
+        {
+            foreach (var variant in product.Variants)
+            {
+                await _eventBus.PublishAsync(new ProductVariantCreated(variant.Id, variant.ProductId, variant.Sku, variant.StockQuantity), cancellationToken);
+            }
+        }
 
         var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
         var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
@@ -532,14 +580,14 @@ public class CatalogService : ICatalogService
             normalizedColor,
             normalizedCapacity,
             request.Price,
-            stockQuantity: 0);
+            stockQuantity: request.StockQuantity);
 
         product.AddVariant(variant);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         if (_eventBus is not null)
         {
-            await _eventBus.PublishAsync(new ProductVariantCreated(variant.Id, variant.ProductId, variant.Sku, 0), cancellationToken);
+            await _eventBus.PublishAsync(new ProductVariantCreated(variant.Id, variant.ProductId, variant.Sku, request.StockQuantity), cancellationToken);
         }
 
         return Result.Success(ToVariantDto(variant));
