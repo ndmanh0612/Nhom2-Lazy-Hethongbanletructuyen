@@ -17,6 +17,7 @@ namespace PhoneStore.Modules.Identity.Endpoints;
 [ApiController]
 [Route("api/v1/admin/staff")]
 [Authorize(Policy = AuthorizationPolicies.RequireAdmin)]
+[ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
 public class StaffController : ControllerBase
 {
     private readonly IIdentityService _identityService;

@@ -53,6 +53,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPost("/api/v1/admin/products")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
         var result = await _catalogService.CreateProductAsync(request, cancellationToken);
@@ -64,6 +65,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPut("/api/v1/admin/products/{productId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> UpdateProduct(
         long productId,
         [FromBody] UpdateProductRequest request,
@@ -78,6 +80,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpDelete("/api/v1/admin/products/{productId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> DeleteProduct(long productId, CancellationToken cancellationToken)
     {
         await _catalogService.DeleteProductAsync(productId, cancellationToken);
@@ -89,6 +92,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpGet("/api/v1/admin/products/variants")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> GetVariants([FromQuery] VariantFilterQuery query, CancellationToken cancellationToken)
     {
         var result = await _catalogService.GetVariantsAsync(query, cancellationToken);
@@ -100,6 +104,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPost("/api/v1/admin/products/{productId:long}/variants")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> CreateVariant(
         long productId,
         [FromBody] CreateVariantRequest request,
@@ -114,6 +119,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPut("/api/v1/admin/products/variants/{variantId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> UpdateVariant(
         long variantId,
         [FromBody] UpdateVariantRequest request,
@@ -128,6 +134,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpDelete("/api/v1/admin/products/variants/{variantId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> DeleteVariant(long variantId, CancellationToken cancellationToken)
     {
         await _catalogService.DeleteVariantAsync(variantId, cancellationToken);
@@ -139,6 +146,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPost("/api/v1/admin/products/{productId:long}/images")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> AddImage(
         long productId,
         [FromBody] CreateProductImageRequest request,
@@ -153,6 +161,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpDelete("/api/v1/admin/products/images/{imageId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> DeleteImage(long imageId, CancellationToken cancellationToken)
     {
         await _catalogService.DeleteProductImageAsync(imageId, cancellationToken);
