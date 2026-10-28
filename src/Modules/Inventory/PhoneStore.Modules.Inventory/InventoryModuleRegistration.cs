@@ -38,6 +38,7 @@ public static class InventoryModuleRegistration
 [ApiController]
 [Route("api/v1/admin/inventory")]
 [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+[ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
 public class InventoryController : ControllerBase
 {
     private readonly IInventoryService _inventoryService;
