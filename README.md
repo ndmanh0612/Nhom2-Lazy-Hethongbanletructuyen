@@ -56,7 +56,7 @@ PhoneStore/
 ## 🚀 Hướng dẫn khởi chạy dự án cho thành viên nhóm
 
 ### 1. Yêu cầu môi trường
-- .NET 10 SDK (hoặc .NET 8/9 compatible)
+- .NET 10 SDK (solution hiện target `net10.0`)
 - Docker Desktop (cho PostgreSQL và MinIO)
 - Git & IDE (Visual Studio 2022 / JetBrains Rider / VS Code)
 
@@ -118,11 +118,13 @@ Dữ liệu mẫu được seed tự động khi app khởi động ở môi tr�
 POST /api/v1/auth/register  hoặc  POST /api/v1/auth/login
         │
         ├─ Body  : { userId, email, fullName, role, accessToken, expiresAt }
-        └─ Cookie: phonestore_refresh (HttpOnly)  ← refresh token, JS không đọc được
+        └─ Cookie: phonestore_rt (HttpOnly)       ← refresh token, JS không đọc được
                  phonestore_csrf    (đọc được)  ← CSRF token cho endpoint dùng cookie
 ```
 
-Access token là JWT (HS256) mang claim `sub` (user id), `email`, `role`, `jti`.
+Access token là JWT (HS256) mang claim `sub` (user id), `email`, `role`, `jti`, `sid`.
+`sid` tham chiếu phiên trong `identity.refresh_tokens`; JWT chỉ hợp lệ khi phiên
+còn hiệu lực và tài khoản còn hoạt động, đúng vai trò.
 Client gửi kèm mọi request:
 
 ```
@@ -135,13 +137,14 @@ Authorization: Bearer <accessToken>
 |---|---|
 | `POST /api/v1/auth/register` | FR-01 — đăng ký khách hàng, trả token ngay |
 | `POST /api/v1/auth/login` | FR-02 — đăng nhập, trả token + cookie phiên |
-| `POST /api/v1/auth/refresh` | FR-09 — làm mới access token từ cookie (cần header `X-CSRF-TOKEN`) |
-| `POST /api/v1/auth/logout` | FR-02 — thu hồi refresh token, xoá cookie phiên |
+| `POST /api/v1/auth/refresh` | Hỗ trợ FR-02 — xoay cặp token từ cookie (cần header `X-CSRF-TOKEN`) |
+| `POST /api/v1/auth/logout` | FR-02 — thu hồi phiên, vô hiệu hóa JWT tham chiếu phiên, xoá refresh cookie |
 | `GET /api/v1/auth/csrf` | Lấy CSRF token (dùng cho endpoint refresh / logout) |
 
 **Token rotation:** mỗi lần refresh, refresh token cũ bị thu hồi vĩnh viễn và được
 thay bằng token mới. Nếu client gửi lại token đã dùng → bị từ chối `401`
-(chống đánh cắp token).
+(từ chối token cũ). Access token của cặp cũ cũng bị từ chối; client phải cập nhật
+Bearer token sau refresh. Logout có CSRF hợp lệ vẫn thực hiện được khi JWT hết hạn.
 
 **Thu hồi phiên tự động** khi: đổi mật khẩu, khoá tài khoản, đổi vai trò.
 
@@ -165,21 +168,26 @@ Mục `Authentication` trong `appsettings.json`:
 | `SigningKey` | *(rỗng)* | Khoá ký — **bắt buộc ≥ 32 ký tự** ở Production |
 | `AccessTokenMinutes` | `30` | Thời hạn access token |
 | `RefreshTokenDays` | `7` | Thời hạn refresh token |
-| `AllowDevelopmentSigningKey` | `true` | Chỉ bật ở Development; Production bắt buộc set `SigningKey` |
+| `AllowDevelopmentSigningKey` | `false` (`true` trong Development) | Khóa ngẫu nhiên trong process cho local; restart làm JWT cũ hết hiệu lực |
 
 Override ở Production bằng biến môi trường:
 ```bash
 Authentication__SigningKey="<chuỗi-ngẫu-nhiên-ít-nhất-32-ký-tự>"
+Authentication__AllowDevelopmentSigningKey=false
 ```
+
+CORS có credentials chỉ cho phép `Cors:AllowedOrigins` được cấu hình; mặc định
+không mở cho origin ngoài API. Hướng dẫn cài đặt, cookie/CSRF, thay đổi client và
+kịch bản demo: [FR-01 / FR-02](docs/auth/FR-01-FR-02.md).
 
 ### 7. Tình trạng test hiện tại
 
 | Project | Số test | Loại |
 |---|---:|---|
-| `PhoneStore.UnitTests` | 73 | Unit test nghiệp vụ domain + application service |
+| `PhoneStore.UnitTests` | 80 | Unit test nghiệp vụ và cấu hình JWT |
 | `PhoneStore.ArchitectureTests` | 7 | Ranh giới module (không rò rỉ tham chiếu) |
-| `PhoneStore.IntegrationTests` | 168 | E2E qua HTTP thật với `WebApplicationFactory` + PostgreSQL |
-| **Tổng** | **248** | |
+| `PhoneStore.IntegrationTests` | 188 | API qua `WebApplicationFactory` + PostgreSQL thật |
+| **Tổng** | **275** | Đã chạy đạt ngày 28/10/2026; xem [validation](docs/auth/validation.md) |
 
 Bộ integration test gồm các file chính:
 
@@ -189,7 +197,8 @@ Bộ integration test gồm các file chính:
 | `CatalogAndIdentityRegressionTests` | 30 | Hồi quy lọc, sắp xếp, phân trang Catalog + đăng ký / đăng nhập |
 | `EndToEndOrderJourneyTests` | 16 | Hành trình đặt hàng đầu-cuối |
 | `IdentityApiTests` | 13 | Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ |
-| `AuthAndStaffApiTests` | 12 | JWT, refresh token rotation, CSRF, quản lý tài khoản nhân viên (FR-15) |
+| `AuthAndStaffApiTests` | 14 | JWT, refresh token rotation, CSRF, quản lý tài khoản nhân viên (FR-15) |
+| `IdentitySessionRegressionTests` | 19 | Rollback, cạnh tranh đăng ký/refresh, thu hồi phiên, CSRF/Origin |
 | `OrderFulfillmentApiTests` | 9 | Xác nhận → giao hàng → thu COD → giao thất bại (FR-10, FR-11) |
 | `InventoryApiTests` | 9 | Nhập kho, điều chỉnh tồn, nhật ký biến động (FR-14) |
 | `CatalogAdminApiTests` | 9 | Quản trị danh mục / thương hiệu / sản phẩm / SKU (FR-12, FR-13) |

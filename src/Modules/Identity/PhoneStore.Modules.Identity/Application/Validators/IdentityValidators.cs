@@ -43,11 +43,13 @@ public class LoginRequestValidator : AppValidator<LoginRequest>
         RuleFor(request => request.Email)
             .NotEmpty()
             .EmailAddress()
+            .MaximumLength(254)
             .WithMessage("Email không hợp lệ.");
 
         RuleFor(request => request.Password)
             .NotEmpty()
-            .WithMessage("Mật khẩu không được để trống.");
+            .MaximumLength(72)
+            .WithMessage("Mật khẩu không được để trống và tối đa 72 ký tự.");
     }
 }
 

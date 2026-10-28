@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace PhoneStore.BuildingBlocks.Common;
 
 /// <summary>
@@ -6,6 +8,8 @@ namespace PhoneStore.BuildingBlocks.Common;
 /// </summary>
 public class JwtOptions
 {
+    // Chỉ dùng local: khởi động lại process sẽ vô hiệu hóa JWT dùng khóa này.
+    private static readonly string DevelopmentSigningKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     public const string SectionName = "Authentication";
 
     /// <summary>Issuer của access token.</summary>
@@ -24,22 +28,30 @@ public class JwtOptions
     public int RefreshTokenDays { get; set; } = 7;
 
     /// <summary>
-    /// True nếu cấu hình dùng khoá ký mặc định yếu — chỉ nên bật ở Development.
+    /// True để sinh khóa tạm trong process — Host chỉ cho bật ở Development.
     /// Production bắt buộc phải cấu hình SigningKey qua biến môi trường.
     /// </summary>
-    public bool AllowDevelopmentSigningKey { get; set; } = true;
+    public bool AllowDevelopmentSigningKey { get; set; }
 
     /// <summary>Khoá ký dùng thực tế: ưu tiên SigningKey, fallback sang khoá dev.</summary>
     public string ResolveSigningKey()
     {
-        if (!string.IsNullOrWhiteSpace(SigningKey) && SigningKey.Length >= 32)
+        if (string.IsNullOrWhiteSpace(Issuer) || string.IsNullOrWhiteSpace(Audience)
+            || AccessTokenMinutes <= 0 || RefreshTokenDays <= 0)
         {
+            throw new InvalidOperationException("Cấu hình Authentication không hợp lệ.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(SigningKey))
+        {
+            if (SigningKey.Length < 32)
+                throw new InvalidOperationException("Authentication:SigningKey phải có ít nhất 32 ký tự.");
             return SigningKey;
         }
 
         if (AllowDevelopmentSigningKey)
         {
-            return "PhoneStore-Development-Signing-Key-Change-Me-Please-2026";
+            return DevelopmentSigningKey;
         }
 
         throw new InvalidOperationException(

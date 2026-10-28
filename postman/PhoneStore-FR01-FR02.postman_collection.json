@@ -1,0 +1,992 @@
+{
+  "info": {
+    "name": "PhoneStore — FR-01 FR-02 — Local Auth Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Local test accounts only. Start the .NET API first. Run 00–17 in order with the cookie jar enabled. Request 01 generates a new email/password each time. Scripts store JWT and CSRF in collection variables; do not use an environment overriding these names. No manually entered Cookie header is required. This file contains no real credentials."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5122",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "old_access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "csrf_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 — Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 — FR-01 Register new customer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Expected HTTP 201. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Đỗ Công Trí - API Test\",\n  \"phone\": \"0912345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const id = pm.variables.replaceIn('{{$guid}}');",
+              "pm.collectionVariables.set('email', 'tri.' + id + '@example.com');",
+              "pm.collectionVariables.set('password', 'Demo@' + id + '1');",
+              "['access_token', 'old_access_token', 'csrf_token', 'user_id'].forEach(key => pm.collectionVariables.set(key, ''));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "  const data = pm.response.json().data;",
+              "  pm.test('Access token is present; refresh token is not in JSON', function () {",
+              "    pm.expect(data.accessToken).to.be.a('string').and.not.empty;",
+              "    pm.expect(data).not.to.have.property('refreshToken');",
+              "    pm.expect(data).not.to.have.property('passwordHash');",
+              "    pm.expect(data.role).to.eql('CUSTOMER');",
+              "  });",
+              "  pm.collectionVariables.set('access_token', data.accessToken);",
+              "  pm.collectionVariables.set('user_id', String(data.userId));",
+              "  const cookies = pm.response.headers.all().filter(h => h.key.toLowerCase() === 'set-cookie');",
+              "  const csrf = cookies.find(h => h.value.startsWith('phonestore_csrf='));",
+              "  const refresh = cookies.find(h => h.value.startsWith('phonestore_rt='));",
+              "  pm.test('Refresh cookie is HttpOnly', function () {",
+              "    pm.expect(refresh, 'phonestore_rt Set-Cookie').to.exist;",
+              "    pm.expect(refresh.value.toLowerCase()).to.include('httponly');",
+              "  });",
+              "  pm.test('CSRF cookie is present', function () { pm.expect(csrf).to.exist; });",
+              "  if (csrf) pm.collectionVariables.set('csrf_token', decodeURIComponent(csrf.value.split(';')[0].split('=')[1]));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — FR-01 Duplicate email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Expected HTTP 409. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Đỗ Công Trí - API Test\",\n  \"phone\": \"0912345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', function () { pm.response.to.have.status(409); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code EMAIL_ALREADY_EXISTS', function () { pm.expect(pm.response.json().code).to.eql('EMAIL_ALREADY_EXISTS'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — FR-01 Weak password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Expected HTTP 400. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"abc\",\n  \"fullName\": \"Đỗ Công Trí - API Test\",\n  \"phone\": \"0912345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Validation has field errors', function () { pm.expect(pm.response.json().fieldErrors).to.be.an('object'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — FR-02 Wrong password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Expected HTTP 401. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"WrongPassword@999\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code INVALID_CREDENTIALS', function () { pm.expect(pm.response.json().code).to.eql('INVALID_CREDENTIALS'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — FR-02 Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "  const data = pm.response.json().data;",
+              "  pm.test('Access token is present; refresh token is not in JSON', function () {",
+              "    pm.expect(data.accessToken).to.be.a('string').and.not.empty;",
+              "    pm.expect(data).not.to.have.property('refreshToken');",
+              "    pm.expect(data).not.to.have.property('passwordHash');",
+              "    pm.expect(data.role).to.eql('CUSTOMER');",
+              "  });",
+              "  pm.collectionVariables.set('access_token', data.accessToken);",
+              "  pm.collectionVariables.set('user_id', String(data.userId));",
+              "  const cookies = pm.response.headers.all().filter(h => h.key.toLowerCase() === 'set-cookie');",
+              "  const csrf = cookies.find(h => h.value.startsWith('phonestore_csrf='));",
+              "  const refresh = cookies.find(h => h.value.startsWith('phonestore_rt='));",
+              "  pm.test('Refresh cookie is HttpOnly', function () {",
+              "    pm.expect(refresh, 'phonestore_rt Set-Cookie').to.exist;",
+              "    pm.expect(refresh.value.toLowerCase()).to.include('httponly');",
+              "  });",
+              "  pm.test('CSRF cookie is present', function () { pm.expect(csrf).to.exist; });",
+              "  if (csrf) pm.collectionVariables.set('csrf_token', decodeURIComponent(csrf.value.split(';')[0].split('=')[1]));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Session: Me with JWT",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "me"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Profile belongs to the logged in user', function () { pm.expect(pm.response.json().data.email).to.eql(pm.collectionVariables.get('email')); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — Session: Me without JWT",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "me"
+          ]
+        },
+        "description": "Expected HTTP 401. Run requests in numbered order."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code UNAUTHORIZED', function () { pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — CSRF: Refresh without CSRF header",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/refresh",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "refresh"
+          ]
+        },
+        "description": "Expected HTTP 403. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code CSRF_TOKEN_INVALID', function () { pm.expect(pm.response.json().code).to.eql('CSRF_TOKEN_INVALID'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — Session: Refresh with CSRF",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-CSRF-TOKEN",
+            "value": "{{csrf_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/refresh",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "refresh"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('old_access_token', pm.collectionVariables.get('access_token'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "if (pm.response.code === 200 || pm.response.code === 201) {",
+              "  const data = pm.response.json().data;",
+              "  pm.test('Access token is present; refresh token is not in JSON', function () {",
+              "    pm.expect(data.accessToken).to.be.a('string').and.not.empty;",
+              "    pm.expect(data).not.to.have.property('refreshToken');",
+              "    pm.expect(data).not.to.have.property('passwordHash');",
+              "    pm.expect(data.role).to.eql('CUSTOMER');",
+              "  });",
+              "  pm.collectionVariables.set('access_token', data.accessToken);",
+              "  pm.collectionVariables.set('user_id', String(data.userId));",
+              "  const cookies = pm.response.headers.all().filter(h => h.key.toLowerCase() === 'set-cookie');",
+              "  const csrf = cookies.find(h => h.value.startsWith('phonestore_csrf='));",
+              "  const refresh = cookies.find(h => h.value.startsWith('phonestore_rt='));",
+              "  pm.test('Refresh cookie is HttpOnly', function () {",
+              "    pm.expect(refresh, 'phonestore_rt Set-Cookie').to.exist;",
+              "    pm.expect(refresh.value.toLowerCase()).to.include('httponly');",
+              "  });",
+              "  pm.test('CSRF cookie is present', function () { pm.expect(csrf).to.exist; });",
+              "  if (csrf) pm.collectionVariables.set('csrf_token', decodeURIComponent(csrf.value.split(';')[0].split('=')[1]));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — Session: Old JWT after refresh",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{old_access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "me"
+          ]
+        },
+        "description": "Expected HTTP 401. Run requests in numbered order."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code UNAUTHORIZED', function () { pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — Session: New JWT after refresh",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "me"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — FR-02 Logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-CSRF-TOKEN",
+            "value": "{{csrf_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/logout",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "logout"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 — Session: JWT after logout",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "me"
+          ]
+        },
+        "description": "Expected HTTP 401. Run requests in numbered order."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code UNAUTHORIZED', function () { pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 — Session: Refresh after logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-CSRF-TOKEN",
+            "value": "{{csrf_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/refresh",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "refresh"
+          ]
+        },
+        "description": "Expected HTTP 401. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', function () { pm.response.to.have.status(401); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code REFRESH_TOKEN_MISSING', function () { pm.expect(pm.response.json().code).to.eql('REFRESH_TOKEN_MISSING'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 — FR-02 Repeat logout",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-CSRF-TOKEN",
+            "value": "{{csrf_token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/logout",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "logout"
+          ]
+        },
+        "description": "Expected HTTP 200. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 — Origin: Reject untrusted site",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Origin",
+            "value": "https://untrusted.example",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Expected HTTP 403. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Đỗ Công Trí - API Test\",\n  \"phone\": \"0912345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', function () { pm.response.to.have.status(403); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Error code CSRF_TOKEN_INVALID', function () { pm.expect(pm.response.json().code).to.eql('CSRF_TOKEN_INVALID'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 — FR-01 Invalid email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Expected HTTP 400. Run requests in numbered order.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"Đỗ Công Trí - API Test\",\n  \"phone\": \"0912345678\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Auth response is not cached', function () { pm.expect(pm.response.headers.get('Cache-Control')).to.include('no-store'); });",
+              "pm.test('Validation has field errors', function () { pm.expect(pm.response.json().fieldErrors).to.be.an('object'); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

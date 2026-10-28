@@ -83,6 +83,25 @@ public static class BuildingBlocksRegistration
                 // giống các lỗi nghiệp vụ, để client chỉ cần xử lý một cấu trúc.
                 options.Events = new JwtBearerEvents
                 {
+                    OnTokenValidated = async context =>
+                    {
+                        var principal = context.Principal;
+                        var sessionId = principal?.FindFirst("sid")?.Value;
+                        var role = principal?.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                        var subject = principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                        if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(role)
+                            || !long.TryParse(subject, out var userId) || userId <= 0)
+                        {
+                            context.Fail("Token không chứa phiên hợp lệ.");
+                            return;
+                        }
+
+                        var store = context.HttpContext.RequestServices.GetRequiredService<IRefreshTokenStore>();
+                        if (!await store.IsActiveAsync(sessionId, userId, role, context.HttpContext.RequestAborted))
+                        {
+                            context.Fail("Phiên đã hết hạn hoặc bị thu hồi.");
+                        }
+                    },
                     OnChallenge = async context =>
                     {
                         context.HandleResponse();

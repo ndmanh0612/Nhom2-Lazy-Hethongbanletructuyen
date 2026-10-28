@@ -12,7 +12,7 @@ namespace PhoneStore.BuildingBlocks.Infrastructure.Identity;
 /// <summary>
 /// N2LHTBLTT-9: Phát access token (JWT) và refresh token (opaque).
 ///
-/// Access token mang các claim: sub (user id), email, role, jti.
+/// Access token mang các claim: sub (user id), email, role, jti, sid (phiên trong DB).
 /// Refresh token là chuỗi ngẫu nhiên 64 byte; chỉ lưu bản SHA-256 trong
 /// database (IRefreshTokenStore) — không lưu bản gốc để giảm rủi ro lộ token.
 /// </summary>
@@ -43,12 +43,15 @@ public class JwtTokenService : ITokenService
     {
         var now = _timeProvider.GetUtcNow();
         var expiresAt = now.AddMinutes(_options.AccessTokenMinutes);
+        var refreshToken = GenerateRefreshToken();
+        var sessionId = HashToken(refreshToken);
 
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new(JwtRegisteredClaimNames.Email, email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
+            new("sid", sessionId),
             new(ClaimTypes.NameIdentifier, userId.ToString()),
             new(ClaimTypes.Role, role)
         };
@@ -65,10 +68,9 @@ public class JwtTokenService : ITokenService
             signingCredentials: credentials);
 
         var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        var refreshToken = GenerateRefreshToken();
 
         await _refreshTokenStore.StoreAsync(
-            HashToken(refreshToken),
+            sessionId,
             userId,
             now.AddDays(_options.RefreshTokenDays),
             cancellationToken);

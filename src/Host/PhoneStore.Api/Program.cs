@@ -1,4 +1,5 @@
 using PhoneStore.BuildingBlocks;
+using PhoneStore.BuildingBlocks.Common;
 using PhoneStore.BuildingBlocks.Infrastructure.Web;
 using PhoneStore.BuildingBlocks.Validation;
 using PhoneStore.Api.Seeding;
@@ -9,6 +10,12 @@ using PhoneStore.Modules.Inventory;
 using PhoneStore.Modules.Order;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Environment.IsDevelopment()
+    && builder.Configuration.GetValue<bool>("Authentication:AllowDevelopmentSigningKey"))
+{
+    throw new InvalidOperationException("Khóa ký tạm chỉ được bật trong môi trường Development.");
+}
 
 // N2LHTBLTT-14: Swagger, Validation và Global Exception Handling.
 builder.Services.AddAppSwagger("PhoneStore API", "v1");
@@ -39,9 +46,7 @@ builder.Services.AddOrderModule(builder.Configuration);
 builder.Services.AddInventoryModule(builder.Configuration);
 
 // CORS
-// N2LHTBLTT-38: API dùng cookie phiên (refresh token) nên bắt buộc AllowCredentials.
-// Vì vậy không dùng AllowAnyOrigin (bị CORS chặn) — dùng SetIsOriginAllowed để
-// cho phép mọi origin nhưng vẫn gửi kèm cookie.
+// Cookie chỉ được chia sẻ với frontend có origin được cấu hình rõ ràng.
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
@@ -54,11 +59,6 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(allowedOrigins);
         }
-        else
-        {
-            policy.SetIsOriginAllowed(_ => true);
-        }
-
         policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials();
     });
 });
@@ -84,17 +84,25 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseMiddleware<AppExceptionMiddleware>();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api/v1/auth")
+        || context.Request.Path.StartsWithSegments("/api/v1/me"))
+    {
+        context.Response.Headers.CacheControl = "no-store";
+        context.Response.Headers.Pragma = "no-cache";
+    }
+    await next(context);
+});
 app.UseCors("AllowApp");
 
-// N2LHTBLTT-9: Xác thực + phân quyền phải chạy trước middleware xử lý lỗi
-// để lỗi 401/403 trả về đúng envelope ErrorResponse.
+// Exception middleware bao cả xác thực vì việc kiểm tra phiên có truy vấn DB.
 app.UseAuthentication();
 app.UseAuthorization();
 
 // N2LHTBLTT-38: Bảo vệ CSRF cho các endpoint dùng cookie để xác thực.
 app.UseMiddleware<CsrfProtectionMiddleware>();
-
-app.UseMiddleware<AppExceptionMiddleware>();
 
 app.MapGet("/health", () => Results.Ok(new
 {
