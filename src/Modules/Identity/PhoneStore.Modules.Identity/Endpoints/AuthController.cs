@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PhoneStore.BuildingBlocks.Common;
 using PhoneStore.BuildingBlocks.Infrastructure.Web;
 using PhoneStore.Modules.Identity.Application.DTOs;
@@ -9,7 +10,7 @@ using PhoneStore.Modules.Identity.Application.Services;
 namespace PhoneStore.Modules.Identity.Endpoints;
 
 /// <summary>
-/// FR-01 / FR-02 / FR-09: Đăng ký, đăng nhập, làm mới token và đăng xuất.
+/// FR-01 / FR-02: Đăng ký, đăng nhập, làm mới token và đăng xuất.
 ///
 /// Access token trả trong body (client gửi kèm header Authorization: Bearer).
 /// Refresh token trả qua cookie HttpOnly để JavaScript không đọc được —
@@ -20,10 +21,12 @@ namespace PhoneStore.Modules.Identity.Endpoints;
 public class AuthController : ControllerBase
 {
     private readonly IIdentityService _identityService;
+    private readonly JwtOptions _options;
 
-    public AuthController(IIdentityService identityService)
+    public AuthController(IIdentityService identityService, IOptions<JwtOptions> options)
     {
         _identityService = identityService;
+        _options = options.Value;
     }
 
     /// <summary>
@@ -57,7 +60,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// FR-02 / FR-09: Làm mới access token bằng refresh token trong cookie.
+    /// FR-02: Làm mới access token bằng refresh token trong cookie.
     /// Endpoint này dùng cookie để xác thực nên bắt buộc có CSRF token
     /// (header X-CSRF-TOKEN khớp với cookie phonestore_csrf).
     /// </summary>
@@ -75,16 +78,21 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// FR-02 / FR-09: Đăng xuất — thu hồi refresh token và xoá cookie phiên.
+    /// FR-02: Đăng xuất — thu hồi refresh token và xoá cookie phiên.
     /// </summary>
     [HttpPost("logout")]
-    [Authorize(Policy = AuthorizationPolicies.RequireAuthenticated)]
+    [AllowAnonymous]
     public async Task<IActionResult> Logout(CancellationToken cancellationToken)
     {
         var refreshToken = Request.Cookies[AuthCookies.RefreshToken];
-        await _identityService.LogoutAsync(refreshToken, cancellationToken);
+        // Cookie + CSRF vẫn cho phép logout khi JWT đã hết hạn.
+        var sessionId = User.Identity?.IsAuthenticated == true ? User.FindFirst("sid")?.Value : null;
+        await _identityService.LogoutAsync(refreshToken, cancellationToken, sessionId);
 
-        Response.Cookies.Delete(AuthCookies.RefreshToken);
+        Response.Cookies.Delete(AuthCookies.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true, Secure = Request.IsHttps, SameSite = SameSiteMode.Strict, Path = "/"
+        });
 
         return Ok(ApiResponse.Ok("Đăng xuất thành công."));
     }
@@ -111,7 +119,7 @@ public class AuthController : ControllerBase
             Secure = Request.IsHttps,
             SameSite = SameSiteMode.Strict,
             Path = "/",
-            Expires = DateTimeOffset.UtcNow.AddDays(7)
+            Expires = DateTimeOffset.UtcNow.AddDays(_options.RefreshTokenDays)
         });
 
         CsrfTokenProvider.GetOrCreate(HttpContext);
