@@ -35,6 +35,7 @@ public static class CartModuleRegistration
 [ApiController]
 [Route("api/v1/cart")]
 [Authorize(Policy = AuthorizationPolicies.RequireAuthenticated)]
+[ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
