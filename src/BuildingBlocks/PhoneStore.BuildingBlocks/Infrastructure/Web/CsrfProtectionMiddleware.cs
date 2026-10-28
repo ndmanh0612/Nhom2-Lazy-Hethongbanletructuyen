@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PhoneStore.BuildingBlocks.Common;
 
@@ -23,22 +24,36 @@ namespace PhoneStore.BuildingBlocks.Infrastructure.Web;
 /// </summary>
 public class CsrfProtectionMiddleware
 {
-    private const string SafeMethods = "GET,HEAD,OPTIONS,TRACE";
+    private static readonly HashSet<string> SafeMethods = new(StringComparer.OrdinalIgnoreCase) { "GET", "HEAD", "OPTIONS", "TRACE" };
 
     private readonly RequestDelegate _next;
     private readonly ILogger<CsrfProtectionMiddleware> _logger;
+    private readonly string[] _allowedOrigins;
 
-    public CsrfProtectionMiddleware(RequestDelegate next, ILogger<CsrfProtectionMiddleware> logger)
+    public CsrfProtectionMiddleware(RequestDelegate next, ILogger<CsrfProtectionMiddleware> logger, IConfiguration configuration)
     {
         _next = next;
         _logger = logger;
+        _allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (SafeMethods.Contains(context.Request.Method, StringComparison.OrdinalIgnoreCase))
+        if (SafeMethods.Contains(context.Request.Method))
         {
             await _next(context);
+            return;
+        }
+
+        // Cả login/register cũng thay cookie; kiểm tra Origin để chống login CSRF.
+        var origin = context.Request.Headers.Origin.ToString();
+        var sameOrigin = $"{context.Request.Scheme}://{context.Request.Host}";
+        if (context.Request.Path.StartsWithSegments("/api/v1/auth", StringComparison.OrdinalIgnoreCase)
+            && !string.IsNullOrEmpty(origin)
+            && !string.Equals(origin, sameOrigin, StringComparison.OrdinalIgnoreCase)
+            && !_allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
+        {
+            await WriteCsrfErrorAsync(context, "Origin không được phép.");
             return;
         }
 

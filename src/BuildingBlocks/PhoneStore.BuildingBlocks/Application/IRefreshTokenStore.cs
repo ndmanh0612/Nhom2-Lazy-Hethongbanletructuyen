@@ -24,4 +24,7 @@ public interface IRefreshTokenStore
 
     /// <summary>Đánh dấu refresh token đã bị thu hồi (đăng xuất).</summary>
     Task RevokeAsync(string tokenHash, CancellationToken cancellationToken = default);
+
+    /// <summary>Kiểm tra phiên JWT và trạng thái/vai trò hiện tại của tài khoản.</summary>
+    Task<bool> IsActiveAsync(string tokenHash, long userId, string role, CancellationToken cancellationToken = default);
 }
