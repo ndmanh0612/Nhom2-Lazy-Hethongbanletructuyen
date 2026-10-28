@@ -12,7 +12,7 @@ public static class IdentityModuleRegistration
     public static IServiceCollection AddIdentityModule(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection") 
-            ?? "Host=localhost;Port=5432;Database=phonestore_db;Username=postgres;Password=postgres";
+            ?? "Host=localhost;Port=5433;Database=phonestore_db;Username=postgres;Password=postgrespassword";
 
         services.AddDbContext<IdentityDbContext>(options =>
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", IdentityDbContext.Schema)));
