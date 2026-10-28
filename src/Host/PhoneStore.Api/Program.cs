@@ -1,3 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using PhoneStore.Modules.Identity.Infrastructure.Persistence;
+using PhoneStore.Modules.Catalog.Infrastructure.Persistence;
+using PhoneStore.Modules.Cart.Infrastructure.Persistence;
+using PhoneStore.Modules.Order.Infrastructure.Persistence;
+using PhoneStore.Modules.Inventory.Infrastructure.Persistence;
 using PhoneStore.BuildingBlocks;
 using PhoneStore.BuildingBlocks.Common;
 using PhoneStore.BuildingBlocks.Infrastructure.Web;
@@ -70,6 +76,13 @@ if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {
+        var services = scope.ServiceProvider;
+        await services.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
+        await services.GetRequiredService<CatalogDbContext>().Database.MigrateAsync();
+        await services.GetRequiredService<CartDbContext>().Database.MigrateAsync();
+        await services.GetRequiredService<OrderDbContext>().Database.MigrateAsync();
+        await services.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
+
         await DatabaseSeeder.SeedAsync(app.Services);
     }
 }
