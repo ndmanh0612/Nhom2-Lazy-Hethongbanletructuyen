@@ -4,6 +4,7 @@ using PhoneStore.Modules.Catalog;
 using PhoneStore.Modules.Identity;
 using PhoneStore.Modules.Inventory;
 using PhoneStore.Modules.Order;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,12 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var inventoryDb = scope.ServiceProvider.GetRequiredService<PhoneStore.Modules.Inventory.Infrastructure.Persistence.InventoryDbContext>();
+        inventoryDb.Database.Migrate();
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {

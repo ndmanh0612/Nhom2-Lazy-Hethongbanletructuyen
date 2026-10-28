@@ -18,6 +18,7 @@
     <ProjectReference Include="..\..\src\BuildingBlocks\PhoneStore.BuildingBlocks\PhoneStore.BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\src\Modules\Identity\PhoneStore.Modules.Identity\PhoneStore.Modules.Identity.csproj" />
     <ProjectReference Include="..\..\src\Modules\Order\PhoneStore.Modules.Order\PhoneStore.Modules.Order.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Inventory\PhoneStore.Modules.Inventory\PhoneStore.Modules.Inventory.csproj" />
   </ItemGroup>
 
 </Project>
