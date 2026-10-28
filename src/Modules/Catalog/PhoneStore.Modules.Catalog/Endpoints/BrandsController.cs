@@ -34,6 +34,17 @@ public class BrandsController : ControllerBase
     }
 
     /// <summary>
+    /// FR-12: Xem chi tiết thương hiệu theo ID.
+    /// </summary>
+    [HttpGet("{id:long}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetBrandById(long id, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.GetBrandByIdAsync(id, cancellationToken);
+        return Ok(ApiResponse<BrandDto>.Ok(result.Value));
+    }
+
+    /// <summary>
     /// FR-12: Quản trị tạo thương hiệu mới.
     /// </summary>
     [HttpPost("/api/v1/admin/brands")]
@@ -48,6 +59,7 @@ public class BrandsController : ControllerBase
     /// FR-12: Cập nhật tên / trạng thái của thương hiệu.
     /// </summary>
     [HttpPut("/api/v1/admin/brands/{brandId:long}")]
+    [HttpPatch("/api/v1/admin/brands/{brandId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
     public async Task<IActionResult> UpdateBrand(
         long brandId,
@@ -66,7 +78,7 @@ public class BrandsController : ControllerBase
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
     public async Task<IActionResult> DeleteBrand(long brandId, CancellationToken cancellationToken)
     {
-        await _catalogService.DeleteBrandAsync(brandId, cancellationToken);
-        return Ok(ApiResponse.Ok("Xoá thương hiệu thành công."));
+        var result = await _catalogService.DeleteBrandAsync(brandId, cancellationToken);
+        return Ok(ApiResponse.Ok(result.Value));
     }
 }

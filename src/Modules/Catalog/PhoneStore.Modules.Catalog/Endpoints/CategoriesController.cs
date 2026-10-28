@@ -34,6 +34,17 @@ public class CategoriesController : ControllerBase
     }
 
     /// <summary>
+    /// FR-12: Xem chi tiết danh mục theo ID.
+    /// </summary>
+    [HttpGet("{id:long}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCategoryById(long id, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.GetCategoryByIdAsync(id, cancellationToken);
+        return Ok(ApiResponse<CategoryDto>.Ok(result.Value));
+    }
+
+    /// <summary>
     /// FR-12: Quản trị tạo danh mục mới.
     /// </summary>
     [HttpPost("/api/v1/admin/categories")]
@@ -48,6 +59,7 @@ public class CategoriesController : ControllerBase
     /// FR-12: Cập nhật tên / trạng thái của danh mục.
     /// </summary>
     [HttpPut("/api/v1/admin/categories/{categoryId:long}")]
+    [HttpPatch("/api/v1/admin/categories/{categoryId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
     public async Task<IActionResult> UpdateCategory(
         long categoryId,
@@ -66,7 +78,7 @@ public class CategoriesController : ControllerBase
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
     public async Task<IActionResult> DeleteCategory(long categoryId, CancellationToken cancellationToken)
     {
-        await _catalogService.DeleteCategoryAsync(categoryId, cancellationToken);
-        return Ok(ApiResponse.Ok("Xoá danh mục thành công."));
+        var result = await _catalogService.DeleteCategoryAsync(categoryId, cancellationToken);
+        return Ok(ApiResponse.Ok(result.Value));
     }
 }
