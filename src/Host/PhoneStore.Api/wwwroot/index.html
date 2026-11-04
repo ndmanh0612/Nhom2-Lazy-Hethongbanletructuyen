@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#e8380d">
     <meta name="description" content="PhoneStore — cửa hàng điện thoại trực tuyến: điện thoại, tablet, laptop, phụ kiện giá tốt, trả góp 0%, giao hàng toàn quốc.">
     <title>PhoneStore — Điện thoại, phụ kiện giá tốt</title>
-    <link rel="stylesheet" href="/assets/css/app.css?v=20261104-6">
+    <link rel="stylesheet" href="/assets/css/app.css?v=20261104-10">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e8380d'/%3E%3Crect x='11' y='6' width='10' height='20' rx='2.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -32,7 +32,8 @@
             <span class="topbar__divider"></span>
             <a href="#/cau-hoi" class="topbar__link">Hỏi đáp</a>
             <span class="topbar__divider"></span>
-            <a href="#/tai-khoan" class="topbar__link" data-auth-only hidden>Tài khoản</a>
+            <a href="#/tai-khoan" class="topbar__link topbar__user" data-auth-only hidden>👤 <span data-user-name></span></a>
+            <button type="button" class="topbar__link topbar__btn" data-logout data-auth-only hidden>Đăng xuất</button>
             <a href="#/dang-nhap" class="topbar__link" data-guest-only>Đăng nhập</a>
             <a href="#/dang-ky" class="topbar__link" data-guest-only>Đăng ký</a>
         </div>
@@ -71,6 +72,10 @@
             <a href="#/cua-hang" class="header__action">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1.4 10H5.4L4 9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 9V6.5a3.5 3.5 0 0 1 7 0V9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
                 <span>Cửa hàng<br><small>40 chi nhánh</small></span>
+            </a>
+            <a href="#/dang-nhap" class="header__action header__action--account" id="header-account" aria-label="Tài khoản">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <span><span id="header-account-label">Đăng nhập</span></span>
             </a>
             <a href="#/gio-hang" class="header__action header__action--cart">
                 <span class="cart-icon">
@@ -187,10 +192,10 @@
     </div>
 </div>
 
-<script src="/assets/js/api.js?v=20261104-6"></script>
-<script src="/assets/js/mock.js?v=20261104-6"></script>
-<script src="/assets/js/ui.js?v=20261104-6"></script>
-<script src="/assets/js/pages.js?v=20261104-6"></script>
-<script src="/assets/js/app.js?v=20261104-6"></script>
+<script src="/assets/js/api.js?v=20261104-10"></script>
+<script src="/assets/js/mock.js?v=20261104-10"></script>
+<script src="/assets/js/ui.js?v=20261104-10"></script>
+<script src="/assets/js/pages.js?v=20261104-10"></script>
+<script src="/assets/js/app.js?v=20261104-10"></script>
 </body>
 </html>

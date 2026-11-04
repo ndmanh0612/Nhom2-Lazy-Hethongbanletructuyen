@@ -4,6 +4,9 @@
 
 const App = (() => {
     const compareList = [];
+    // Trang người dùng đang xem trước khi vào đăng nhập/đăng ký → đăng nhập xong quay lại đúng chỗ.
+    let returnTo = '#/';
+    const AUTH_PATHS = ['/dang-nhap', '/dang-ky'];
 
     /* ---------------- Routing ---------------- */
 
@@ -47,6 +50,9 @@ const App = (() => {
 
     async function route() {
         const { path, segments, query } = parseHash();
+        if (!AUTH_PATHS.includes(path)) {
+            returnTo = window.location.hash || '#/';
+        }
 
         // Static informational pages
         const staticPages = {
@@ -92,8 +98,19 @@ const App = (() => {
             });
         } catch (error) {
             console.error(error);
+            if (error && error.status === 401) {
+                // Phiên hết hạn giữa chừng → đưa về đăng nhập, sau đó quay lại trang này.
+                UI.toast('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.', 'error');
+                window.location.hash = '#/dang-nhap';
+                return;
+            }
             UI.errorState(error.message || 'Đã xảy ra lỗi khi tải trang.');
         }
+    }
+
+    /** Địa chỉ cần quay lại sau khi đăng nhập/đăng ký (mặc định trang chủ). */
+    function afterLoginHash() {
+        return returnTo && !AUTH_PATHS.some(path => returnTo.startsWith('#' + path)) ? returnTo : '#/';
     }
 
     function matchRoute(pattern, segments) {
@@ -157,6 +174,26 @@ const App = (() => {
         const user = Api.getUser();
         document.querySelectorAll('[data-auth-only]').forEach(node => { node.hidden = !user; });
         document.querySelectorAll('[data-guest-only]').forEach(node => { node.hidden = Boolean(user); });
+        document.querySelectorAll('[data-user-name]').forEach(node => { node.textContent = user ? (user.fullName || user.email) : ''; });
+        const label = document.getElementById('header-account-label');
+        const account = document.getElementById('header-account');
+        if (label) label.textContent = user ? 'Tài khoản' : 'Đăng nhập';
+        if (account) account.setAttribute('href', user ? '#/tai-khoan' : '#/dang-nhap');
+    }
+
+    async function logout() {
+        try {
+            await Api.auth.logout();
+        } catch (error) {
+            // Dù server lỗi, phiên phía trình duyệt vẫn đã bị xoá (finally trong Api.auth.logout).
+            console.error(error);
+        }
+        UI.toast('Bạn đã đăng xuất.', 'success');
+        if (window.location.hash === '#/' || window.location.hash === '') {
+            await route();
+        } else {
+            window.location.hash = '#/';
+        }
     }
 
     /* ---------------- Quick login ---------------- */
@@ -259,6 +296,11 @@ const App = (() => {
 
         // Add-to-cart từ card sản phẩm
         document.addEventListener('click', async event => {
+            if (event.target.closest('[data-logout]')) {
+                event.preventDefault();
+                await logout();
+                return;
+            }
             const addButton = event.target.closest('[data-add-to-cart]');
             if (addButton) {
                 event.preventDefault();
@@ -344,6 +386,7 @@ const App = (() => {
     /* ---------------- Init ---------------- */
 
     async function init() {
+        await Api.restoreSession();
         syncAuthUi();
         bindSearch();
         bindQuickLogin();
@@ -357,5 +400,5 @@ const App = (() => {
 
     document.addEventListener('DOMContentLoaded', init);
 
-    return { init, route, refreshCartBadge, openQuickLogin, compareProducts };
+    return { init, route, refreshCartBadge, openQuickLogin, compareProducts, afterLoginHash, logout };
 })();
