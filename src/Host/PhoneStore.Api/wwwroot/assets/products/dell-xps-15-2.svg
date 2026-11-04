@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img">
+<defs>
+  <linearGradient id="bg2b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7f8fa"/><stop offset="1" stop-color="#e9ecf1"/></linearGradient>
+  <linearGradient id="body2b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7edf8"/><stop offset="1" stop-color="#94989f"/></linearGradient>
+  <linearGradient id="scr2b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3aa0ff"/><stop offset="1" stop-color="#1c3fa8"/></linearGradient>
+  <radialGradient id="sh2b"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="600" height="600" fill="url(#bg2b)"/>
+<ellipse cx="300" cy="492" rx="230" ry="18" fill="url(#sh2b)"/><path d="M150 150 H450 a16 16 0 0 1 16 16 V366 H134 V166 a16 16 0 0 1 16 -16Z" fill="url(#body2b)"/><circle cx="300" cy="258" r="26" fill="#f9ffff" opacity=".55"/><path d="M70 372 H530 L548 396 a10 10 0 0 1 -10 14 H62 a10 10 0 0 1 -10 -14Z" fill="url(#body2b)"/><rect x="250" y="372" width="100" height="9" rx="4" fill="#6f7277"/></svg>

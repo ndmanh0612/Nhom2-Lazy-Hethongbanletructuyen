@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img">
+<defs>
+  <linearGradient id="bg17b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f7f8fa"/><stop offset="1" stop-color="#e9ecf1"/></linearGradient>
+  <linearGradient id="body17b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#202328"/><stop offset="1" stop-color="#141619"/></linearGradient>
+  <linearGradient id="scr17b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5cc8ff"/><stop offset="1" stop-color="#0f4cd8"/></linearGradient>
+  <radialGradient id="sh17b"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="600" height="600" fill="url(#bg17b)"/>
+<ellipse cx="300" cy="492" rx="230" ry="18" fill="url(#sh17b)"/><path d="M150 150 H450 a16 16 0 0 1 16 16 V366 H134 V166 a16 16 0 0 1 16 -16Z" fill="url(#body17b)"/><circle cx="300" cy="258" r="26" fill="#23252b" opacity=".55"/><path d="M70 372 H530 L548 396 a10 10 0 0 1 -10 14 H62 a10 10 0 0 1 -10 -14Z" fill="url(#body17b)"/><rect x="250" y="372" width="100" height="9" rx="4" fill="#0f1013"/></svg>
