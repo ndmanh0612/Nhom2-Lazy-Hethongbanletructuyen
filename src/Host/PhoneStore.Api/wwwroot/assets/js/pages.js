@@ -362,7 +362,7 @@ const Pages = (() => {
                         <div class="detail__main-image" id="main-image">
                             ${mainImage
                                 ? `<img src="${escapeHtml(mainImage)}" alt="${escapeHtml(product.name)}" style="max-height:100%;object-fit:contain">`
-                                : `<div class="product-card__thumb" style="font-size:64px">${escapeHtml((product.name || '?').charAt(0).toUpperCase())}</div>`}
+                                : UI.placeholderThumb(product, true)}
                         </div>
                         <div class="detail__thumbs">${imagesHtml}</div>
                     </div>
@@ -390,10 +390,14 @@ const Pages = (() => {
                         </div>
 
                         <div class="detail__actions">
-                            <button class="btn btn--primary" id="btn-add-cart" ${selectedVariant ? '' : 'disabled'}>Thêm vào giỏ hàng</button>
-                            <button class="btn btn--outline" id="btn-buy-now" ${selectedVariant ? '' : 'disabled'}>Mua ngay</button>
-                            <button class="btn btn--ghost" id="btn-wishlist">♡ Yêu thích</button>
-                            <button class="btn btn--ghost" id="btn-compare">⇄ So sánh</button>
+                            <div class="detail__cta">
+                                <button class="btn btn--primary" id="btn-add-cart" ${selectedVariant ? '' : 'disabled'}>Thêm vào giỏ hàng</button>
+                                <button class="btn btn--outline" id="btn-buy-now" ${selectedVariant ? '' : 'disabled'}>Mua ngay</button>
+                            </div>
+                            <div class="detail__aux">
+                                <button class="btn btn--ghost" id="btn-wishlist">♡ Yêu thích</button>
+                                <button class="btn btn--ghost" id="btn-compare">⇄ So sánh</button>
+                            </div>
                         </div>
 
                         <div class="detail__row" style="margin-top:20px">
@@ -432,7 +436,7 @@ const Pages = (() => {
                     ${UI.mockBanner('Lịch sử giá được mô phỏng từ giá hiện tại.')}
                     <table class="spec-table">
                         <tbody>
-                            ${Mock.priceHistory(product).map(row => `
+                            ${Mock.priceHistory({ ...product, minPrice: selectedVariant ? selectedVariant.price : (product.minPrice || 0) }).map(row => `
                                 <tr><td>${escapeHtml(row.period)}</td><td><b>${formatCurrency(row.price)}</b></td><td>${escapeHtml(row.note)}</td></tr>`).join('')}
                         </tbody>
                     </table>

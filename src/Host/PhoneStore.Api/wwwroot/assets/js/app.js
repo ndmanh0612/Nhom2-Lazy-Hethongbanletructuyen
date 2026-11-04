@@ -85,7 +85,8 @@ const App = (() => {
 
         try {
             await match.route.handler({
-                get: key => query.get(key),
+                // Ưu tiên tham số trên đường dẫn (/san-pham/:id), sau đó mới tới query string.
+                get: key => (match.params.values[key] !== undefined ? match.params.values[key] : query.get(key)),
                 segments: match.params.segments,
                 query
             });
@@ -108,7 +109,7 @@ const App = (() => {
                 return null;
             }
         }
-        return { segments };
+        return { segments, values };
     }
 
     /* ---------------- Header / layout ---------------- */
@@ -268,9 +269,18 @@ const App = (() => {
                 } catch {
                     variants = [];
                 }
-                const product = await Api.catalog.product(productId).catch(() => null);
-                const variant = variants[0] || (product && product.variants && product.variants[0]);
-                await Pages.addToCart(variant, product || { id: productId, name: '' }, 1);
+                if (addButton.disabled) return;
+                const originalLabel = addButton.textContent;
+                addButton.disabled = true;
+                addButton.textContent = 'Đang thêm...';
+                try {
+                    const product = await Api.catalog.product(productId).catch(() => null);
+                    const variant = variants[0] || (product && product.variants && product.variants[0]);
+                    await Pages.addToCart(variant, product || { id: productId, name: '' }, 1);
+                } finally {
+                    addButton.disabled = false;
+                    addButton.textContent = originalLabel;
+                }
                 return;
             }
 
