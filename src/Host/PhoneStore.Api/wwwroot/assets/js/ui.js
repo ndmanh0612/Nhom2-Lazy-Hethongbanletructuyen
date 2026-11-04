@@ -52,7 +52,12 @@ const UI = (() => {
     }
 
     function loading(message = 'Đang tải dữ liệu...') {
-        render(`<div class="container"><div class="loading"><div class="spinner"></div><span>${escapeHtml(message)}</span></div></div>`);
+        const card = `<div class="skeleton-card"><div class="skeleton skeleton--media"></div><div class="skeleton skeleton--line"></div><div class="skeleton skeleton--line skeleton--short"></div><div class="skeleton skeleton--price"></div></div>`;
+        render(`<div class="container" role="status" aria-live="polite">
+            <span class="sr-only">${escapeHtml(message)}</span>
+            <div class="skeleton skeleton--title"></div>
+            <div class="product-grid">${card.repeat(8)}</div>
+        </div>`);
     }
 
     function errorState(message) {
@@ -110,26 +115,50 @@ const UI = (() => {
         return `<span class="status-chip status-chip--${map[status] || 'pending'}">${labels[status] || status}</span>`;
     }
 
+    function placeholderThumb(product, large = false) {
+        const name = (product.name || '?').trim();
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) % 360;
+        const brand = escapeHtml(product.brandName || '');
+        return `<div class="product-card__thumb${large ? ' product-card__thumb--lg' : ''}" style="--hue:${hash}" role="img" aria-label="${escapeHtml(name)}">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="14" y="5" width="20" height="38" rx="4.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M21 9h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="37.5" r="1.6" fill="currentColor"/></svg>
+            ${brand ? `<span>${brand}</span>` : ''}
+        </div>`;
+    }
+
     function productThumb(product, size = '') {
         if (product.mainImageUrl) {
-            return `<img src="${escapeHtml(product.mainImageUrl)}" alt="${escapeHtml(product.name)}" ${size}>`;
+            return `<img src="${escapeHtml(product.mainImageUrl)}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async"
+                data-fallback-name="${escapeHtml(product.name || '')}" data-fallback-brand="${escapeHtml(product.brandName || '')}" ${size}>`;
         }
-        const initial = (product.name || '?').trim().charAt(0).toUpperCase();
-        return `<div class="product-card__thumb" ${size}>${escapeHtml(initial)}</div>`;
+        return placeholderThumb(product);
     }
+
+    // Ảnh lỗi (404, hỏng) → thay bằng placeholder thay vì icon ảnh vỡ.
+    document.addEventListener('error', (event) => {
+        const img = event.target;
+        if (!(img instanceof HTMLImageElement) || !img.dataset.fallbackName) return;
+        const holder = document.createElement('div');
+        holder.innerHTML = placeholderThumb({ name: img.dataset.fallbackName, brandName: img.dataset.fallbackBrand });
+        img.replaceWith(holder.firstElementChild);
+    }, true);
 
     function productCard(product) {
         const price = product.minPrice || 0;
         const maxPrice = product.maxPrice || price;
         const hasRange = maxPrice > price;
         const discount = Math.round((1 - price / Math.max(maxPrice, price)) * 100);
-        const stock = product.totalStock ?? (product.variants || []).reduce((sum, variant) => sum + (variant.stockQuantity || 0), 0);
+        // API danh sách không trả tồn kho → stock = null (không rõ), tránh hiện sai "Tạm hết hàng".
+        const hasStockInfo = product.totalStock != null || (product.variants || []).length > 0;
+        const stock = hasStockInfo
+            ? (product.totalStock ?? product.variants.reduce((sum, variant) => sum + (variant.stockQuantity || 0), 0))
+            : null;
         const rating = Mock.ratingFor(product);
 
         const badges = [];
         if (discount > 0) badges.push(`<span class="badge">-${discount}%</span>`);
         if (product.isNew) badges.push('<span class="badge badge--new">Mới</span>');
-        if (stock > 0 && stock < 20) badges.push('<span class="badge badge--hot">Sắp hết</span>');
+        if (stock !== null && stock > 0 && stock < 20) badges.push('<span class="badge badge--hot">Sắp hết</span>');
 
         const isWishlisted = Mock.getWishlist().includes(product.id);
 
@@ -152,7 +181,7 @@ const UI = (() => {
                         ${formatCurrency(price)}
                         ${hasRange ? `<del>${formatCurrency(maxPrice)}</del>` : ''}
                     </div>
-                    <div class="product-card__note">${stock > 0 ? `Còn ${stock} sản phẩm` : 'Tạm hết hàng'}</div>
+                    ${stock === null ? '' : `<div class="product-card__note${stock > 0 ? '' : ' product-card__note--out'}">${stock > 0 ? `Còn ${stock} sản phẩm` : 'Tạm hết hàng'}</div>`}
                     <div class="product-card__actions">
                         <button class="btn btn--primary btn--sm" data-add-to-cart="${product.id}" data-variants='${escapeHtml(JSON.stringify(product.variants || []))}'>Thêm vào giỏ</button>
                         <button class="btn btn--ghost btn--sm" data-compare="${product.id}">So sánh</button>
@@ -269,11 +298,11 @@ const UI = (() => {
         return `
             <article class="flash-card">
                 <span class="flash-card__badge">${escapeHtml(item.badge)}</span>
-                <div class="flash-card__media"><span>${escapeHtml(item.name.charAt(0).toUpperCase())}</span></div>
+                <div class="flash-card__media">${placeholderThumb({ name: item.name, brandName: item.name.split(' ')[0] })}</div>
                 <div class="flash-card__body">
                     <div class="flash-card__name">${escapeHtml(item.name)}</div>
                     <div class="flash-card__price">
-                        ${formatCurrency(item.price)}
+                        <span>${formatCurrency(item.price)}</span>
                         <del>${formatCurrency(item.originalPrice)}</del>
                     </div>
                     <div class="flash-card__progress"><span style="width:${soldPercent}%"></span></div>
@@ -425,6 +454,7 @@ const UI = (() => {
         mockBanner,
         statusChip,
         productThumb,
+        placeholderThumb,
         productCard,
         productGrid,
         bannerCarousel,
