@@ -81,7 +81,11 @@ const Api = (() => {
 
         const response = await fetch(`${BASE}${path}`, Object.assign({}, options, { method, headers }));
 
-        if (response.status === 401) {
+        // 401 ở chính các endpoint xác thực (đăng nhập/đăng ký/làm mới) là lỗi nghiệp vụ
+        // (sai mật khẩu...) chứ không phải hết phiên: giữ nguyên thông báo của server.
+        const isAuthEndpoint = /^\/auth\/(login|register|refresh)/.test(path);
+
+        if (response.status === 401 && !isAuthEndpoint) {
             const refreshed = await tryRefreshToken();
             if (refreshed) {
                 return request(path, options);
@@ -109,7 +113,18 @@ const Api = (() => {
         }
     }
 
-    async function tryRefreshToken() {
+    // Nhiều request song song cùng gặp 401 chỉ được làm mới token MỘT lần: refresh token được xoay vòng
+    // (dùng một lần), nên lần gọi thứ hai sẽ thất bại và làm mất phiên dù lần đầu đã thành công.
+    let refreshInFlight = null;
+
+    function tryRefreshToken() {
+        if (!refreshInFlight) {
+            refreshInFlight = doRefreshToken().finally(() => { refreshInFlight = null; });
+        }
+        return refreshInFlight;
+    }
+
+    async function doRefreshToken() {
         try {
             const csrfToken = readCsrfToken();
             const response = await fetch(`${BASE}/auth/refresh`, {
@@ -129,6 +144,17 @@ const Api = (() => {
         } catch {
             return false;
         }
+    }
+
+    /**
+     * Khôi phục phiên khi mở lại tab/trình duyệt: access token nằm trong sessionStorage nên bị mất,
+     * nhưng refresh token (cookie HttpOnly) còn hạn → đổi lấy access token mới thay vì bắt đăng nhập lại.
+     */
+    async function restoreSession() {
+        if (accessToken || !getUser()) return Boolean(accessToken);
+        const ok = await tryRefreshToken();
+        if (!ok) setSession(null, null);
+        return ok;
     }
 
     class ApiError extends Error {
@@ -298,5 +324,5 @@ const Api = (() => {
         }
     };
 
-    return { auth, catalog, cart, order, admin, ApiError, getAccessToken, getUser, setSession, isAuthenticated, isStaff, request };
+    return { auth, catalog, cart, order, admin, ApiError, getAccessToken, getUser, setSession, restoreSession, isAuthenticated, isStaff, request };
 })();

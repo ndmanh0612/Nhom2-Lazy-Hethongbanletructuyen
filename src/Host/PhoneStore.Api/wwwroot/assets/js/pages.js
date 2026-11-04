@@ -940,6 +940,7 @@ const Pages = (() => {
                     <button data-tab="addresses">Địa chỉ nhận hàng</button>
                     <button data-tab="password">Đổi mật khẩu</button>
                     ${Api.isStaff() ? '<button data-tab="staff">Quản trị</button>' : ''}
+                    <button type="button" class="tabs__logout" data-logout>Đăng xuất</button>
                 </div>
 
                 <div id="tab-profile" class="tab-panel">
@@ -1127,6 +1128,10 @@ const Pages = (() => {
     /* ================= AUTH PAGES ================= */
 
     function login() {
+        if (Api.isAuthenticated()) {
+            window.location.hash = '#/tai-khoan';
+            return;
+        }
         UI.render(`
             <div class="container">
                 <div class="auth-card">
@@ -1151,6 +1156,7 @@ const Pages = (() => {
             </div>`);
 
         bindDemoButtons(document.getElementById('login-form'));
+        addPasswordToggles(document.getElementById('login-form'));
 
         document.getElementById('login-form').addEventListener('submit', async event => {
             event.preventDefault();
@@ -1161,12 +1167,40 @@ const Pages = (() => {
             try {
                 await Api.auth.login(form.email.value.trim(), form.password.value);
                 UI.toast('Đăng nhập thành công.', 'success');
-                window.location.hash = '#/';
+                window.location.hash = App.afterLoginHash();
             } catch (error) {
                 errorBox.hidden = false;
-                errorBox.textContent = error.message;
+                errorBox.textContent = formatAuthError(error);
                 button.disabled = false;
             }
+        });
+    }
+
+    /** Gộp thông báo lỗi tổng và lỗi từng trường (nếu server trả fieldErrors). */
+    function formatAuthError(error) {
+        const fields = error && error.fieldErrors ? Object.values(error.fieldErrors).flat() : [];
+        return fields.length ? `${error.message} ${fields.join(' ')}` : (error.message || 'Đã có lỗi xảy ra.');
+    }
+
+    /** Thêm nút hiện/ẩn mật khẩu cho mọi ô password trong form. */
+    function addPasswordToggles(form) {
+        form.querySelectorAll('input[type="password"]').forEach(input => {
+            const wrap = document.createElement('div');
+            wrap.className = 'password-wrap';
+            input.replaceWith(wrap);
+            wrap.appendChild(input);
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'password-toggle';
+            toggle.textContent = 'Hiện';
+            toggle.setAttribute('aria-label', 'Hiện mật khẩu');
+            toggle.addEventListener('click', () => {
+                const show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                toggle.textContent = show ? 'Ẩn' : 'Hiện';
+                toggle.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+            });
+            wrap.appendChild(toggle);
         });
     }
 
@@ -1180,6 +1214,10 @@ const Pages = (() => {
     }
 
     function register() {
+        if (Api.isAuthenticated()) {
+            window.location.hash = '#/tai-khoan';
+            return;
+        }
         UI.render(`
             <div class="container">
                 <div class="auth-card">
@@ -1201,6 +1239,8 @@ const Pages = (() => {
                 </div>
             </div>`);
 
+        addPasswordToggles(document.getElementById('register-form'));
+
         document.getElementById('register-form').addEventListener('submit', async event => {
             event.preventDefault();
             const form = event.target;
@@ -1215,10 +1255,10 @@ const Pages = (() => {
                     phone: form.phone.value.trim() || null
                 });
                 UI.toast('Đăng ký tài khoản thành công.', 'success');
-                window.location.hash = '#/';
+                window.location.hash = App.afterLoginHash();
             } catch (error) {
                 errorBox.hidden = false;
-                errorBox.textContent = error.message;
+                errorBox.textContent = formatAuthError(error);
                 button.disabled = false;
             }
         });
