@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using PhoneStore.Modules.Identity.Infrastructure.Persistence;
 using PhoneStore.Modules.Catalog.Infrastructure.Persistence;
@@ -69,33 +70,63 @@ builder.Services.AddCors(options =>
     });
 });
 
+// N2LHTBLTT-41: Hỗ trợ chạy sau reverse proxy (nginx / traefik / cloud load balancer).
+// ForwardedHeaders phải được đăng ký trước khi pipeline dựng, nếu không
+// scheme/host gốc sẽ bị sai và cookie Secure + CORS origin sẽ không khớp.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
-// N2LHTBLTT-40: Seed dữ liệu tối thiểu cho môi trường local (idempotent).
-if (app.Environment.IsDevelopment())
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var services = scope.ServiceProvider;
-        await services.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
-        await services.GetRequiredService<CatalogDbContext>().Database.MigrateAsync();
-        await services.GetRequiredService<CartDbContext>().Database.MigrateAsync();
-        await services.GetRequiredService<OrderDbContext>().Database.MigrateAsync();
-        await services.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
+// N2LHTBLTT-41: Áp dụng header do proxy chuyển tiếp (X-Forwarded-Proto/Host).
+app.UseForwardedHeaders();
 
-        await DatabaseSeeder.SeedAsync(app.Services);
-    }
+// N2LHTBLTT-40: Seed dữ liệu tối thiểu cho môi trường local (idempotent).
+// N2LHTBLTT-41: Môi trường Production dùng cờ cấu hình để bật/tắt migration và seed,
+// vì migration cần chạy khi DB đã sẵn sàng (thường là job riêng trước khi restart API).
+var autoMigrate = app.Configuration.GetValue("Database:AutoMigrate", app.Environment.IsDevelopment());
+var autoSeed = app.Configuration.GetValue("Database:AutoSeed", app.Environment.IsDevelopment());
+
+if (autoMigrate)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    await services.GetRequiredService<IdentityDbContext>().Database.MigrateAsync();
+    await services.GetRequiredService<CatalogDbContext>().Database.MigrateAsync();
+    await services.GetRequiredService<CartDbContext>().Database.MigrateAsync();
+    await services.GetRequiredService<OrderDbContext>().Database.MigrateAsync();
+    await services.GetRequiredService<InventoryDbContext>().Database.MigrateAsync();
 }
 
-if (app.Environment.IsDevelopment())
+if (autoSeed)
 {
+    await DatabaseSeeder.SeedAsync(app.Services);
+}
+
+// N2LHTBLTT-41: Swagger bật theo cấu hình để dùng được trên môi trường demo/staging.
+// Ở Development Swagger chiếm root ("/") cho tiện; ở Production phải để prefix
+// "swagger" vì root dành cho storefront SPA.
+var swaggerEnabled = app.Configuration.GetValue("Swagger:Enabled", app.Environment.IsDevelopment());
+if (swaggerEnabled)
+{
+    var swaggerRoutePrefix = app.Environment.IsDevelopment() ? string.Empty : "swagger";
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
+        // UseSwagger phục vụ OpenAPI JSON tại /swagger/v1/swagger.json.
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "PhoneStore API v1");
-        c.RoutePrefix = string.Empty;
+        c.RoutePrefix = swaggerRoutePrefix;
     });
 }
+
+// N2LHTBLTT-41: Phục vụ SPA storefront (wwwroot) — chạy trước khi routing API.
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseMiddleware<AppExceptionMiddleware>();
 app.Use(async (context, next) =>
@@ -126,6 +157,27 @@ app.MapGet("/health", () => Results.Ok(new
 }));
 
 app.MapControllers();
+
+// N2LHTBLTT-41: Fallback SPA — mọi đường dẫn không phải API/static đều trả index.html
+// để frontend dùng History API routing hoạt động khi người dùng F5 hoặc deep-link.
+app.MapFallback(async context =>
+{
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return;
+    }
+
+    var indexFile = Path.Combine(app.Environment.WebRootPath ?? "wwwroot", "index.html");
+    if (!File.Exists(indexFile))
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return;
+    }
+
+    context.Response.ContentType = "text/html; charset=utf-8";
+    await context.Response.SendFileAsync(indexFile);
+});
 
 app.Run();
 
