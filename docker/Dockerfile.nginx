@@ -1,0 +1,18 @@
+# ==============================================================================
+# PhoneStore — Reverse proxy (nginx) cho môi trường production
+# Image nhẹ, chỉ chứa cấu hình + tài liệu nén.
+# ==============================================================================
+
+FROM nginx:1.27-alpine
+
+# Xoá cấu hình mặc định của nginx để tránh xung đột server block.
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY docker/nginx.conf /etc/nginx/conf.d/phonestore.conf
+
+EXPOSE 80
+
+HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=5 \
+    CMD wget --quiet --tries=1 --spider http://localhost/health || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]
