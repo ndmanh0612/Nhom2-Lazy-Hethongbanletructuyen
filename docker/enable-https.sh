@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # Bật HTTPS cho PhoneStore bằng Let's Encrypt. Chạy trên server, trong thư mục gốc dự án.
 # Yêu cầu: bản ghi A của DOMAIN đã trỏ về IP server, cổng 80/443 mở.
-#   ./docker/enable-https.sh phonestore.lazi.id.vn you@example.com
+#   ./docker/enable-https.sh phonestore.lazi.id.vn [you@example.com]
+# Bỏ trống email thì đăng ký không email (không nhận cảnh báo hết hạn).
 set -euo pipefail
 
 DOMAIN="${1:?Thiếu domain}"
-EMAIL="${2:?Thiếu email nhận cảnh báo hết hạn chứng chỉ}"
+EMAIL="${2:-}"
+if [ -n "$EMAIL" ]; then ACCOUNT=(-m "$EMAIL"); else ACCOUNT=(--register-unsafely-without-email); fi
 COMPOSE="docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod"
 ENVFILE=docker/env.prod
 
 mkdir -p certbot-www
 certbot certonly --webroot -w "$PWD/certbot-www" -d "$DOMAIN" \
-    --non-interactive --agree-tos -m "$EMAIL" --keep-until-expiring
+    --non-interactive --agree-tos "${ACCOUNT[@]}" --keep-until-expiring
 
 set_env() { grep -q "^$1=" "$ENVFILE" && sed -i "s|^$1=.*|$1=$2|" "$ENVFILE" || echo "$1=$2" >> "$ENVFILE"; }
 set_env NGINX_CONF nginx.ssl.conf
