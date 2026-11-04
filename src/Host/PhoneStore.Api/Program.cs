@@ -90,6 +90,8 @@ app.UseForwardedHeaders();
 // vì migration cần chạy khi DB đã sẵn sàng (thường là job riêng trước khi restart API).
 var autoMigrate = app.Configuration.GetValue("Database:AutoMigrate", app.Environment.IsDevelopment());
 var autoSeed = app.Configuration.GetValue("Database:AutoSeed", app.Environment.IsDevelopment());
+// Dữ liệu mẫu phong phú (nhiều sản phẩm, ảnh, tồn kho) cho demo — mặc định tắt để test không bị ảnh hưởng.
+var autoSeedSample = app.Configuration.GetValue("Database:AutoSeedSample", false);
 
 if (autoMigrate)
 {
@@ -105,6 +107,11 @@ if (autoMigrate)
 if (autoSeed)
 {
     await DatabaseSeeder.SeedAsync(app.Services);
+}
+
+if (autoSeedSample)
+{
+    await SampleDataSeeder.SeedAsync(app.Services);
 }
 
 // N2LHTBLTT-41: Swagger bật theo cấu hình để dùng được trên môi trường demo/staging.

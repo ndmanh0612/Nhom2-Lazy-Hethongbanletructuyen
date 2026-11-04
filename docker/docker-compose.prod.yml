@@ -52,6 +52,7 @@ services:
       Authentication__RefreshTokenDays: ${JWT_REFRESH_TOKEN_DAYS:-7}
       Database__AutoMigrate: "true"
       Database__AutoSeed: "true"
+      Database__AutoSeedSample: "true"
       Swagger__Enabled: "true"
       Cors__AllowedOrigins__0: ${PUBLIC_ORIGIN:-http://localhost}
     expose:

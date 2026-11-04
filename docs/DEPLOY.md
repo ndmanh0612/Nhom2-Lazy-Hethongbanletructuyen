@@ -107,6 +107,7 @@ docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod down
 | `ConnectionStrings__DefaultConnection` | API | Điểm đến PostgreSQL nội bộ `postgres:5432` |
 | `Database__AutoMigrate` | API | `true` → chạy migration 5 schema khi khởi động |
 | `Database__AutoSeed` | API | `true` → seed tài khoản + sản phẩm mẫu |
+| `Database__AutoSeedSample` | API | `true` → thêm dữ liệu mẫu phong phú (23 sản phẩm, ảnh SVG, tồn kho khớp catalog/inventory). Mặc định `false` |
 | `Swagger__Enabled` | API | Bật Swagger cho môi trường demo/staging |
 | `Cors__AllowedOrigins__0` | API | Origin public của storefront (nếu tách domain) |
 
