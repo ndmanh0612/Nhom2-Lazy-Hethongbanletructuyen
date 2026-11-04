@@ -161,8 +161,7 @@ git pull
 docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod up -d --build
 ```
 
-Bật HTTPS: đặt chứng chỉ Let's Encrypt vào thư mục `docker/certs/`, rồi bổ sung `listen 443 ssl`
-cùng `server_name` trong `docker/nginx.conf` và map cổng `443:443` trong compose.
+HTTPS và domain: xem mục 9.
 
 ---
 
@@ -174,3 +173,21 @@ cùng `server_name` trong `docker/nginx.conf` và map cổng `443:443` trong com
 | `401` khi đăng nhập | Sai `PUBLIC_ORIGIN` khiến cookie/CSRF không khớp | Đặt `PUBLIC_ORIGIN` đúng URL public |
 | Storefront trả 404 | nginx không tìm thấy `index.html` | Kiểm tra `docker logs phonestore-web` |
 | Migration lỗi | DB chưa healthy | `docker compose logs postgres` — đợi `pg_isready` OK |
+
+---
+
+## 9. Domain + HTTPS (Let's Encrypt)
+
+1. Tạo bản ghi DNS: loại `A`, host `phonestore`, giá trị là IP server (zone `lazi.id.vn` quản lý tại zonedns.vn).
+   Kiểm tra: `nslookup phonestore.lazi.id.vn 8.8.8.8` phải trả về IP server.
+2. Trên server, trong `/opt/phonestore`:
+
+   ```bash
+   ./docker/enable-https.sh phonestore.lazi.id.vn <email>
+   ```
+
+   Script xin chứng chỉ bằng certbot (webroot `certbot-www/`), đặt `NGINX_CONF=nginx.ssl.conf` và
+   `PUBLIC_ORIGIN=https://phonestore.lazi.id.vn` trong `docker/env.prod`, rồi khởi động lại stack.
+   Nginx chuyển HTTP sang HTTPS; chứng chỉ tự gia hạn và nginx tự nạp lại.
+3. Cấu hình nginx tách thành `nginx.conf` (chỉ HTTP), `nginx.ssl.conf` (HTTP→HTTPS + 443) và
+   `nginx-locations.conf` (các location dùng chung).
