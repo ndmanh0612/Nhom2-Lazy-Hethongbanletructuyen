@@ -19,7 +19,7 @@
       <div class="meta-card"><div class="label">Module</div><div class="value">5</div></div>
       <div class="meta-card"><div class="label">Endpoint</div><div class="value">23 + health</div></div>
       <div class="meta-card"><div class="label">Bảng / schema</div><div class="value">13 / 5</div></div>
-      <div class="meta-card"><div class="label">Test</div><div class="value">168</div></div>
+      <div class="meta-card"><div class="label">Test</div><div class="value">350</div></div>
     </div>
   </div>
 </header>
@@ -117,16 +117,16 @@
   <h2><span class="num">4</span> Trạng thái hiện thực</h2>
   <div class="grid g3">
     <div class="card">
-      <h4><span class="badge b-green">9 / 16</span> FR đã có endpoint + test</h4>
-      <p class="muted">FR-01 → FR-09 và FR-12. Mỗi FR đều có đường dẫn HTTP thật và test tự động bảo vệ hành vi.</p>
+      <h4><span class="badge b-green">15 / 16</span> FR đã có endpoint + test</h4>
+      <p class="muted">FR-01 → FR-15. Mỗi FR đều có đường dẫn HTTP thật và test tự động bảo vệ hành vi.</p>
     </div>
     <div class="card">
-      <h4><span class="badge b-amber">7 / 16</span> FR đã có cơ chế domain</h4>
-      <p class="muted">FR-10, 11, 13, 14, 15, 16 còn thiếu controller nhưng đã có entity, method domain và contract — phần việc còn lại chủ yếu là wiring.</p>
+      <h4><span class="badge b-amber">1 / 16</span> FR còn lại</h4>
+      <p class="muted">FR-16 — thống kê doanh thu, trạng thái đơn, tồn kho thấp (task N2LHTBLTT-32). Dữ liệu nguồn đã có sẵn ở bảng <code>ordering.orders</code> và <code>inventory.product_stocks</code>.</p>
     </div>
     <div class="card">
-      <h4><span class="badge b-blue">168</span> test tự động</h4>
-      <p class="muted">35 unit · 7 architecture · 126 integration. Tất cả chạy trong CI với PostgreSQL thật.</p>
+      <h4><span class="badge b-blue">350</span> test tự động</h4>
+      <p class="muted">155 unit · 7 architecture · 188 integration. Tất cả chạy trong CI với PostgreSQL thật.</p>
     </div>
   </div>
 </section>

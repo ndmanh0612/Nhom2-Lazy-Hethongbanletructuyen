@@ -12,14 +12,14 @@
   <div class="wrap">
     <div class="eyebrow">Đồ án Phát Triển Ứng Dụng Phía Máy Chủ Nâng Cao · HP 608819</div>
     <h1><span class="ticket">Thiết kế hệ thống</span> — Kiến trúc, CSDL &amp; Luồng kỹ thuật</h1>
-    <p class="subtitle">Tài liệu thiết kế kỹ thuật của PhoneStore. Nội dung bám sát source code hiện có: 5 module, 5 schema PostgreSQL, 23 endpoint nghiệp vụ (+1 health check), 13 bảng, 3 contract liên module, 1 event bus và 168 test tự động.</p>
+    <p class="subtitle">Tài liệu thiết kế kỹ thuật của PhoneStore. Nội dung bám sát source code hiện có: 5 module, 5 schema PostgreSQL, 23 endpoint nghiệp vụ (+1 health check), 13 bảng, 3 contract liên module, 1 event bus và 350 test tự động.</p>
     <div class="meta-grid">
       <div class="meta-card"><div class="label">Kiến trúc</div><div class="value sm">Modular Monolith</div></div>
       <div class="meta-card"><div class="label">Framework</div><div class="value sm">.NET 10 / ASP.NET Core</div></div>
       <div class="meta-card"><div class="label">CSDL</div><div class="value sm">PostgreSQL 16 · 5 schema</div></div>
       <div class="meta-card"><div class="label">Bảng</div><div class="value">13</div></div>
       <div class="meta-card"><div class="label">Endpoint</div><div class="value">23 + health</div></div>
-      <div class="meta-card"><div class="label">Test</div><div class="value">168</div></div>
+      <div class="meta-card"><div class="label">Test</div><div class="value">350</div></div>
     </div>
     <div class="meta-grid" style="margin-top:12px">
       <div class="meta-card" style="grid-column:1/-1"><div class="label">Tài liệu này phục vụ</div><div class="value sm">N2LHTBLTT-3 (Thiết kế kiến trúc tổng thể) · N2LHTBLTT-4 (Thiết kế CSDL, bảng, quan hệ &amp; ERD) · N2LHTBLTT-7 (DbContext &amp; migrations theo module) · N2LHTBLTT-22 (Transaction, khoá tồn) · N2LHTBLTT-29 (In-memory Event Bus)</div></div>
@@ -718,23 +718,28 @@
   <table>
     <thead><tr><th>Project</th><th>Số test</th><th>Phạm vi</th><th>Cơ chế</th></tr></thead>
     <tbody>
-      <tr><td><code>PhoneStore.UnitTests</code></td><td>35</td><td>Domain rules + application service</td><td>Test thuần, không cần DB</td></tr>
+      <tr><td><code>PhoneStore.UnitTests</code></td><td>155</td><td>Domain rules + application service</td><td>Test thuần, không cần DB</td></tr>
       <tr><td><code>PhoneStore.ArchitectureTests</code></td><td>7</td><td>Ranh giới module — không rò rỉ tham chiếu</td><td>Quét assembly + namespace</td></tr>
-      <tr><td><code>PhoneStore.IntegrationTests</code></td><td>126</td><td>E2E qua HTTP thật</td><td>WebApplicationFactory + PostgreSQL thật</td></tr>
-      <tr style="background:rgba(79,156,249,.06)"><td><b>Tổng</b></td><td><b>168</b></td><td colspan="2">Tất cả chạy trong CI GitHub Actions</td></tr>
+      <tr><td><code>PhoneStore.IntegrationTests</code></td><td>188</td><td>E2E qua HTTP thật</td><td>WebApplicationFactory + PostgreSQL thật</td></tr>
+      <tr style="background:rgba(79,156,249,.06)"><td><b>Tổng</b></td><td><b>350</b></td><td colspan="2">Tất cả chạy trong CI GitHub Actions</td></tr>
     </tbody>
   </table>
 
-  <h4>Chi tiết 9 file integration test</h4>
+  <h4>Chi tiết 15 file integration test</h4>
   <table>
     <thead><tr><th>File</th><th>Số test</th><th>Phủ</th></tr></thead>
     <tbody>
       <tr><td><code>BusinessFlowRegressionTests</code></td><td>32</td><td>Hồi quy luồng giỏ / checkout / hủy đơn / phân quyền</td></tr>
       <tr><td><code>CatalogAndIdentityRegressionTests</code></td><td>30</td><td>Hồi quy lọc, sắp xếp, phân trang Catalog + đăng ký / đăng nhập</td></tr>
       <tr><td><code>EndToEndOrderJourneyTests</code></td><td>16</td><td>Hành trình đặt hàng đầu-cuối</td></tr>
-      <tr><td><code>IdentityApiTests</code></td><td>12</td><td>Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ</td></tr>
+      <tr><td><code>IdentityApiTests</code></td><td>13</td><td>Đăng ký, đăng nhập, hồ sơ, mật khẩu, địa chỉ</td></tr>
       <tr><td><code>CatalogQueryTests</code></td><td>10</td><td>Tìm kiếm, lọc giá/danh mục, sắp xếp, phân trang</td></tr>
       <tr><td><code>OrderLifecycleTests</code></td><td>10</td><td>Danh sách / chi tiết / lọc trạng thái / hủy đơn</td></tr>
+      <tr><td><code>AuthAndStaffApiTests</code></td><td>14</td><td>Đăng nhập, session, phân quyền STAFF / ADMIN, quản lý tài khoản nhân viên</td></tr>
+      <tr><td><code>IdentitySessionRegressionTests</code></td><td>11</td><td>Hồi quy vòng đời phiên — token rotation, thu hồi phiên, CSRF</td></tr>
+      <tr><td><code>CatalogAdminApiTests</code></td><td>11</td><td>CRUD sản phẩm, biến thể SKU, ảnh — phân quyền STAFF</td></tr>
+      <tr><td><code>InventoryApiTests</code></td><td>9</td><td>Nhập kho, điều chỉnh tồn, nhật ký biến động, tồn thấp</td></tr>
+      <tr><td><code>OrderFulfillmentApiTests</code></td><td>8</td><td>Xác nhận / giao hàng / thu COD / giao thất bại</td></tr>
       <tr><td><code>CartApiTests</code></td><td>8</td><td>Thêm, gộp, sửa, xoá, vượt giới hạn, xác thực</td></tr>
       <tr><td><code>CheckoutFlowTests</code></td><td>7</td><td>Health, catalog, checkout COD, validation</td></tr>
       <tr><td><code>StockRestoreOnCancelTests</code></td><td>1</td><td>Hủy đơn → hoàn tồn kho <code>inventory.product_stocks</code></td></tr>
@@ -786,7 +791,7 @@
         2. setup-dotnet (v10.x)
         3. dotnet restore
         4. dotnet build   --no-restore
-        5. dotnet test    --no-build   (168 test)
+        5. dotnet test    --no-build   (350 test)
 
  Jenkins Pipeline (N2LHTBLTT-37) — dự kiến
    ├─ Stage Build   : dotnet restore → dotnet build --configuration Release

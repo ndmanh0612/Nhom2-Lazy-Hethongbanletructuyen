@@ -71,6 +71,14 @@ docker compose -f docker/docker-compose.yml up -d
 > (`ConnectionStrings:DefaultConnection`). Có thể override bằng biến môi trường
 > `ConnectionStrings__DefaultConnection`.
 
+> **Deploy production (PostgreSQL + API + nginx)**: xem [docs/DEPLOY.md](docs/DEPLOY.md).
+> Tóm tắt:
+> ```bash
+> cp docker/env.prod.sample docker/env.prod   # điền mật khẩu + PHONESTORE_SIGNING_KEY
+> docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod up -d --build
+> ```
+> Storefront trên `http://localhost:8088/`, Swagger trên `http://localhost:8088/swagger`.
+
 ### 3. Build và Chạy Web API
 ```bash
 # Build toàn bộ Solution
