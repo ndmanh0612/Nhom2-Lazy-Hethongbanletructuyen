@@ -435,8 +435,13 @@ public class CatalogService : ICatalogService
             throw new NotFoundException("Sản phẩm không tồn tại hoặc đã bị ẩn.", "PRODUCT_NOT_FOUND");
         }
 
-        var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
-        var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
+        var category = await _dbContext.Categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == product.CategoryId, cancellationToken);
+
+        var brand = await _dbContext.Brands
+            .AsNoTracking()
+            .FirstOrDefaultAsync(b => b.Id == product.BrandId, cancellationToken);
 
         return Result.Success(ToDetailDto(product, category?.Name, brand?.Name));
     }
@@ -749,11 +754,13 @@ public class CatalogService : ICatalogService
     {
         var variantDtos = product.Variants
             .Where(v => v.IsActive)
+            .OrderBy(v => v.Id)
             .Select(ToVariantDto)
             .ToList();
 
         var imageDtos = product.Images
             .OrderBy(i => i.SortOrder)
+            .ThenBy(i => i.Id)
             .Select(i => new ProductImageDto(i.Id, i.ImageUrl, i.SortOrder))
             .ToList();
 
