@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sơ đồ Idempotency Flow - PhoneStore</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 30px;
+      background: #0f172a;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #f8fafc;
+    }
+    .toolbar {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+    }
+    button {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #0369a1;
+    }
+    .img-container {
+      background: white;
+      padding: 15px;
+      border-radius: 16px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+      max-width: 1100px;
+      width: 100%;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <button onclick="downloadPng()">📥 Tải ảnh PNG độ nét cao (Dành cho Word)</button>
+    <button onclick="window.print()" style="background:#475569">🖨️ In / Xuất PDF</button>
+  </div>
+
+  <div class="img-container" id="svgContainer">
+    <!-- SVG Content Loaded Here -->
+  </div>
+
+  <canvas id="exportCanvas" style="display:none;"></canvas>
+
+  <script>
+    fetch('idempotency-flow.svg')
+      .then(res => res.text())
+      .then(svgText => {
+        document.getElementById('svgContainer').innerHTML = svgText;
+      });
+
+    function downloadPng() {
+      const svgElement = document.querySelector('svg');
+      const svgString = new XMLSerializer().serializeToString(svgElement);
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.getElementById('exportCanvas');
+        // 2x Scale for ultra-crisp resolution in Word
+        const scale = 2;
+        canvas.width = 1100 * scale;
+        canvas.height = 780 * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        const pngURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'so-do-idempotency-request-key-hash.png';
+        link.href = pngURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+      image.src = blobURL;
+    }
+  </script>
+</body>
+</html>
+

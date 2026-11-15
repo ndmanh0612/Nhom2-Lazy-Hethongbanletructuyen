@@ -5,7 +5,9 @@ using PhoneStore.Modules.Cart.Infrastructure.Persistence;
 using PhoneStore.Modules.Order.Infrastructure.Persistence;
 using PhoneStore.Modules.Inventory.Infrastructure.Persistence;
 using PhoneStore.BuildingBlocks;
+using PhoneStore.BuildingBlocks.Application;
 using PhoneStore.BuildingBlocks.Common;
+using PhoneStore.BuildingBlocks.Infrastructure.Storage;
 using PhoneStore.BuildingBlocks.Infrastructure.Web;
 using PhoneStore.BuildingBlocks.Validation;
 using PhoneStore.Api.Seeding;
@@ -43,6 +45,10 @@ builder.Services.AddBuildingBlocks(
     typeof(CartModuleRegistration),
     typeof(OrderModuleRegistration),
     typeof(InventoryModuleRegistration));
+
+// N2LHTBLTT-30: Đăng ký Cloudflare R2 Storage Service.
+builder.Services.Configure<CloudflareR2Options>(builder.Configuration.GetSection(CloudflareR2Options.SectionName));
+builder.Services.AddSingleton<IFileStorageService, CloudflareR2StorageService>();
 
 // Register Modules (Modular Monolith)
 builder.Services.AddIdentityModule(builder.Configuration);
