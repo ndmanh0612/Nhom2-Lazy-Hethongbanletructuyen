@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhoneStore.BuildingBlocks.Application;
 using PhoneStore.BuildingBlocks.Common;
@@ -166,5 +167,65 @@ public class ProductsController : ControllerBase
     {
         await _catalogService.DeleteProductImageAsync(imageId, cancellationToken);
         return Ok(ApiResponse.Ok("Xoá ảnh sản phẩm thành công."));
+    }
+
+    // -----------------------------------------------------------------------
+    // N2LHTBLTT-30: Upload ảnh sản phẩm lên Cloudflare R2.
+    // N2LHTBLTT-31: Sinh Presigned URL để truy cập ảnh.
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên Cloudflare R2.
+    /// Chỉ chấp nhận .jpg, .jpeg, .png, .webp. Dung lượng tối đa 5MB.
+    /// </summary>
+    [HttpPost("/api/v1/admin/products/{productId:long}/images/upload")]
+    [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [RequestSizeLimit(6 * 1024 * 1024)] // 6MB buffer cho multipart overhead
+    public async Task<IActionResult> UploadImage(
+        long productId,
+        IFormFile file,
+        [FromForm] int sortOrder,
+        CancellationToken cancellationToken)
+    {
+        // Validate file
+        if (file is null || file.Length == 0)
+        {
+            throw new PhoneStore.BuildingBlocks.Exceptions.ValidationException("file", "Vui lòng chọn file ảnh để upload.");
+        }
+
+        const long maxFileSize = 5 * 1024 * 1024; // 5MB
+        if (file.Length > maxFileSize)
+        {
+            throw new PhoneStore.BuildingBlocks.Exceptions.ValidationException("file", "Dung lượng file không được vượt quá 5MB.");
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            throw new PhoneStore.BuildingBlocks.Exceptions.ValidationException("file", "Chỉ chấp nhận file ảnh định dạng .jpg, .jpeg, .png, .webp.");
+        }
+
+        await using var stream = file.OpenReadStream();
+        var result = await _catalogService.UploadProductImageAsync(
+            productId,
+            stream,
+            file.FileName,
+            file.ContentType,
+            sortOrder,
+            cancellationToken);
+
+        return StatusCode(201, ApiResponse<ProductImageDto>.Ok(result.Value, "Upload ảnh sản phẩm thành công."));
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-31: Sinh Presigned URL để truy cập ảnh sản phẩm (có thời hạn 1 giờ).
+    /// </summary>
+    [HttpGet("/api/v1/products/images/{imageId:long}/presigned-url")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPresignedUrl(long imageId, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.GetProductImagePresignedUrlAsync(imageId, cancellationToken);
+        return Ok(ApiResponse<object>.Ok(new { presignedUrl = result.Value }));
     }
 }
