@@ -170,12 +170,12 @@ public class ProductsController : ControllerBase
     }
 
     // -----------------------------------------------------------------------
-    // N2LHTBLTT-30: Upload ảnh sản phẩm lên Cloudflare R2.
+    // N2LHTBLTT-30: Upload ảnh sản phẩm lên MinIO (S3-compatible object storage).
     // N2LHTBLTT-31: Sinh Presigned URL để truy cập ảnh.
     // -----------------------------------------------------------------------
 
     /// <summary>
-    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên Cloudflare R2.
+    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên MinIO.
     /// Chỉ chấp nhận .jpg, .jpeg, .png, .webp. Dung lượng tối đa 5MB.
     /// </summary>
     [HttpPost("/api/v1/admin/products/{productId:long}/images/upload")]
