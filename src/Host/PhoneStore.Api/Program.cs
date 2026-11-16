@@ -46,9 +46,9 @@ builder.Services.AddBuildingBlocks(
     typeof(OrderModuleRegistration),
     typeof(InventoryModuleRegistration));
 
-// N2LHTBLTT-30: Đăng ký Cloudflare R2 Storage Service.
-builder.Services.Configure<CloudflareR2Options>(builder.Configuration.GetSection(CloudflareR2Options.SectionName));
-builder.Services.AddSingleton<IFileStorageService, CloudflareR2StorageService>();
+// N2LHTBLTT-30: Đăng ký MinIO Storage Service.
+builder.Services.Configure<MinioStorageOptions>(builder.Configuration.GetSection(MinioStorageOptions.SectionName));
+builder.Services.AddSingleton<IFileStorageService, MinioStorageService>();
 
 // Register Modules (Modular Monolith)
 builder.Services.AddIdentityModule(builder.Configuration);

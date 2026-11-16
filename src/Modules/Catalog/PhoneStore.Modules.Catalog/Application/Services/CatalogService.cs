@@ -37,7 +37,7 @@ public interface ICatalogService
     Task<Result<ProductImageDto>> AddProductImageAsync(long productId, CreateProductImageRequest request, CancellationToken cancellationToken = default);
     Task<Result> DeleteProductImageAsync(long imageId, CancellationToken cancellationToken = default);
 
-    // N2LHTBLTT-30: Upload ảnh sản phẩm lên Cloudflare R2.
+    // N2LHTBLTT-30: Upload ảnh sản phẩm lên MinIO / S3 storage.
     Task<Result<ProductImageDto>> UploadProductImageAsync(long productId, Stream fileStream, string fileName, string contentType, int sortOrder, CancellationToken cancellationToken = default);
 
     // N2LHTBLTT-31: Sinh presigned URL cho ảnh sản phẩm.
@@ -689,7 +689,7 @@ public class CatalogService : ICatalogService
             throw new NotFoundException("Không tìm thấy ảnh sản phẩm.", "PRODUCT_IMAGE_NOT_FOUND");
         }
 
-        // N2LHTBLTT-30: Xóa file trên R2 nếu URL thuộc về R2 storage.
+        // N2LHTBLTT-30: Xóa file trên MinIO / S3 nếu URL thuộc về storage.
         if (_fileStorageService is not null)
         {
             var objectKey = ExtractObjectKeyFromUrl(image.ImageUrl);
@@ -701,7 +701,7 @@ public class CatalogService : ICatalogService
                 }
                 catch
                 {
-                    // Không chặn việc xóa record DB nếu xóa file R2 thất bại.
+                    // Không chặn việc xóa record DB nếu xóa file storage thất bại.
                 }
             }
         }
@@ -713,7 +713,7 @@ public class CatalogService : ICatalogService
     }
 
     /// <summary>
-    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên Cloudflare R2 và lưu URL vào DB.
+    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên MinIO / S3 và lưu URL vào DB.
     /// </summary>
     public async Task<Result<ProductImageDto>> UploadProductImageAsync(
         long productId,
@@ -734,7 +734,7 @@ public class CatalogService : ICatalogService
             throw new NotFoundException("Không tìm thấy sản phẩm.", "PRODUCT_NOT_FOUND");
         }
 
-        // Upload lên R2 với folder = "products/{productId}"
+        // Upload lên Storage với folder = "products/{productId}"
         var folder = $"products/{productId}";
         var objectKey = await _fileStorageService.UploadAsync(fileStream, fileName, contentType, folder, cancellationToken);
         var publicUrl = _fileStorageService.GetPublicUrl(objectKey);
@@ -782,8 +782,8 @@ public class CatalogService : ICatalogService
     // -----------------------------------------------------------------------
 
     /// <summary>
-    /// Trích xuất object key từ URL ảnh trên R2.
-    /// Ví dụ: "https://pub-xxx.r2.dev/products/123/abc.jpg" → "products/123/abc.jpg"
+    /// Trích xuất object key từ URL ảnh trên MinIO / S3.
+    /// Ví dụ: "http://localhost:9000/phonestore-images/products/123/abc.jpg" → "products/123/abc.jpg"
     /// </summary>
     private static string? ExtractObjectKeyFromUrl(string imageUrl)
     {
