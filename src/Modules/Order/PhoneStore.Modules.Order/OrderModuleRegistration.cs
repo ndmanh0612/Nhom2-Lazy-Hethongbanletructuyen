@@ -25,6 +25,7 @@ public static class OrderModuleRegistration
 
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IReportingService, ReportingService>();
 
         return services;
     }
@@ -36,7 +37,6 @@ public static class OrderModuleRegistration
 /// </summary>
 [ApiController]
 [Route("api/v1/orders")]
-[ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
