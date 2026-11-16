@@ -20,7 +20,7 @@ services:
       retries: 10
 
   minio:
-    image: quay.io/minio/minio:latest
+    image: cgr.dev/chainguard/minio:latest
     container_name: phonestore-minio
     restart: always
     command: server /data --console-address ":9001"
