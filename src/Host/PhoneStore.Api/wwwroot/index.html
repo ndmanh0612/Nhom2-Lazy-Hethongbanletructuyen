@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PhoneStore — cửa hàng điện thoại trực tuyến: điện thoại, tablet, laptop, phụ kiện giá tốt, trả góp 0%, giao hàng toàn quốc.">
+    <title>PhoneStore — Điện thoại, phụ kiện giá tốt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="/assets/css/app.css?v=20261104-2">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e8380d'/%3E%3Crect x='11' y='6' width='10' height='20' rx='2.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E">
+</head>
+<body>
+<!-- Thanh công cụ trên cùng -->
+<div class="topbar">
+    <div class="container topbar__inner">
+        <div class="topbar__left">
+            <span class="topbar__hotline">Hotline: <strong>1800 1234</strong></span>
+            <span class="topbar__divider"></span>
+            <a href="#/tra-cuu-don-hang" class="topbar__link">Tra cứu đơn hàng</a>
+            <span class="topbar__divider"></span>
+            <a href="#/cua-hang" class="topbar__link">Hệ thống cửa hàng</a>
+            <span class="topbar__divider"></span>
+            <a href="#/huong-dan" class="topbar__link">Hướng dẫn mua hàng</a>
+        </div>
+        <div class="topbar__right">
+            <a href="#/flash-sale" class="topbar__link">⚡ Flash sale</a>
+            <span class="topbar__divider"></span>
+            <a href="#/khuyen-mai" class="topbar__link">Khuyến mãi</a>
+            <span class="topbar__divider"></span>
+            <a href="#/tin-tuc" class="topbar__link">Tin tức</a>
+            <span class="topbar__divider"></span>
+            <a href="#/cau-hoi" class="topbar__link">Hỏi đáp</a>
+            <span class="topbar__divider"></span>
+            <a href="#/tai-khoan" class="topbar__link" data-auth-only hidden>Tài khoản</a>
+            <a href="#/dang-nhap" class="topbar__link" data-guest-only>Đăng nhập</a>
+            <a href="#/dang-ky" class="topbar__link" data-guest-only>Đăng ký</a>
+        </div>
+    </div>
+</div>
+
+<!-- Header chính -->
+<header class="header">
+    <div class="container header__inner">
+        <a href="#/" class="logo" aria-label="PhoneStore trang chủ">
+            <span class="logo__mark">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="11" y="6" width="10" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="16" cy="23" r="1.1" fill="currentColor"/></svg>
+            </span>
+            <span class="logo__text">Phone<em>Store</em></span>
+        </a>
+
+        <div class="search">
+            <div class="search__box">
+                <input type="search" id="global-search" placeholder="Bạn đang tìm gì? Ví dụ: iPhone 15, Galaxy S24..." autocomplete="off">
+                <button type="button" class="search__btn" aria-label="Tìm kiếm">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+            <div class="search__suggest" id="search-suggest" hidden></div>
+        </div>
+
+        <div class="header__actions">
+            <a href="#/flash-sale" class="header__action header__action--installment">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                <span>Flash sale<br><small>Giảm tới 21%</small></span>
+            </a>
+            <a href="#/tra-gop" class="header__action header__action--installment">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 10h19" stroke="currentColor" stroke-width="1.8"/></svg>
+                <span>Trả góp<br><small>0% hôm nay</small></span>
+            </a>
+            <a href="#/cua-hang" class="header__action">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1.4 10H5.4L4 9Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 9V6.5a3.5 3.5 0 0 1 7 0V9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+                <span>Cửa hàng<br><small>40 chi nhánh</small></span>
+            </a>
+            <a href="#/gio-hang" class="header__action header__action--cart">
+                <span class="cart-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2.2l2 11h10l2-7H6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19" r="1.5" fill="currentColor"/><circle cx="16.5" cy="19" r="1.5" fill="currentColor"/></svg>
+                    <span class="cart-badge" id="cart-count" hidden>0</span>
+                </span>
+                <span>Giỏ hàng<br><small id="cart-total">0 đ</small></span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Danh mục -->
+    <nav class="categorybar" aria-label="Danh mục sản phẩm">
+        <div class="container categorybar__inner" id="category-bar"></div>
+    </nav>
+</header>
+
+<!-- Nội dung do JS render -->
+<main id="app" class="app"></main>
+
+<!-- Chân trang -->
+<footer class="footer">
+    <div class="container footer__grid">
+        <div class="footer__col">
+            <h4>Về PhoneStore</h4>
+            <ul>
+                <li><a href="#/gioi-thieu">Giới thiệu</a></li>
+                <li><a href="#/tuy-dung">Tuyển dụng</a></li>
+                <li><a href="#/lien-he">Liên hệ</a></li>
+                <li><a href="#/bao-hanh">Chính sách bảo hành</a></li>
+            </ul>
+        </div>
+        <div class="footer__col">
+            <h4>Mua hàng</h4>
+            <ul>
+                <li><a href="#/huong-dan">Hướng dẫn mua hàng</a></li>
+                <li><a href="#/tra-gop">Thông tin trả góp</a></li>
+                <li><a href="#/doi-tra">Đổi trả sản phẩm</a></li>
+                <li><a href="#/van-chuyen">Vận chuyển</a></li>
+            </ul>
+        </div>
+        <div class="footer__col">
+            <h4>Thông tin</h4>
+            <ul>
+                <li><a href="#/khuyen-mai">Khuyến mãi</a></li>
+                <li><a href="#/flash-sale">Flash sale</a></li>
+                <li><a href="#/tin-tuc">Tin tức</a></li>
+                <li><a href="#/cau-hoi">Câu hỏi thường gặp</a></li>
+                <li><a href="#/thanh-toan">Phương thức thanh toán</a></li>
+                <li><a href="#/tra-cuu-don-hang">Tra cứu đơn hàng</a></li>
+                <li><a href="#/cua-hang">Hệ thống cửa hàng</a></li>
+            </ul>
+        </div>
+        <div class="footer__col footer__col--contact">
+            <h4>Liên hệ</h4>
+            <p><strong>Tổng đài: 1800 1234</strong><br>08:00 - 21:30, cả ngày lễ Tết</p>
+            <p><strong>Email:</strong> cskh@phonestore.vn</p>
+            <p><strong>Địa chỉ:</strong> 123 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh</p>
+            <div class="footer__social">
+                <a href="#/lien-he" aria-label="Facebook">f</a>
+                <a href="#/lien-he" aria-label="YouTube">▶</a>
+                <a href="#/lien-he" aria-label="Zalo">z</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer__bottom">
+        <div class="container footer__bottom-inner">
+            <span>© 2026 PhoneStore. Đồ án HP 608819 — Nhóm 2 (Lazy).</span>
+            <span class="footer__payment">Chấp nhận: COD · Visa/Mastercard · MoMo · ZaloPay · VNPay · Trả góp 0%</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Nút liên hệ nổi góc phải -->
+<div class="float-actions">
+    <button class="float-action float-action--top" type="button" id="btn-scroll-top" aria-label="Lên đầu trang">↑</button>
+    <a class="float-action float-action--zalo" href="#/lien-he" aria-label="Chat qua Zalo">💬</a>
+    <a class="float-action float-action--hotline" href="tel:18001234" aria-label="Gọi hotline">☎</a>
+</div>
+
+<!-- Thông báo nhanh -->
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+<!-- Hộp thoại đăng nhập nhanh -->
+<div class="modal" id="quick-login-modal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel modal__panel--sm" role="dialog" aria-modal="true" aria-labelledby="quick-login-title">
+        <button class="modal__close" type="button" data-close-modal aria-label="Đóng">&times;</button>
+        <h3 id="quick-login-title" class="modal__title">Đăng nhập PhoneStore</h3>
+        <p class="modal__subtitle">Dùng tài khoản demo để trải nghiệm đầy đủ các chức năng.</p>
+        <div class="demo-accounts">
+            <button class="demo-account" type="button" data-demo-email="customer@phonestore.vn" data-demo-password="Customer@123">
+                <strong>Khách hàng</strong><span>customer@phonestore.vn</span>
+            </button>
+            <button class="demo-account" type="button" data-demo-email="staff@phonestore.vn" data-demo-password="Staff@123">
+                <strong>Nhân viên</strong><span>staff@phonestore.vn</span>
+            </button>
+            <button class="demo-account" type="button" data-demo-email="admin@phonestore.vn" data-demo-password="Admin@123">
+                <strong>Quản trị</strong><span>admin@phonestore.vn</span>
+            </button>
+        </div>
+        <form id="quick-login-form" class="form" novalidate>
+            <label class="field">
+                <span class="field__label">Email</span>
+                <input type="email" name="email" required placeholder="ban@email.com" autocomplete="username">
+            </label>
+            <label class="field">
+                <span class="field__label">Mật khẩu</span>
+                <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+            </label>
+            <button class="btn btn--primary btn--block" type="submit">Đăng nhập</button>
+            <p class="form__hint">Chưa có tài khoản? <a href="#/dang-ky">Đăng ký ngay</a></p>
+        </form>
+    </div>
+</div>
+
+<script src="/assets/js/api.js?v=20261104-2"></script>
+<script src="/assets/js/mock.js?v=20261104-2"></script>
+<script src="/assets/js/ui.js?v=20261104-2"></script>
+<script src="/assets/js/pages.js?v=20261104-2"></script>
+<script src="/assets/js/app.js?v=20261104-2"></script>
+</body>
+</html>
