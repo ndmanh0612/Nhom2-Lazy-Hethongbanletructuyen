@@ -32,8 +32,8 @@
   <div class="wrap">
     <a href="#tong-quan" class="on">1. Tổng quan</a>
     <a href="#tac-nhan">2. Tác nhân</a>
-    <a href="#phân-tich">3. Phân tích yêu cầu</a>
-    <a href="#phân-ra">4. Phân rã chức năng (FBD)</a>
+    <a href="#phan-tich">3. Phân tích yêu cầu</a>
+    <a href="#phan-ra">4. Phân rã chức năng (FBD)</a>
     <a href="#use-case">5. Use Case chi tiết</a>
     <a href="#quy-trinh">6. Quy trình nghiệp vụ</a>
     <a href="#quy-tac">7. Quy tắc nghiệp vụ</a>
@@ -148,7 +148,7 @@
 </section>
 
 <!-- ================= 3. PHÂN TÍCH YÊU CẦU ================= -->
-<section id="phân-tích">
+<section id="phan-tich">
   <h2><span class="num">3</span> Phân tích yêu cầu</h2>
 
   <h3>3.1. Yêu cầu chức năng (FR)</h3>
@@ -186,14 +186,14 @@
       <tr><td><b>NFR-04</b></td><td>Bảo mật — giá luôn do server quyết định</td><td>0 rủi ro client gửi giá giả</td><td><code>AddToCartRequest</code> không có field giá; giá lấy qua <code>IProductPricingContract</code> lúc thêm và lúc checkout</td></tr>
       <tr><td><b>NFR-05</b></td><td>Phân quyền theo chủ sở hữu dữ liệu</td><td>0 rủi ro đọc đơn của khách khác</td><td>Ownership check trong service → <code>ForbiddenException</code> 403; role CUSTOMER/STAFF/ADMIN trong <code>identity.users</code></td></tr>
       <tr><td><b>NFR-06</b></td><td>Tính nhất quán thông báo lỗi</td><td>100% lỗi trả JSON chuẩn</td><td><code>AppExceptionMiddleware</code> bắt cả exception không lường trước → <code>ErrorResponse</code> có <code>code</code> + <code>requestId</code></td></tr>
-      <tr><td><b>NFR-07</b></td><td>Khả dụng &amp; triển khai lặp lại</td><td>1 lệnh dựng môi trường</td><td>docker-compose (PostgreSQL 16 + MinIO), Dockerfile multi-stage, CI tự chạy 168 test, EF Core migration theo module</td></tr>
+      <tr><td><b>NFR-07</b></td><td>Khả dụng &amp; triển khai lặp lại</td><td>1 lệnh dựng môi trường</td><td>docker-compose (PostgreSQL 16 + MinIO), Dockerfile multi-stage, CI tự chạy 350 test, EF Core migration theo module</td></tr>
       <tr><td><b>NFR-08</b></td><td>Cô lập module &amp; khả năng mở rộng</td><td>0 rò rỉ tham chiếu chéo module</td><td>7 architecture test chặn import DbContext/Implementation chéo; giao tiếp qua Contract + Event Bus</td></tr>
-      <tr><td><b>NFR-09</b></td><td>Chất lượng &amp; khả năng bảo trì</td><td>168 test tự động xanh</td><td>Unit + Architecture + Integration test; mỗi lần chạy tạo DB riêng <code>phonestore_test_&lt;guid&gt;</code></td></tr>    </tbody>
+      <tr><td><b>NFR-09</b></td><td>Chất lượng &amp; khả năng bảo trì</td><td>350 test tự động xanh</td><td>Unit + Architecture + Integration test; mỗi lần chạy tạo DB riêng <code>phonestore_test_&lt;guid&gt;</code></td></tr>    </tbody>
   </table>
 </section>
 
 <!-- ================= 4. PHÂN RÃ CHỨC NĂNG ================= -->
-<section id="phân-ra">
+<section id="phan-ra">
   <h2><span class="num">4</span> Phân rã chức năng (Function Decomposition Diagram)</h2>
   <p class="lead">Cây phân rã chức năng bắt đầu từ mục tiêu hệ thống, mở rộng theo từng vai trò người dùng, rồi tới nhóm chức năng và chức năng con. Mỗi lá trong cây đều ánh xạ được về ít nhất một endpoint đã hiện thực.</p>
 
@@ -227,7 +227,8 @@
                     <ul>
                       <li><div class="node l4">POST /api/v1/auth/login</div></li>
                       <li><div class="node l4">POST /api/v1/auth/logout</div></li>
-                      <li><div class="node l4"><span class="badge b-amber">Tạm thời</span> nhận danh tính qua header X-User-Id — chờ JWT task 8/9</div></li>
+                      <li><div class="node l4">JWT HS256 (access token) + refresh token HttpOnly cookie, lưu SHA-256, có token rotation</div></li>
+                      <li><div class="node l4">CSRF token cho endpoint dùng cookie (<code>GET /api/v1/auth/csrf</code>)</div></li>
                     </ul>
                   </li>
                 </ul>
@@ -248,8 +249,8 @@
                 <ul>
                   <li><div class="node l3"><span class="k">FR-15</span> Tài khoản nhân viên, khóa/mở, phân quyền</div>
                     <ul>
-                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-16</div></li>
-                      <li><div class="node l4">Cơ chế đã có: <code>User.SetActive(bool)</code> · enum UserRole</div></li>
+                      <li><div class="node l4">POST /api/v1/admin/staff · PATCH /api/v1/admin/staff/{id}/role · PATCH /api/v1/admin/staff/{id}/lock · POST /api/v1/admin/staff/{id}/reset-password</div></li>
+                      <li><div class="node l4">Đổi mật khẩu / khóa / đổi vai trò → thu hồi toàn bộ phiên đang mở</div></li>
                     </ul>
                   </li>
                 </ul>
@@ -287,8 +288,8 @@
                 <ul>
                   <li><div class="node l3"><span class="k">FR-13</span> CRUD sản phẩm, SKU, giá, thông số kỹ thuật</div>
                     <ul>
-                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-18</div></li>
-                      <li><div class="node l4">Cơ chế đã có: <code>Product.UpdateInfo</code> · <code>ProductVariant.UpdatePrice</code> · <code>AdjustStock</code></div></li>
+                      <li><div class="node l4">POST /api/v1/admin/products · PUT/PATCH/DELETE /api/v1/admin/products/{id}</div></li>
+                      <li><div class="node l4">CRUD biến thể (SKU, màu, dung lượng, giá) + upload ảnh: <code>/api/v1/admin/products/{id}/variants</code></div></li>
                     </ul>
                   </li>
                 </ul>
@@ -354,14 +355,14 @@
                 <ul>
                   <li><div class="node l3"><span class="k">FR-10</span> Xác nhận đơn &amp; chuyển trạng thái giao hàng</div>
                     <ul>
-                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-27</div></li>
-                      <li><div class="node l4">Cơ chế đã có: <code>Order.ChangeStatus(newStatus, note)</code> tự ghi lịch sử</div></li>
+                      <li><div class="node l4">POST /api/v1/orders/{id}/confirm · POST /api/v1/orders/{id}/ship</div></li>
+                      <li><div class="node l4">Mỗi lần chuyển trạng thái tự ghi lịch sử vào <code>ordering.order_status_histories</code></div></li>
                     </ul>
                   </li>
                   <li><div class="node l3"><span class="k">FR-11</span> Giao thành công, thu COD, giao thất bại</div>
                     <ul>
-                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-28</div></li>
-                      <li><div class="node l4">Cơ chế đã có: <code>Order.DeliveredAt</code> tự set khi sang DELIVERED</div></li>
+                      <li><div class="node l4">POST /api/v1/orders/{id}/deliver (thu COD) · POST /api/v1/orders/{id}/delivery-failed</div></li>
+                      <li><div class="node l4">Tiền COD thu được phải ≥ tổng tiền đơn; đối soát: <code>GET /api/v1/admin/orders/cod-collections</code></div></li>
                     </ul>
                   </li>
                 </ul>
@@ -377,8 +378,8 @@
                   <li><div class="node l3"><span class="k">FR-14</span> Nhập kho, điều chỉnh tồn &amp; nhật ký tồn kho</div>
                     <ul>
                       <li><div class="node l4">GET /api/v1/admin/inventory/movements</div></li>
-                      <li><div class="node l4"><span class="badge b-amber">Chưa hiện thực</span> — task N2LHTBLTT-21</div></li>
-                      <li><div class="node l4">Cơ chế đã có: <code>ProductStock.Reserve</code> · <code>Restore</code></div></li>
+                      <li><div class="node l4">POST /api/v1/admin/inventory/stocks/import · /import/batch · /adjust</div></li>
+                      <li><div class="node l4">GET /api/v1/admin/inventory/low-stock — cảnh báo tồn thấp</div></li>
                     </ul>
                   </li>
                 </ul>
@@ -403,7 +404,7 @@
                 <ul>
                   <li><div class="node l3"><span class="k">T-01</span> Kiểm thử tích hợp &amp; hồi quy các API nghiệp vụ</div>
                     <ul>
-                      <li><div class="node l4">126 integration test · 35 unit · 7 architecture = 168</div></li>
+                      <li><div class="node l4">188 integration test · 155 unit · 7 architecture = 350</div></li>
                       <li><div class="node l4">WebApplicationFactory + PostgreSQL thật, DB riêng mỗi lần chạy</div></li>
                       <li><div class="node l4">Task N2LHTBLTT-39</div></li>
                     </ul>
@@ -729,9 +730,9 @@
     <div class="card">
       <h4>Chất lượng &amp; kiểm thử</h4>
       <ul class="tight">
-        <li>35 unit test — domain + application service</li>
+        <li>155 unit test — domain + application service</li>
         <li>7 architecture test — ranh giới module</li>
-        <li>126 integration test — HTTP thật qua WebApplicationFactory</li>
+        <li>188 integration test — HTTP thật qua WebApplicationFactory</li>
         <li>DB test random <code>phonestore_test_&lt;guid&gt;</code>, tự xoá</li>
         <li>Tắt parallelization do override biến môi trường toàn cục</li>
       </ul>
@@ -766,19 +767,19 @@
       <tr><td>FR-07</td><td>N2LHTBLTT-20</td><td><b>Order</b></td><td><code>POST /api/v1/orders/checkout</code></td><td>CheckoutFlowTests, EndToEndOrderJourneyTests</td><td><span class="badge b-green">Xong</span></td></tr>
       <tr><td>FR-08</td><td>N2LHTBLTT-25</td><td><b>Order</b></td><td><code>GET /api/v1/orders</code> · <code>{id}</code></td><td>OrderLifecycleTests, BusinessFlowRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
       <tr><td>FR-09</td><td>N2LHTBLTT-26</td><td><b>Order</b></td><td><code>POST /api/v1/orders/{id}/cancel</code></td><td>StockRestoreOnCancelTests, BusinessFlowRegressionTests</td><td><span class="badge b-green">Xong</span></td></tr>
-      <tr><td>FR-10</td><td>N2LHTBLTT-27</td><td>Order</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
-      <tr><td>FR-11</td><td>N2LHTBLTT-28</td><td>Order</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
-      <tr><td>FR-12</td><td>N2LHTBLTT-10</td><td>Catalog</td><td><code>/api/v1/categories</code> · <code>/api/v1/brands</code></td><td>CatalogQueryTests</td><td><span class="badge b-green">Xong</span></td></tr>
-      <tr><td>FR-13</td><td>N2LHTBLTT-18</td><td>Catalog</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
-      <tr><td>FR-14</td><td>N2LHTBLTT-21</td><td>Inventory</td><td><code>GET /api/v1/admin/inventory/movements</code></td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
-      <tr><td>FR-15</td><td>N2LHTBLTT-16</td><td>Identity</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
+      <tr><td>FR-10</td><td>N2LHTBLTT-27</td><td>Order</td><td><code>POST /api/v1/orders/{id}/confirm</code> · <code>/ship</code></td><td>OrderFulfillmentApiTests, OrderStatusTransitionTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-11</td><td>N2LHTBLTT-28</td><td>Order</td><td><code>POST /api/v1/orders/{id}/deliver</code> · <code>/delivery-failed</code> · <code>GET /api/v1/admin/orders/cod-collections</code></td><td>OrderFulfillmentApiTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-12</td><td>N2LHTBLTT-10</td><td>Catalog</td><td><code>/api/v1/categories</code> · <code>/api/v1/brands</code></td><td>CatalogQueryTests, CatalogCategoryAndBrandTests, CatalogAdminApiTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-13</td><td>N2LHTBLTT-18</td><td>Catalog</td><td><code>POST|PUT|PATCH|DELETE /api/v1/admin/products</code> · <code>/variants</code> · <code>/images</code></td><td>CatalogAdminApiTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-14</td><td>N2LHTBLTT-21</td><td>Inventory</td><td><code>GET /api/v1/admin/inventory/movements</code> · <code>stocks/import</code> · <code>stocks/adjust</code> · <code>low-stock</code></td><td>InventoryApiTests, InventoryTests, ProductStockTests</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>FR-15</td><td>N2LHTBLTT-16</td><td>Identity</td><td><code>POST /api/v1/admin/staff</code> · <code>PATCH {id}/role</code> · <code>PATCH {id}/lock</code> · <code>POST {id}/reset-password</code></td><td>AuthAndStaffApiTests, UserAccountManagementTests</td><td><span class="badge b-green">Xong</span></td></tr>
       <tr><td>FR-16</td><td>N2LHTBLTT-32</td><td>Reporting</td><td>—</td><td>—</td><td><span class="badge b-amber">Chờ</span></td></tr>
-      <tr><td>—</td><td>N2LHTBLTT-39</td><td>Toàn hệ thống</td><td>168 test tự động</td><td>BusinessFlowRegression (32) · CatalogAndIdentityRegression (30) · EndToEndOrderJourney (16) · IdentityApi (12) · CatalogQuery (10) · OrderLifecycle (10) · CartApi (8) · CheckoutFlow (7) · StockRestoreOnCancel (1)</td><td><span class="badge b-green">Xong</span></td></tr>
+      <tr><td>—</td><td>N2LHTBLTT-39</td><td>Toàn hệ thống</td><td><b>350 test tự động</b></td><td>155 unit + 7 architecture + 188 integration (BusinessFlowRegression 32 · CatalogAndIdentityRegression 30 · EndToEndOrderJourney 16 · IdentityApi 13 · CatalogQuery 10 · OrderLifecycle 10 · CartApi 8 · CheckoutFlow 7 · StockRestoreOnCancel 1)</td><td><span class="badge b-green">Xong</span></td></tr>
     </tbody>
   </table>
 
   <div class="callout ok">
-    <b>Tổng kết:</b> 9/16 FR đã có đầy đủ endpoint + test. 7 FR còn lại đã có cơ chế domain sẵn — khi tách controller, phần nghiệp vụ gần như chỉ cần wiring lại logic đã viết. Ước tính khối lượng còn lại nhỏ hơn đáng kể so với 8 FR đầu.
+    <b>Tổng kết:</b> 15/16 FR đã có đầy đủ endpoint + test (FR-16 — báo cáo thống kê vẫn chờ task N2LHTBLTT-32). Toàn bộ <b>350 test</b> đều xanh: 155 unit · 7 architecture · 188 integration. Ranh giới module được bảo vệ tự động bằng 7 architecture test nên mở rộng thêm FR mới không làm vỡ cấu trúc.
   </div>
 </section>
 
