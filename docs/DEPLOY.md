@@ -162,7 +162,7 @@ git pull
 docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod up -d --build
 ```
 
-HTTPS và domain: xem mục 9.
+HTTPS và domain: xem mục 9 (Let's Encrypt) hoặc mục 10 (Cloudflare Tunnel).
 
 ---
 
@@ -192,3 +192,65 @@ HTTPS và domain: xem mục 9.
    Nginx chuyển HTTP sang HTTPS; chứng chỉ tự gia hạn và nginx tự nạp lại.
 3. Cấu hình nginx tách thành `nginx.conf` (chỉ HTTP), `nginx.ssl.conf` (HTTP→HTTPS + 443) và
    `nginx-locations.conf` (các location dùng chung).
+
+---
+
+## 10. Đưa web qua Cloudflare (Cloudflare Tunnel)
+
+Cloudflare Tunnel chạy container `cloudflared` kết nối **chiều ra** tới Cloudflare, nên server
+(hay cả máy cá nhân) **không cần IP public, không cần mở cổng 80/443, không cần certbot** —
+Cloudflare lo HTTPS, CDN và chống DDoS.
+
+```text
+Browser ──HTTPS──▶ Cloudflare edge ──tunnel──▶ cloudflared ──HTTP──▶ web(nginx):80 ──▶ api:8080
+```
+
+### 10.1. Demo nhanh — không cần tài khoản (quick tunnel)
+
+```bash
+docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod --profile cloudflare-quick up -d --build
+docker logs phonestore-cloudflared-quick 2>&1 | grep trycloudflare.com
+```
+
+Log in ra URL dạng `https://<ngẫu-nhiên>.trycloudflare.com`. URL đổi mỗi lần container khởi động lại,
+chỉ dùng để demo.
+
+### 10.2. Domain riêng (named tunnel)
+
+Điều kiện: domain phải được quản lý DNS tại Cloudflare. Với `phonestore.lazi.id.vn`, zone
+`lazi.id.vn` phải chuyển nameserver từ zonedns.vn sang Cloudflare (gói Free không nhận riêng subdomain).
+
+1. Cloudflare Dashboard → **Add a domain** `lazi.id.vn` → đổi nameserver tại nhà đăng ký theo hướng dẫn.
+   Nhớ tạo lại các bản ghi DNS đang dùng cho domain khác.
+2. **Zero Trust → Networks → Tunnels → Create a tunnel** → loại *Cloudflared* → đặt tên `phonestore`.
+   Ở bước *Install connector*, copy token (chuỗi sau `--token`).
+3. Tab **Public Hostname** → thêm: subdomain `phonestore`, domain `lazi.id.vn`,
+   service `HTTP` → `web:80`. Cloudflare tự tạo bản ghi CNAME. Xoá bản ghi `A phonestore` cũ nếu có.
+4. Trong `docker/env.prod`:
+
+   ```dotenv
+   CLOUDFLARE_TUNNEL_TOKEN=<token vừa copy>
+   NGINX_CONF=nginx.conf
+   PUBLIC_ORIGIN=https://phonestore.lazi.id.vn
+   ```
+
+   `NGINX_CONF` phải là `nginx.conf` (chỉ HTTP). Nếu để `nginx.ssl.conf`, nginx sẽ chuyển hướng
+   HTTP→HTTPS mãi và trình duyệt báo *too many redirects*.
+5. Chạy:
+
+   ```bash
+   docker compose -f docker/docker-compose.prod.yml --env-file docker/env.prod --profile cloudflare up -d --build
+   docker logs -f phonestore-cloudflared   # thấy "Registered tunnel connection" là xong
+   ```
+
+6. (Khuyến nghị) Khi đã chạy qua tunnel, đóng cổng 80/443 trên firewall server, hoặc đặt
+   `WEB_PORT=127.0.0.1:8088` và `WEB_SSL_PORT=127.0.0.1:8443` để chỉ truy cập được qua Cloudflare.
+
+nginx giữ nguyên header `X-Forwarded-Proto: https` do cloudflared gửi, nên API nhận đúng scheme
+HTTPS và đặt cookie đăng nhập/CSRF với cờ `Secure`.
+
+| Triệu chứng | Cách xử lý |
+|---|---|
+| `ERR_TOO_MANY_REDIRECTS` | Đổi `NGINX_CONF=nginx.conf` rồi `up -d` lại |
+| Lỗi 502 / 1033 trên Cloudflare | `docker logs phonestore-cloudflared`; kiểm tra service là `http://web:80` |
+| Đăng nhập lỗi 401/CSRF | `PUBLIC_ORIGIN` phải đúng `https://<domain>` |

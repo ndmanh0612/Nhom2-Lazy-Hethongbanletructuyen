@@ -79,6 +79,34 @@ services:
     networks:
       - phonestore-net
 
+  # Cloudflare Tunnel (tuỳ chọn): đưa web ra Internet qua Cloudflare, không cần mở cổng 80/443.
+  # Chạy kèm: --profile cloudflare  (cần CLOUDFLARE_TUNNEL_TOKEN, xem docs/DEPLOY.md mục 10).
+  cloudflared:
+    image: cloudflare/cloudflared:2024.12.2
+    container_name: phonestore-cloudflared
+    restart: unless-stopped
+    profiles: ["cloudflare"]
+    command: tunnel --no-autoupdate --url http://web:80 run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - web
+    networks:
+      - phonestore-net
+
+  # Quick tunnel (demo nhanh, không cần tài khoản): URL ngẫu nhiên *.trycloudflare.com in trong log.
+  # Chạy kèm: --profile cloudflare-quick
+  cloudflared-quick:
+    image: cloudflare/cloudflared:2024.12.2
+    container_name: phonestore-cloudflared-quick
+    restart: unless-stopped
+    profiles: ["cloudflare-quick"]
+    command: tunnel --no-autoupdate --url http://web:80
+    depends_on:
+      - web
+    networks:
+      - phonestore-net
+
 volumes:
   pgdata:
 
