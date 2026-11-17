@@ -26,6 +26,9 @@
 
 Tất cả issue hiện ở trạng thái **To Do** (Status category: `To Do`).
 
+> Cập nhật 26/10/2026: bổ sung `N2LHTBLTT-39` (kiểm thử tích hợp và regression test các API nghiệp vụ,
+> Sprint 5 – DevOps, Testing) — task này được gán cho `toanlion24` sau lần export ngày 25/10.
+
 ## Issue theo người thực hiện
 
 ### Mai Thanh Toàn (`toanlion24`)
@@ -37,6 +40,7 @@ Tất cả issue hiện ở trạng thái **To Do** (Status category: `To Do`).
 | N2LHTBLTT-20 | FR-07: API Checkout COD, tạo đơn và tính tổng tiền | Core Business Development |
 | N2LHTBLTT-25 | FR-08: API xem danh sách, chi tiết và lịch sử đơn hàng | Order Management & System |
 | N2LHTBLTT-26 | FR-09: API hủy đơn, kiểm tra trạng thái và hoàn tồn | Order Management & System |
+| N2LHTBLTT-39 | Kiểm thử tích hợp và regression test các API nghiệp vụ | Sprint 5 – DevOps, Testing |
 
 ### Mạnh Nguyễn (Lead)
 | Key | Summary |
@@ -121,3 +125,15 @@ README trong repo ghi Sprint 2 với mã nội bộ `S2-03`…`S2-10`. Đối ch
 - `S2-03` (Đạt — Migrations + Inventory) → **N2LHTBLTT-7, N2LHTBLTT-13**
 
 Jira hiện đã lên tới Sprint 5, Board "Order Management & System" là nhóm nghiệp vụ Order mới nhất. Tên branch/commit phải dùng mã Jira dạng số (`N2LHTBLTT-<số>`), không dùng mã `S2-xx`.
+
+## Trạng thái triển khai (26/10/2026)
+
+| Task | Người | Trạng thái |
+|---|---|---|
+| N2LHTBLTT-12 | Toàn | ✅ PR #1 (`feature/N2LHTBLTT-12-cart-order-entities`) |
+| N2LHTBLTT-14 | Toàn | ✅ PR #1 |
+| N2LHTBLTT-19 | Toàn | ✅ PR #1 |
+| N2LHTBLTT-20 | Toàn | ✅ PR #1 |
+| N2LHTBLTT-25 | Toàn | ✅ PR #1 |
+| N2LHTBLTT-26 | Toàn | ✅ PR #1 |
+| N2LHTBLTT-39 | Toàn | 🔄 PR #2 (`feature/N2LHTBLTT-39-integration-regression-test`) — stack trên PR #1 |

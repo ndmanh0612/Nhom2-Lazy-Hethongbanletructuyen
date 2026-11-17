@@ -164,8 +164,9 @@ public class CatalogQueryTests : IAsyncLifetime
     [Fact]
     public async Task Filter_by_category_returns_only_products_of_that_category()
     {
-        var categories = await _client.GetFromJsonAsync<JsonElement>("/api/v1/categories", Json);
-        var categoryId = categories.GetProperty("data")[0].GetProperty("id").GetInt64();
+        // Regression: phải chọn danh mục thực sự có sản phẩm. Danh mục đầu tiên
+        // trong danh sách có thể là danh mục rỗng do test khác tạo ra.
+        var categoryId = await ApiTestHelper.GetCategoryIdWithProductsAsync(_client);
 
         var response = await _client.GetAsync($"/api/v1/products?categoryId={categoryId}&pageSize=50");
         response.StatusCode.Should().Be(HttpStatusCode.OK);

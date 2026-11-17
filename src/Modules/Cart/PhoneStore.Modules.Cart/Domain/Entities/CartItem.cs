@@ -1,4 +1,5 @@
 using PhoneStore.BuildingBlocks.Domain;
+using PhoneStore.BuildingBlocks.Exceptions;
 
 namespace PhoneStore.Modules.Cart.Domain.Entities;
 
@@ -49,12 +50,16 @@ public class CartItem : BaseEntity<long>
     {
         if (quantity <= 0)
         {
-            throw new ArgumentException("Số lượng phải lớn hơn 0.", nameof(quantity));
+            throw new ValidationException(
+                "quantity",
+                "Số lượng phải lớn hơn 0.");
         }
 
         if (quantity > MaxQuantityPerItem)
         {
-            throw new ArgumentException($"Mỗi sản phẩm chỉ được thêm tối đa {MaxQuantityPerItem} đơn vị.", nameof(quantity));
+            throw new ValidationException(
+                "quantity",
+                $"Mỗi sản phẩm chỉ được thêm tối đa {MaxQuantityPerItem} đơn vị.");
         }
 
         Quantity = quantity;
@@ -65,7 +70,9 @@ public class CartItem : BaseEntity<long>
     {
         if (quantity <= 0)
         {
-            throw new ArgumentException("Số lượng tăng thêm phải lớn hơn 0.", nameof(quantity));
+            throw new ValidationException(
+                "quantity",
+                "Số lượng tăng thêm phải lớn hơn 0.");
         }
 
         SetQuantity(Quantity + quantity);
