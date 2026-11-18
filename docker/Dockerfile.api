@@ -30,6 +30,9 @@ COPY --from=build /app/publish ./
 
 EXPOSE 8080
 
+# Bảo mật: chạy bằng user không phải root (image aspnet có sẵn user "app", UID $APP_UID).
+USER $APP_UID
+
 # Health check mở TCP tới cổng 8080 — image aspnet không có curl/wget.
 HEALTHCHECK --interval=20s --timeout=5s --start-period=40s --retries=5 \
     CMD ["bash", "-c", "exec 3<>/dev/tcp/localhost/8080 && echo ok"]

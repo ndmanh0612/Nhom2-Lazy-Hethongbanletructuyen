@@ -20,6 +20,9 @@ using PhoneStore.Modules.Order;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Bảo mật: không lộ "Server: Kestrel" trong response.
+builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+
 if (!builder.Environment.IsDevelopment()
     && builder.Configuration.GetValue<bool>("Authentication:AllowDevelopmentSigningKey"))
 {
@@ -118,6 +121,12 @@ if (autoSeed)
 if (autoSeedSample)
 {
     await SampleDataSeeder.SeedAsync(app.Services);
+}
+
+// Bảo mật: trên Production, khoá tài khoản mẫu còn dùng mật khẩu công khai (xem DefaultCredentialGuard).
+if (app.Environment.IsProduction())
+{
+    await DefaultCredentialGuard.EnforceAsync(app.Services, app.Configuration, app.Logger);
 }
 
 // N2LHTBLTT-41: Swagger bật theo cấu hình để dùng được trên môi trường demo/staging.

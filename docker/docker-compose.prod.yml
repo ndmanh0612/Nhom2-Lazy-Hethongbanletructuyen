@@ -17,6 +17,8 @@ services:
     image: postgres:16-alpine
     container_name: phonestore-postgres
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -37,6 +39,8 @@ services:
       dockerfile: docker/Dockerfile.api
     container_name: phonestore-api
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,7 +57,11 @@ services:
       Database__AutoMigrate: "true"
       Database__AutoSeed: "true"
       Database__AutoSeedSample: "true"
-      Swagger__Enabled: "true"
+      # Swagger tắt mặc định trên production (lộ toàn bộ API). Bật tạm: SWAGGER_ENABLED=true trong env.prod.
+      Swagger__Enabled: ${SWAGGER_ENABLED:-false}
+      # Khoá tài khoản mẫu còn mật khẩu công khai; lấy lại admin bằng BOOTSTRAP_ADMIN_PASSWORD (>= 12 ký tự).
+      Security__BootstrapAdminPassword: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      Security__AllowDemoAccounts: ${ALLOW_DEMO_ACCOUNTS:-false}
       Cors__AllowedOrigins__0: ${PUBLIC_ORIGIN:-http://localhost}
       # Lưu ảnh upload trên MinIO (N2LHTBLTT-30/31). Ảnh public qua nginx: <PUBLIC_ORIGIN>/phonestore-images/...
       MinioStorage__Endpoint: http://minio:9000
@@ -72,6 +80,8 @@ services:
       dockerfile: docker/Dockerfile.nginx
     container_name: phonestore-web
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       - api
       - minio
@@ -92,6 +102,8 @@ services:
     image: cgr.dev/chainguard/minio:latest
     container_name: phonestore-minio
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Thiếu MINIO_ROOT_USER trong file env.prod}
@@ -109,6 +121,8 @@ services:
     image: cloudflare/cloudflared:2024.12.2
     container_name: phonestore-cloudflared
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     profiles: ["cloudflare"]
     command: tunnel --no-autoupdate --url http://web:80 run
     environment:
@@ -124,6 +138,8 @@ services:
     image: cloudflare/cloudflared:2024.12.2
     container_name: phonestore-cloudflared-quick
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     profiles: ["cloudflare-quick"]
     command: tunnel --no-autoupdate --url http://web:80
     depends_on:
