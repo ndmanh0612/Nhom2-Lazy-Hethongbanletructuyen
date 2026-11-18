@@ -79,6 +79,7 @@ public class CatalogDbContext : DbContext
             entity.Property(e => e.Capacity).HasMaxLength(50).HasDefaultValue(string.Empty);
             entity.Property(e => e.Price).IsRequired();
             entity.Property(e => e.StockQuantity).HasDefaultValue(0);
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();

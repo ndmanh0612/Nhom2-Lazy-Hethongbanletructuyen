@@ -64,7 +64,24 @@ public class ProductVariant : BaseEntity<long>
     public int StockQuantity { get; private set; }
     public bool IsActive { get; private set; } = true;
 
+    /// <summary>Ảnh riêng của phiên bản (thường theo màu), hiển thị ở ô chọn màu.</summary>
+    public string? ImageUrl { get; private set; }
+
+    /// <summary>Giá niêm yết trước giảm (gạch ngang); null nếu không giảm giá.</summary>
+    public long? OriginalPrice { get; private set; }
+
     protected ProductVariant() { }
+
+    /// <summary>Cập nhật ảnh theo màu và giá niêm yết (giá gốc) của phiên bản.</summary>
+    public void SetPresentation(string? imageUrl, long? originalPrice)
+    {
+        if (originalPrice is <= 0)
+            throw new ArgumentException("Giá gốc phải lớn hơn 0.", nameof(originalPrice));
+
+        ImageUrl = string.IsNullOrWhiteSpace(imageUrl) ? null : imageUrl.Trim();
+        OriginalPrice = originalPrice is { } op && op > Price ? op : null;
+        Touch();
+    }
 
     public static ProductVariant Create(long productId, string sku, string color, string capacity, long price, int stockQuantity = 0)
     {

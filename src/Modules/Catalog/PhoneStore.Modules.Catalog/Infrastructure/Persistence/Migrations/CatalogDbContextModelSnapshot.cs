@@ -204,10 +204,17 @@ namespace PhoneStore.Modules.Catalog.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
+
+                    b.Property<long?>("OriginalPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("Price")
                         .HasColumnType("bigint");

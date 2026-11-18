@@ -311,22 +311,26 @@ const Pages = (() => {
         const variants = product.variants || [];
         const images = product.images || [];
 
-        let selectedVariant = variants.find(variant => variant.isActive) || variants[0] || null;
-
-        const variantButtons = variants.map(variant => `
-            <button class="option" data-variant="${variant.id}" data-price="${variant.price}" data-stock="${variant.stockQuantity}"
-                    data-sku="${escapeHtml(variant.sku)}" data-color="${escapeHtml(variant.color)}" data-capacity="${escapeHtml(variant.capacity)}">
-                ${escapeHtml(variant.color)} · ${escapeHtml(variant.capacity)}
-            </button>`).join('');
-
-        const imagesHtml = images.length
-            ? images.map((image, index) => `
-                <button class="${index === 0 ? 'is-active' : ''}" data-image="${escapeHtml(image.imageUrl)}">
-                    <img src="${escapeHtml(image.imageUrl)}" alt="${escapeHtml(product.name)}">
-                </button>`).join('')
-            : '';
+        // ----- SKU: nhóm theo phiên bản (dung lượng/cấu hình) → màu sắc -----
+        const activeVariants = variants.filter(variant => variant.isActive !== false);
+        const capacityOf = variant => variant.capacity || 'Tiêu chuẩn';
+        const capacities = [...new Set(activeVariants.map(capacityOf))]
+            .map(label => ({ label, minPrice: Math.min(...activeVariants.filter(v => capacityOf(v) === label).map(v => v.price)) }))
+            .sort((x, y) => x.minPrice - y.minPrice);
+        const pickDefault = list => list.find(v => v.stockQuantity > 0) || list[0] || null;
+        let selectedVariant = capacities.length
+            ? pickDefault(activeVariants.filter(v => capacityOf(v) === capacities[0].label))
+            : null;
 
         const mainImage = product.mainImageUrl || (images[0] && images[0].imageUrl) || '';
+        const galleryUrls = [...new Set([
+            ...images.map(image => image.imageUrl),
+            ...activeVariants.map(variant => variant.imageUrl).filter(Boolean)
+        ])];
+        const imagesHtml = galleryUrls.map((url, index) => `
+                <button class="${index === 0 ? 'is-active' : ''}" data-image="${escapeHtml(url)}">
+                    <img src="${escapeHtml(url)}" alt="${escapeHtml(product.name)}" loading="lazy">
+                </button>`).join('');
 
         const specs = parseSpecifications(product.specificationsJson);
 
@@ -368,21 +372,30 @@ const Pages = (() => {
                     </div>
 
                     <div>
-                        <h1 class="detail__title">${escapeHtml(product.name)}</h1>
+                        <h1 class="detail__title" id="detail-title">${escapeHtml(product.name)}</h1>
                         <div class="detail__sub">
                             Thương hiệu: <b>${escapeHtml(product.brandName || '')}</b> ·
                             Danh mục: <b>${escapeHtml(product.categoryName || '')}</b> ·
-                            Mã sản phẩm: <span id="sku-label">${selectedVariant ? escapeHtml(selectedVariant.sku) : '—'}</span>
+                            SKU: <span id="sku-label">${selectedVariant ? escapeHtml(selectedVariant.sku) : '—'}</span>
                         </div>
 
-                        <div class="detail__price-box">
-                            <div class="detail__price" id="detail-price">${formatCurrency(selectedVariant ? selectedVariant.price : product.minPrice)}</div>
-                            <div class="detail__save" id="detail-stock">${selectedVariant ? (selectedVariant.stockQuantity > 0 ? `Còn ${selectedVariant.stockQuantity} sản phẩm` : 'Tạm hết hàng') : ''}</div>
-                        </div>
+                        <div class="sku-price" id="sku-price"></div>
+
+                        ${capacities.length > 1 || (capacities[0] && capacities[0].label !== 'Tiêu chuẩn') ? `
+                        <div class="detail__row">
+                            <h4>Phiên bản</h4>
+                            <div class="sku-caps" id="sku-caps">
+                                ${capacities.map(cap => `
+                                    <button type="button" class="sku-cap" data-cap="${escapeHtml(cap.label)}">
+                                        <strong>${escapeHtml(cap.label)}</strong>
+                                        <span>${formatCurrency(cap.minPrice)}</span>
+                                    </button>`).join('')}
+                            </div>
+                        </div>` : ''}
 
                         <div class="detail__row">
-                            <h4>Màu sắc & dung lượng</h4>
-                            <div class="option-list" id="variant-options">${variantButtons}</div>
+                            <h4>Màu sắc</h4>
+                            <div class="sku-colors" id="sku-colors"></div>
                         </div>
 
                         <div class="detail__promo">
@@ -443,24 +456,69 @@ const Pages = (() => {
                 </div>
             </div>`);
 
-        // Variant selection
-        document.querySelectorAll('[data-variant]').forEach(node => node.addEventListener('click', () => {
-            document.querySelectorAll('[data-variant]').forEach(item => item.classList.remove('is-active'));
-            node.classList.add('is-active');
-            selectedVariant = {
-                id: Number(node.dataset.variant),
-                sku: node.dataset.sku,
-                color: node.dataset.color,
-                capacity: node.dataset.capacity,
-                price: Number(node.dataset.price),
-                stockQuantity: Number(node.dataset.stock)
-            };
-            document.getElementById('detail-price').textContent = formatCurrency(selectedVariant.price);
-            document.getElementById('detail-stock').textContent = selectedVariant.stockQuantity > 0
-                ? `Còn ${selectedVariant.stockQuantity} sản phẩm`
-                : 'Tạm hết hàng';
-            document.getElementById('sku-label').textContent = selectedVariant.sku;
+        // ----- Chọn phiên bản / màu sắc -----
+        const showImage = url => {
+            if (!url) return;
+            document.getElementById('main-image').innerHTML =
+                `<img src="${escapeHtml(url)}" alt="${escapeHtml(product.name)}" style="max-height:100%;object-fit:contain">`;
+            document.querySelectorAll('[data-image]').forEach(item => item.classList.toggle('is-active', item.dataset.image === url));
+        };
+
+        const renderSku = changeImage => {
+            if (!selectedVariant) {
+                document.getElementById('sku-colors').innerHTML = '<p style="color:var(--ink-soft)">Sản phẩm chưa có phiên bản để bán.</p>';
+                return;
+            }
+            const cap = capacityOf(selectedVariant);
+            document.querySelectorAll('[data-cap]').forEach(btn => btn.classList.toggle('is-active', btn.dataset.cap === cap));
+
+            const colorVariants = activeVariants.filter(v => capacityOf(v) === cap);
+            document.getElementById('sku-colors').innerHTML = colorVariants.map(v => `
+                <button type="button" class="sku-color${v.id === selectedVariant.id ? ' is-active' : ''}${v.stockQuantity > 0 ? '' : ' is-out'}" data-variant="${v.id}">
+                    <img src="${escapeHtml(v.imageUrl || mainImage)}" alt="${escapeHtml(v.color)}" loading="lazy">
+                    <span>
+                        <strong>${escapeHtml(v.color || 'Mặc định')}</strong>
+                        <small>${v.stockQuantity > 0 ? formatCurrency(v.price) : 'Tạm hết hàng'}</small>
+                    </span>
+                </button>`).join('');
+            document.querySelectorAll('#sku-colors [data-variant]').forEach(node => node.addEventListener('click', () => {
+                selectedVariant = activeVariants.find(v => v.id === Number(node.dataset.variant));
+                renderSku(true);
+            }));
+
+            const v = selectedVariant;
+            const discount = v.originalPrice && v.originalPrice > v.price ? Math.round((1 - v.price / v.originalPrice) * 100) : 0;
+            document.getElementById('sku-price').innerHTML = `
+                <div class="sku-price__main">
+                    <div class="sku-price__now">${formatCurrency(v.price)}</div>
+                    ${discount ? `<div class="sku-price__old"><del>${formatCurrency(v.originalPrice)}</del><span class="sku-price__badge">-${discount}%</span></div>` : ''}
+                </div>
+                <div class="sku-price__or">Hoặc</div>
+                <div class="sku-price__inst">
+                    <div><b>${formatCurrency(Math.round(v.price / 12 / 100) * 100)}</b> /tháng</div>
+                    <small>12 tháng, lãi suất 0%</small>
+                </div>
+                <div class="sku-price__stock${v.stockQuantity > 0 ? '' : ' is-out'}">
+                    ${v.stockQuantity > 0 ? `✔ Còn hàng (${v.stockQuantity} sản phẩm)` : '✖ Tạm hết hàng'}
+                </div>`;
+
+            const suffix = cap !== 'Tiêu chuẩn' && !product.name.includes(cap) ? ` ${cap}` : '';
+            const colorSuffix = v.color && v.color !== 'Mặc định' ? ` - ${v.color}` : '';
+            document.getElementById('detail-title').textContent = `${product.name}${suffix}${colorSuffix}`;
+            document.getElementById('sku-label').textContent = v.sku;
+            const outOfStock = v.stockQuantity <= 0;
+            document.getElementById('btn-add-cart').disabled = outOfStock;
+            document.getElementById('btn-buy-now').disabled = outOfStock;
+            if (changeImage) showImage(v.imageUrl);
+        };
+
+        document.querySelectorAll('[data-cap]').forEach(btn => btn.addEventListener('click', () => {
+            const list = activeVariants.filter(v => capacityOf(v) === btn.dataset.cap);
+            selectedVariant = list.find(v => v.color === (selectedVariant && selectedVariant.color) && v.stockQuantity > 0)
+                || pickDefault(list);
+            renderSku(true);
         }));
+        renderSku(true);
 
         // Image gallery
         document.querySelectorAll('[data-image]').forEach(node => node.addEventListener('click', () => {

@@ -1,0 +1,5058 @@
+{
+ "products": [
+  {
+   "slug": "iphone-15",
+   "name": "iPhone 15",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 15 chính hãng, Apple A16 Bionic 6 nhân, màn hình 6.1 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.1 inches Super Retina XDR OLED",
+    "Chip": "Apple A16 Bionic 6 nhân",
+    "RAM": "6 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Chính 48 MP & Phụ 12 MP",
+    "Camera trước": "12MP, ƒ/1.9",
+    "Pin": "3349 mAh",
+    "Hệ điều hành": "iOS 17",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-15-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "128GB",
+     "price": 21690000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/iphone-15-xanh-duong.webp",
+     "stock": 16
+    },
+    {
+     "sku": "IPHONE-15-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "128GB",
+     "price": 21990000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/iphone-15-xanh-la.webp",
+     "stock": 40
+    },
+    {
+     "sku": "IPHONE-15-128GB-HONG",
+     "color": "Hồng",
+     "capacity": "128GB",
+     "price": 21790000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/iphone-15-hong.webp",
+     "stock": 46
+    },
+    {
+     "sku": "IPHONE-15-128GB-VANG",
+     "color": "Vàng",
+     "capacity": "128GB",
+     "price": 21990000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/iphone-15-vang.webp",
+     "stock": 80
+    },
+    {
+     "sku": "IPHONE-15-128GB-DEN",
+     "color": "Đen",
+     "capacity": "128GB",
+     "price": 21490000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/iphone-15-den.webp",
+     "stock": 56
+    },
+    {
+     "sku": "IPHONE-15-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 25990000,
+     "imageUrl": "/assets/products/v/iphone-15-xanh-duong.webp",
+     "stock": 73
+    },
+    {
+     "sku": "IPHONE-15-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 25990000,
+     "imageUrl": "/assets/products/v/iphone-15-xanh-la.webp",
+     "stock": 47
+    },
+    {
+     "sku": "IPHONE-15-256GB-HONG",
+     "color": "Hồng",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 25990000,
+     "imageUrl": "/assets/products/v/iphone-15-hong.webp",
+     "stock": 34
+    },
+    {
+     "sku": "IPHONE-15-256GB-VANG",
+     "color": "Vàng",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 25990000,
+     "imageUrl": "/assets/products/v/iphone-15-vang.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPHONE-15-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 24490000,
+     "originalPrice": 25990000,
+     "imageUrl": "/assets/products/v/iphone-15-den.webp",
+     "stock": 61
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-s24",
+   "name": "Galaxy S24",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy S24 chính hãng, Exynos 2400, màn hình 6.2 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "6.2 inches Dynamic AMOLED 2X",
+    "Chip": "Exynos 2400",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính 50 MP, f/1.8 Camera tele: 10 MP, f/2.4, PDAF, OIS, zoom quang học 3xCamera góc siêu rộng: 12 MP, f/2.2, 120˚",
+    "Camera trước": "12 MP, f/2.2",
+    "Pin": "4000 mAh",
+    "Hệ điều hành": "Android 14, One UI 6.1",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-S24-8GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 512GB",
+     "price": 14990000,
+     "originalPrice": 26490000,
+     "imageUrl": "/assets/products/v/galaxy-s24-den.webp",
+     "stock": 73
+    },
+    {
+     "sku": "GALAXY-S24-8GB-512GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 512GB",
+     "price": 14990000,
+     "originalPrice": 26490000,
+     "imageUrl": "/assets/products/v/galaxy-s24-tim.webp",
+     "stock": 56
+    },
+    {
+     "sku": "GALAXY-S24-8GB-512GB-VANG",
+     "color": "Vàng",
+     "capacity": "8GB 512GB",
+     "price": 14990000,
+     "originalPrice": 26490000,
+     "imageUrl": "/assets/products/v/galaxy-s24-vang.webp",
+     "stock": 13
+    },
+    {
+     "sku": "GALAXY-S24-8GB-512GB-XAM",
+     "color": "Xám",
+     "capacity": "8GB 512GB",
+     "price": 14990000,
+     "originalPrice": 26490000,
+     "imageUrl": "/assets/products/v/galaxy-s24-xam.webp",
+     "stock": 31
+    },
+    {
+     "sku": "GALAXY-S24-8GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 256GB",
+     "price": 16790000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/galaxy-s24-den.webp",
+     "stock": 70
+    },
+    {
+     "sku": "GALAXY-S24-8GB-256GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 256GB",
+     "price": 16790000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/galaxy-s24-tim.webp",
+     "stock": 31
+    },
+    {
+     "sku": "GALAXY-S24-8GB-256GB-VANG",
+     "color": "Vàng",
+     "capacity": "8GB 256GB",
+     "price": 16790000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/galaxy-s24-vang.webp",
+     "stock": 65
+    },
+    {
+     "sku": "GALAXY-S24-8GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "8GB 256GB",
+     "price": 16790000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/galaxy-s24-xam.webp",
+     "stock": 72
+    }
+   ]
+  },
+  {
+   "slug": "dell-xps-15",
+   "name": "Dell XPS 15",
+   "category": "Laptop",
+   "brand": "Dell",
+   "description": "Dell XPS 15 chính hãng, Intel Core i9 - 12900HK (3.80 GHz, up to 5.00 GHz, 14 lõi / 20 luồng, 24 MB), màn hình 15.6 inches Infinity Edge Tần số quét 60 Hz Độ sáng 400 nits Độ phủ màu 100% DCI-P3.",
+   "specs": {
+    "Màn hình": "15.6 inches Infinity Edge Tần số quét 60 Hz Độ sáng 400 nits Độ phủ màu 100% DCI-P3",
+    "CPU": "Intel Core i9 - 12900HK (3.80 GHz, up to 5.00 GHz, 14 lõi / 20 luồng, 24 MB)",
+    "RAM": "16GB",
+    "Bộ nhớ": "512 GB SSD M2. PCIe",
+    "Card đồ họa": "Intel Iris Xe NVIDIA GeForce RTX 3050 Ti 4 GB GDDR6",
+    "Pin": "6 Cell",
+    "Hệ điều hành": "Windows 11 Home"
+   },
+   "variants": [
+    {
+     "sku": "DELL-XPS-15-16GB-512GB-BAC",
+     "color": "Bạc",
+     "capacity": "16GB/512GB",
+     "price": 42900000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/dell-xps-15-bac.webp",
+     "stock": 68
+    }
+   ]
+  },
+  {
+   "slug": "iphone-15-pro-max",
+   "name": "iPhone 15 Pro Max",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 15 Pro Max chính hãng, Apple A17 Pro 6 nhân, màn hình 6.7 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.7 inches Super Retina XDR OLED",
+    "Chip": "Apple A17 Pro 6 nhân",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính: 48MP, 24 mm, ƒ/1.78 Camera góc siêu rộng: 12 MP, 13 mm, ƒ/2.2Camera Tele: 12 MP",
+    "Camera trước": "12MP, ƒ/1.9",
+    "Pin": "4422 mAh",
+    "Hệ điều hành": "iOS 17",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-15-PRO-MAX-256GB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-den.webp",
+     "stock": 57
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-256GB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-tu-nhien.webp",
+     "stock": 72
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-256GB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-trang.webp",
+     "stock": 42
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-256GB-TITAN-XANH",
+     "color": "Titan Xanh",
+     "capacity": "256GB",
+     "price": 24990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-xanh.webp",
+     "stock": 45
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-512GB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "512GB",
+     "price": 28490000,
+     "originalPrice": 40990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-den.webp",
+     "stock": 64
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-512GB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "512GB",
+     "price": 28490000,
+     "originalPrice": 40990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-tu-nhien.webp",
+     "stock": 49
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-512GB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "512GB",
+     "price": 28490000,
+     "originalPrice": 40990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-trang.webp",
+     "stock": 60
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-512GB-TITAN-XANH",
+     "color": "Titan Xanh",
+     "capacity": "512GB",
+     "price": 28490000,
+     "originalPrice": 40990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-xanh.webp",
+     "stock": 69
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-1TB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-den.webp",
+     "stock": 14
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-1TB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-tu-nhien.webp",
+     "stock": 70
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-1TB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-trang.webp",
+     "stock": 32
+    },
+    {
+     "sku": "IPHONE-15-PRO-MAX-1TB-TITAN-XANH",
+     "color": "Titan Xanh",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-15-pro-max-titan-xanh.webp",
+     "stock": 22
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-s24-ultra",
+   "name": "Galaxy S24 Ultra",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy S24 Ultra chính hãng, Snapdragon 8 Gen 3 For Galaxy, màn hình 6.8 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "6.8 inches Dynamic AMOLED 2X",
+    "Chip": "Snapdragon 8 Gen 3 For Galaxy",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính: 200MP, Laser AF, OIS Camera: 50MP, PDAF, OIS, zoom quang học 5xCamera tele: 10MPCamera góc siêu rộng: 12 MP, f/2.2, 13mm, 120˚",
+    "Camera trước": "12 MP, f/2.2",
+    "Pin": "5,000mAh",
+    "Hệ điều hành": "Android 14, One UI 6.1",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 36810000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-den.webp",
+     "stock": 36
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-512GB-TIM",
+     "color": "Tím",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 36810000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-tim.webp",
+     "stock": 55
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-512GB-VANG",
+     "color": "Vàng",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 36810000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-vang.webp",
+     "stock": 12
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-512GB-XAM",
+     "color": "Xám",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 36810000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-xam.webp",
+     "stock": 22
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 256GB",
+     "price": 25290000,
+     "originalPrice": 29450000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-den.webp",
+     "stock": 54
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-256GB-TIM",
+     "color": "Tím",
+     "capacity": "12GB 256GB",
+     "price": 25290000,
+     "originalPrice": 29450000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-tim.webp",
+     "stock": 50
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-256GB-VANG",
+     "color": "Vàng",
+     "capacity": "12GB 256GB",
+     "price": 25290000,
+     "originalPrice": 29450000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-vang.webp",
+     "stock": 42
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "12GB 256GB",
+     "price": 25290000,
+     "originalPrice": 29450000,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-xam.webp",
+     "stock": 15
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-1TB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 1TB",
+     "price": 44490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-den.webp",
+     "stock": 9
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-1TB-TIM",
+     "color": "Tím",
+     "capacity": "12GB 1TB",
+     "price": 44490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-tim.webp",
+     "stock": 50
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-1TB-VANG",
+     "color": "Vàng",
+     "capacity": "12GB 1TB",
+     "price": 44490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-vang.webp",
+     "stock": 13
+    },
+    {
+     "sku": "GALAXY-S24-ULTRA-12GB-1TB-XAM",
+     "color": "Xám",
+     "capacity": "12GB 1TB",
+     "price": 44490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/galaxy-s24-ultra-xam.webp",
+     "stock": 16
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-a55",
+   "name": "Galaxy A55 5G",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy A55 5G chính hãng, Exynos 1480 4nm 2.4GHz, màn hình 6.6 inches Super AMOLED.",
+   "specs": {
+    "Màn hình": "6.6 inches Super AMOLED",
+    "Chip": "Exynos 1480 4nm 2.4GHz",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera chính: 50 MP OIS+HDR Camera góc rộng: 12MP Camera macro: 5MP",
+    "Camera trước": "32 MP",
+    "Pin": "5000 mAh",
+    "Hệ điều hành": "Android 14",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-A55-8GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 128GB",
+     "price": 7590000,
+     "originalPrice": 9990000,
+     "imageUrl": "/assets/products/v/galaxy-a55-den.webp",
+     "stock": 46
+    },
+    {
+     "sku": "GALAXY-A55-8GB-128GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 128GB",
+     "price": 7590000,
+     "originalPrice": 9990000,
+     "imageUrl": "/assets/products/v/galaxy-a55-tim.webp",
+     "stock": 25
+    },
+    {
+     "sku": "GALAXY-A55-8GB-128GB-XANH-NHAT",
+     "color": "Xanh nhạt",
+     "capacity": "8GB 128GB",
+     "price": 7590000,
+     "originalPrice": 9990000,
+     "imageUrl": "/assets/products/v/galaxy-a55-xanh-nhat.webp",
+     "stock": 5
+    }
+   ]
+  },
+  {
+   "slug": "xiaomi-14-ultra",
+   "name": "Xiaomi 14 Ultra",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Xiaomi 14 Ultra chính hãng, Snapdragon 8 Gen 3, màn hình 6.73 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.73 inches AMOLED",
+    "Chip": "Snapdragon 8 Gen 3",
+    "RAM": "16 GB",
+    "Bộ nhớ": "512 GB",
+    "Camera sau": "50 MP, f/1.63 hoặc f/4.0, 23mm (góc rộng), kích thước 1\", PDAF đa hướng, Laser AF, OIS 50 MP, f/2.5, 120mm (tiềm vọng tele), Dual-Pixel PDAF",
+    "Camera trước": "32MP f/2.0Dynamic Framing (0.8x, 1x)HDRChế độ chân dung với khả năng kiểm soát làm mờ và độ sâu",
+    "Pin": "5.000 mAh",
+    "Hệ điều hành": "Xiaomi HyperOS",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "XIAOMI-14-ULTRA-16GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "16GB 512GB",
+     "price": 24090000,
+     "originalPrice": 32990000,
+     "imageUrl": "/assets/products/v/xiaomi-14-ultra-den.webp",
+     "stock": 14
+    },
+    {
+     "sku": "XIAOMI-14-ULTRA-16GB-512GB-TRANG",
+     "color": "Trắng",
+     "capacity": "16GB 512GB",
+     "price": 24090000,
+     "originalPrice": 32990000,
+     "imageUrl": "/assets/products/v/xiaomi-14-ultra-trang.webp",
+     "stock": 49
+    }
+   ]
+  },
+  {
+   "slug": "redmi-note-13-pro",
+   "name": "Redmi Note 13 Pro",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Redmi Note 13 Pro chính hãng, MediaTek Helio G99-Ultra 8 nhân, màn hình 6.67 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.67 inches AMOLED",
+    "Chip": "MediaTek Helio G99-Ultra 8 nhân",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Chính 200 MP & Phụ 8 MP, 2 MP",
+    "Camera trước": "16 MP",
+    "Pin": "5000 mAh",
+    "Hệ điều hành": "Android 13",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "REDMI-NOTE-13-PRO-4G-8GB-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "4G 8GB 128GB",
+     "price": 4690000,
+     "originalPrice": 7290000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-xanh-la.webp",
+     "stock": 50
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-4G-8GB-128GB-TIM",
+     "color": "Tím",
+     "capacity": "4G 8GB 128GB",
+     "price": 4690000,
+     "originalPrice": 7290000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-tim.webp",
+     "stock": 36
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-4G-8GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "4G 8GB 128GB",
+     "price": 4690000,
+     "originalPrice": 7290000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-den.webp",
+     "stock": 43
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-8GB-256GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 256GB",
+     "price": 4990000,
+     "originalPrice": 7850000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-tim.webp",
+     "stock": 41
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-8GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "8GB 256GB",
+     "price": 4990000,
+     "originalPrice": 7850000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-xanh-la.webp",
+     "stock": 41
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-8GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 256GB",
+     "price": 4990000,
+     "originalPrice": 7850000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-den.webp",
+     "stock": 65
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-12GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 512GB",
+     "price": 6990000,
+     "originalPrice": 10780000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-den.webp",
+     "stock": 77
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-12GB-512GB-TIM",
+     "color": "Tím",
+     "capacity": "12GB 512GB",
+     "price": 6990000,
+     "originalPrice": 10780000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-tim.webp",
+     "stock": 55
+    },
+    {
+     "sku": "REDMI-NOTE-13-PRO-12GB-512GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "12GB 512GB",
+     "price": 6990000,
+     "originalPrice": 10780000,
+     "imageUrl": "/assets/products/v/redmi-note-13-pro-xanh-la.webp",
+     "stock": 34
+    }
+   ]
+  },
+  {
+   "slug": "oppo-find-x7",
+   "name": "OPPO Find X7",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Find X7 chính hãng.",
+   "specs": {},
+   "variants": [
+    {
+     "sku": "OPPO-FIND-X7-12GB-256GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "12GB 256GB",
+     "price": 15990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/oppo-find-x7-mac-dinh.webp",
+     "stock": 66
+    }
+   ]
+  },
+  {
+   "slug": "oppo-reno11-f",
+   "name": "OPPO Reno11 F 5G",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Reno11 F 5G chính hãng, Mediatek Dimensity 7050 (6 nm), màn hình 6.7 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.7 inches AMOLED",
+    "Chip": "Mediatek Dimensity 7050 (6 nm)",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera góc rộng: 64 MP, f/1.7 Camera góc siêu rộng: 8 MP, f/2.2 Camera macro: 2 MP, f/2.4",
+    "Camera trước": "Camera góc rộng: 32 MP, f/2.4, 22mm, 1/2.74\", 0.8µm",
+    "Pin": "5000 mAh",
+    "Hệ điều hành": "ColorOS 14 Android 14 - Thuật toán tối ưu hiệu năng",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "OPPO-RENO11-F-8GB-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "8GB 256GB",
+     "price": 6990000,
+     "originalPrice": 8990000,
+     "imageUrl": "/assets/products/v/oppo-reno11-f-xanh-duong.webp",
+     "stock": 28
+    },
+    {
+     "sku": "OPPO-RENO11-F-8GB-256GB-XANH-DEN",
+     "color": "Xanh Đen",
+     "capacity": "8GB 256GB",
+     "price": 6990000,
+     "originalPrice": 8990000,
+     "imageUrl": "/assets/products/v/oppo-reno11-f-xanh-den.webp",
+     "stock": 44
+    }
+   ]
+  },
+  {
+   "slug": "vivo-v30-e",
+   "name": "vivo V30e",
+   "category": "Điện thoại",
+   "brand": "vivo",
+   "description": "vivo V30e chính hãng, Qualcomm SM6450 Snapdragon 6 Gen 1 (4 nm), màn hình 6.78 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.78 inches AMOLED",
+    "Chip": "Qualcomm SM6450 Snapdragon 6 Gen 1 (4 nm)",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera góc rộng: 50 MP, f/1.8, 1/1.95\", 0.8µm, PDAF, OIS Camera góc siêu rộng: 8 MP, f/2.2, 120˚, 1/4.0\", 1.12µm",
+    "Camera trước": "32 MP HD Selfie Camera f/2.0, 84º FoV, 5P lens",
+    "Pin": "5500 mAh",
+    "Hệ điều hành": "Android 14 OS",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "VIVO-V30-E-12GB-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "12GB 256GB",
+     "price": 10490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/vivo-v30-e-trang.webp",
+     "stock": 13
+    }
+   ]
+  },
+  {
+   "slug": "realme-12-pro",
+   "name": "realme 12 Pro 5G",
+   "category": "Điện thoại",
+   "brand": "realme",
+   "description": "realme 12 Pro 5G chính hãng, Snapdragon 7+ Gen 2, màn hình 6.7 inches IPS LCD.",
+   "specs": {
+    "Màn hình": "6.7 inches IPS LCD",
+    "Chip": "Snapdragon 7+ Gen 2",
+    "RAM": "16 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "108 MP + 13 MP + 2 MP",
+    "Camera trước": "32 MP",
+    "Pin": "5.000 mAh",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "REALME-12-PRO-8GB-256GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "8GB/256GB",
+     "price": 9490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/realme-12-pro-mac-dinh.webp",
+     "stock": 64
+    }
+   ]
+  },
+  {
+   "slug": "honor-magic6-lite",
+   "name": "Honor Magic6 Lite",
+   "category": "Điện thoại",
+   "brand": "Honor",
+   "description": "Honor Magic6 Lite chính hãng, Snapdragon 6 Gen 1, màn hình 6.78 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.78 inches AMOLED",
+    "Chip": "Snapdragon 6 Gen 1",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính: 108.0 MP, ƒ/1.75Camera góc rộng: 5.0 MP, ƒ/2.2Camera góc siêu rộng: 2.0 MP, ƒ/2.4",
+    "Camera trước": "16.0 MP, ƒ/2.45",
+    "Pin": "5800 mAh",
+    "Hệ điều hành": "Android 13.0",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "HONOR-MAGIC6-LITE-8GB-256GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "8GB/256GB",
+     "price": 8290000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/honor-magic6-lite-mac-dinh.webp",
+     "stock": 72
+    }
+   ]
+  },
+  {
+   "slug": "ipad-air-m2-11",
+   "name": "iPad Air M2 11 inch",
+   "category": "Máy tính bảng",
+   "brand": "Apple",
+   "description": "iPad Air M2 11 inch chính hãng, Apple M2, màn hình 10.86 inches Liquid Retina.",
+   "specs": {
+    "Màn hình": "10.86 inches Liquid Retina",
+    "Chip": "Apple M2",
+    "CPU": "CPU 8 lõi với 4 lõi hiệu năng và 4 lõi tiết kiệm điện",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera góc rộng 12MP, khẩu độ ƒ/1.8",
+    "Camera trước": "Camera trước Ultra Wide 12MP trên cạnh ngang Khẩu độ ƒ/2.4",
+    "Pin": "Tích hợp pin sạc Li-Po 28,93 watt‑giờ",
+    "Hệ điều hành": "iPadOS 17"
+   },
+   "variants": [
+    {
+     "sku": "IPAD-AIR-M2-11-WIFI-128GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 128GB",
+     "price": 14490000,
+     "originalPrice": 16990000,
+     "imageUrl": "/assets/products/v/ipad-air-m2-11-xam.webp",
+     "stock": 21
+    },
+    {
+     "sku": "IPAD-AIR-M2-11-WIFI-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 128GB",
+     "price": 14490000,
+     "originalPrice": 16990000,
+     "imageUrl": "/assets/products/v/ipad-air-m2-11-xanh-duong.webp",
+     "stock": 74
+    },
+    {
+     "sku": "IPAD-AIR-M2-11-WIFI-128GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 128GB",
+     "price": 14490000,
+     "originalPrice": 16990000,
+     "imageUrl": "/assets/products/v/ipad-air-m2-11-trang-vang.webp",
+     "stock": 6
+    },
+    {
+     "sku": "IPAD-AIR-M2-11-WIFI-128GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 128GB",
+     "price": 14490000,
+     "originalPrice": 16990000,
+     "imageUrl": "/assets/products/v/ipad-air-m2-11-tim.webp",
+     "stock": 54
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-tab-s9-fe",
+   "name": "Galaxy Tab S9 FE",
+   "category": "Máy tính bảng",
+   "brand": "Samsung",
+   "description": "Galaxy Tab S9 FE chính hãng, Exynos 1380, màn hình 10.9 inches TFT LCD.",
+   "specs": {
+    "Màn hình": "10.9 inches TFT LCD",
+    "Chip": "Exynos 1380",
+    "CPU": "8 nhân, 2.4GHz, 2GHz",
+    "RAM": "6 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "8 MP",
+    "Camera trước": "12 MP",
+    "Pin": "8.000mAh",
+    "Hệ điều hành": "Android 13"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-TAB-S9-FE-WIFI-6GB-128GB-XAM",
+     "color": "Xám",
+     "capacity": "WIFI 6GB 128GB",
+     "price": 8490000,
+     "originalPrice": 9990000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xam.webp",
+     "stock": 80
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-WIFI-6GB-128GB-BAC",
+     "color": "Bạc",
+     "capacity": "WIFI 6GB 128GB",
+     "price": 8490000,
+     "originalPrice": 9990000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-bac.webp",
+     "stock": 14
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-WIFI-6GB-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "WIFI 6GB 128GB",
+     "price": 8490000,
+     "originalPrice": 9990000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xanh-la.webp",
+     "stock": 41
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-PLUS-WIFI-8GB-128G-BAC",
+     "color": "Bạc",
+     "capacity": "Plus WIFI 8GB 128GB",
+     "price": 9690000,
+     "originalPrice": 13740000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-bac.webp",
+     "stock": 8
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-PLUS-WIFI-8GB-128G-XAM",
+     "color": "Xám",
+     "capacity": "Plus WIFI 8GB 128GB",
+     "price": 9690000,
+     "originalPrice": 13740000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xam.webp",
+     "stock": 79
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-PLUS-WIFI-8GB-128G-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "Plus WIFI 8GB 128GB",
+     "price": 9690000,
+     "originalPrice": 13740000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xanh-la.webp",
+     "stock": 59
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-5G-6GB-128GB-XAM",
+     "color": "Xám",
+     "capacity": "5G 6GB 128GB",
+     "price": 9990000,
+     "originalPrice": 12990000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xam.webp",
+     "stock": 72
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-5G-6GB-128GB-BAC",
+     "color": "Bạc",
+     "capacity": "5G 6GB 128GB",
+     "price": 9990000,
+     "originalPrice": 12990000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-bac.webp",
+     "stock": 36
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-5G-6GB-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "5G 6GB 128GB",
+     "price": 9990000,
+     "originalPrice": 12990000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xanh-la.webp",
+     "stock": 46
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-PLUS-WIFI-12GB-256-BAC",
+     "color": "Bạc",
+     "capacity": "Plus WIFI 12GB 256GB",
+     "price": 10690000,
+     "originalPrice": 15700000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-bac.webp",
+     "stock": 13
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-PLUS-WIFI-12GB-256-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "Plus WIFI 12GB 256GB",
+     "price": 10690000,
+     "originalPrice": 15700000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xanh-la.webp",
+     "stock": 58
+    },
+    {
+     "sku": "GALAXY-TAB-S9-FE-PLUS-WIFI-12GB-256-XAM",
+     "color": "Xám",
+     "capacity": "Plus WIFI 12GB 256GB",
+     "price": 10690000,
+     "originalPrice": 15700000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s9-fe-xam.webp",
+     "stock": 38
+    }
+   ]
+  },
+  {
+   "slug": "macbook-air-m2-13",
+   "name": "MacBook Air M2 13 inch",
+   "category": "Laptop",
+   "brand": "Apple",
+   "description": "MacBook Air M2 13 inch chính hãng, Apple M2, màn hình 13.6 inches Liquid Retina Display.",
+   "specs": {
+    "Màn hình": "13.6 inches Liquid Retina Display",
+    "CPU": "Apple M2",
+    "RAM": "8GB",
+    "Bộ nhớ": "256GB",
+    "Card đồ họa": "8 nhân GPU, 16 nhân Neural Engine",
+    "Pin": "52,6 Wh",
+    "Hệ điều hành": "MacOS"
+   },
+   "variants": [
+    {
+     "sku": "MACBOOK-AIR-M2-13-8GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB/256GB",
+     "price": 17490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-den.webp",
+     "stock": 76
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-8GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "8GB/256GB",
+     "price": 17490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-xam.webp",
+     "stock": 17
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-8GB-256GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "8GB/256GB",
+     "price": 17490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-trang-vang.webp",
+     "stock": 78
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-8GB-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "8GB/256GB",
+     "price": 17490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-bac.webp",
+     "stock": 8
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-16GB-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "16GB/256GB",
+     "price": 19490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-bac.webp",
+     "stock": 74
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-16GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "16GB/256GB",
+     "price": 19490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-xam.webp",
+     "stock": 59
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-16GB-256GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "16GB/256GB",
+     "price": 18590000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-trang-vang.webp",
+     "stock": 50
+    },
+    {
+     "sku": "MACBOOK-AIR-M2-13-16GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "16GB/256GB",
+     "price": 18590000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/macbook-air-m2-13-den.webp",
+     "stock": 13
+    }
+   ]
+  },
+  {
+   "slug": "asus-vivobook-15",
+   "name": "ASUS Vivobook 15",
+   "category": "Laptop",
+   "brand": "ASUS",
+   "description": "ASUS Vivobook 15 chính hãng, Intel Core i5-1235U (1.3 GHz, 12M Cache, up to 4.4 GHz, 10 lõi), màn hình 15.6 inches Độ sáng 250nits Độ phủ màu 45% NTSC Màn hình chống chói TÜV Rheinland-certified.",
+   "specs": {
+    "Màn hình": "15.6 inches Độ sáng 250nits Độ phủ màu 45% NTSC Màn hình chống chói TÜV Rheinland-certified",
+    "CPU": "Intel Core i5-1235U (1.3 GHz, 12M Cache, up to 4.4 GHz, 10 lõi)",
+    "RAM": "16GB",
+    "Bộ nhớ": "512GB M.2 NVMe PCIe 3.0 SSD",
+    "Card đồ họa": "Intel Iris Xe Graphics",
+    "Pin": "42WHrs, 3S1P, 3-cell Li-ion",
+    "Hệ điều hành": "Windows 11 Home"
+   },
+   "variants": [
+    {
+     "sku": "ASUS-VIVOBOOK-15-X1504VA-NJ069W-BAC",
+     "color": "Bạc",
+     "capacity": "X1504VA-NJ069W",
+     "price": 9690000,
+     "originalPrice": 12690000,
+     "imageUrl": "/assets/products/v/asus-vivobook-15-bac.webp",
+     "stock": 61
+    },
+    {
+     "sku": "ASUS-VIVOBOOK-15-X1504ZA-NJ517W-BAC",
+     "color": "Bạc",
+     "capacity": "X1504ZA-NJ517W",
+     "price": 13190000,
+     "originalPrice": 16490000,
+     "imageUrl": "/assets/products/v/asus-vivobook-15-bac.webp",
+     "stock": 54
+    },
+    {
+     "sku": "ASUS-VIVOBOOK-15-X1504VA-NJ1969W-BAC",
+     "color": "Bạc",
+     "capacity": "X1504VA-NJ1969W",
+     "price": 13490000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/asus-vivobook-15-bac.webp",
+     "stock": 45
+    }
+   ]
+  },
+  {
+   "slug": "lenovo-thinkpad-e14",
+   "name": "Lenovo ThinkPad E14 Gen 5",
+   "category": "Laptop",
+   "brand": "Lenovo",
+   "description": "Lenovo ThinkPad E14 Gen 5 chính hãng, Intel Core Ultra 5 135H, 14 lõi (4P + 8E + 2LPE) / 18 luồng, Max Turbo up to 4.6GHz, 18MB Intel Smart Cache, màn hình 14 inches Độ sáng 300nits Màn hình chống chóiĐộ phủ màu 45% NTSC.",
+   "specs": {
+    "Màn hình": "14 inches Độ sáng 300nits Màn hình chống chóiĐộ phủ màu 45% NTSC",
+    "CPU": "Intel Core Ultra 5 135H, 14 lõi (4P + 8E + 2LPE) / 18 luồng, Max Turbo up to 4.6GHz, 18MB Intel Smart Cache",
+    "RAM": "16GB",
+    "Bộ nhớ": "512GB SSD M.2 2242 PCIe 4.0x4 NVMe Opal 2.0 (Hỗ trợ tối đa hai ổ đĩa, 2 ổ SSD M.2, tối đa 1TB)",
+    "Card đồ họa": "Intel Arc Graphics",
+    "Pin": "48Wh, 65W USB-C (3-pin)",
+    "Hệ điều hành": "Windows 11 Home Single Language, English (US) / English (UK)"
+   },
+   "variants": [
+    {
+     "sku": "LENOVO-THINKPAD-E14-16GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "16GB/512GB",
+     "price": 34490000,
+     "originalPrice": 35100000,
+     "imageUrl": "/assets/products/v/lenovo-thinkpad-e14-den.webp",
+     "stock": 35
+    }
+   ]
+  },
+  {
+   "slug": "hp-pavilion-15",
+   "name": "HP Pavilion 15",
+   "category": "Laptop",
+   "brand": "HP",
+   "description": "HP Pavilion 15 chính hãng, Intel Core i5 - 1335U (1.30 GHz, Turbo Boost 4.6 GHz, 10 lõi / 12 luồng, 12 MB), màn hình 15.6 inches Độ phủ màu 45% NTSCMàn hình chống chóiĐộ sáng 250 nits.",
+   "specs": {
+    "Màn hình": "15.6 inches Độ phủ màu 45% NTSCMàn hình chống chóiĐộ sáng 250 nits",
+    "CPU": "Intel Core i5 - 1335U (1.30 GHz, Turbo Boost 4.6 GHz, 10 lõi / 12 luồng, 12 MB)",
+    "RAM": "16GB",
+    "Bộ nhớ": "512 GB SSD NVMe PCIe",
+    "Card đồ họa": "Intel Iris Xe Graphics",
+    "Pin": "3-cell Li-ion, 41 Wh",
+    "Hệ điều hành": "Windows 11 Home SL"
+   },
+   "variants": [
+    {
+     "sku": "HP-PAVILION-15-15-EG2083TU-7C0W9P-BAC",
+     "color": "Bạc",
+     "capacity": "15-EG2083TU 7C0W9PA",
+     "price": 14490000,
+     "originalPrice": 19790000,
+     "imageUrl": "/assets/products/v/hp-pavilion-15-bac.webp",
+     "stock": 76
+    },
+    {
+     "sku": "HP-PAVILION-15-15-EG2089TU-7C0R1P-VANG",
+     "color": "Vàng",
+     "capacity": "15-EG2089TU 7C0R1PA",
+     "price": 16990000,
+     "originalPrice": 21900000,
+     "imageUrl": "/assets/products/v/hp-pavilion-15-vang.webp",
+     "stock": 17
+    },
+    {
+     "sku": "HP-PAVILION-15-15-EG3095TU-8C5L6P-BAC",
+     "color": "Bạc",
+     "capacity": "15-EG3095TU 8C5L6PA",
+     "price": 17490000,
+     "originalPrice": 19990000,
+     "imageUrl": "/assets/products/v/hp-pavilion-15-bac.webp",
+     "stock": 38
+    },
+    {
+     "sku": "HP-PAVILION-15-15-EG3111TU-8U6L8P-BAC",
+     "color": "Bạc",
+     "capacity": "15-EG3111TU 8U6L8PA",
+     "price": 17990000,
+     "originalPrice": 21290000,
+     "imageUrl": "/assets/products/v/hp-pavilion-15-bac.webp",
+     "stock": 78
+    },
+    {
+     "sku": "HP-PAVILION-15-15-EG3095TU-8C5L6P-BAC-2",
+     "color": "Bạc",
+     "capacity": "15-EG3095TU 8C5L6PA V2",
+     "price": 17990000,
+     "originalPrice": 19990000,
+     "imageUrl": "/assets/products/v/hp-pavilion-15-bac.webp",
+     "stock": 54
+    }
+   ]
+  },
+  {
+   "slug": "airpods-pro-2",
+   "name": "AirPods Pro 2 (USB-C)",
+   "category": "Phụ kiện",
+   "brand": "Apple",
+   "description": "AirPods Pro 2 (USB-C) chính hãng.",
+   "specs": {},
+   "variants": [
+    {
+     "sku": "AIRPODS-PRO-2-USB-C-TRANG",
+     "color": "Trắng",
+     "capacity": "USB-C",
+     "price": 4990000,
+     "originalPrice": 6190000,
+     "imageUrl": "/assets/products/v/airpods-pro-2-trang.webp",
+     "stock": 44
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-buds2-pro",
+   "name": "Galaxy Buds2 Pro",
+   "category": "Phụ kiện",
+   "brand": "Samsung",
+   "description": "Galaxy Buds2 Pro chính hãng.",
+   "specs": {
+    "Pin": "Tai nghe: Dùng 5 giờHộp sạc: Dùng 18 giờ (Tắt ANC)"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-BUDS2-PRO-TIEU-CHUAN-DEN",
+     "color": "Đen",
+     "capacity": "Tiêu chuẩn",
+     "price": 1990000,
+     "originalPrice": 3500000,
+     "imageUrl": "/assets/products/v/galaxy-buds2-pro-den.webp",
+     "stock": 70
+    },
+    {
+     "sku": "GALAXY-BUDS2-PRO-TIEU-CHUAN-TIM",
+     "color": "Tím",
+     "capacity": "Tiêu chuẩn",
+     "price": 2390000,
+     "originalPrice": 3500000,
+     "imageUrl": "/assets/products/v/galaxy-buds2-pro-tim.webp",
+     "stock": 56
+    }
+   ]
+  },
+  {
+   "slug": "anker-powerport-65w",
+   "name": "Sạc nhanh Anker 65W 2 cổng",
+   "category": "Phụ kiện",
+   "brand": "Anker",
+   "description": "Sạc nhanh Anker 65W 2 cổng chính hãng.",
+   "specs": {},
+   "variants": [
+    {
+     "sku": "ANKER-POWERPORT-65W-65W-DEN",
+     "color": "Đen",
+     "capacity": "65W",
+     "price": 650000,
+     "originalPrice": 1150000,
+     "imageUrl": "/assets/products/v/anker-powerport-65w-den.webp",
+     "stock": 55
+    }
+   ]
+  },
+  {
+   "slug": "anker-powercore-20000",
+   "name": "Pin dự phòng Anker 20.000mAh 22.5W",
+   "category": "Phụ kiện",
+   "brand": "Anker",
+   "description": "Pin dự phòng Anker 20.000mAh 22.5W chính hãng.",
+   "specs": {
+    "Pin": "20000 mAh"
+   },
+   "variants": [
+    {
+     "sku": "ANKER-POWERCORE-20000-20-000MAH-DEN",
+     "color": "Đen",
+     "capacity": "20.000mAh",
+     "price": 750000,
+     "originalPrice": 1150000,
+     "imageUrl": "/assets/products/v/anker-powercore-20000-den.webp",
+     "stock": 79
+    },
+    {
+     "sku": "ANKER-POWERCORE-20000-20-000MAH-TRANG",
+     "color": "Trắng",
+     "capacity": "20.000mAh",
+     "price": 750000,
+     "originalPrice": 1150000,
+     "imageUrl": "/assets/products/v/anker-powercore-20000-trang.webp",
+     "stock": 45
+    }
+   ]
+  },
+  {
+   "slug": "iphone-18-pro-max",
+   "name": "iPhone 18 Pro Max",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 18 Pro Max chính hãng, Apple A20 Pro, màn hình 6.9 inches Super Retina XDR.",
+   "specs": {
+    "Màn hình": "6.9 inches Super Retina XDR",
+    "Chip": "Apple A20 Pro",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "48 MP Fusion Main, f/1,48 / f/1,8 / f/2,8 / f/4,048 MP Fusion Ultra Wide, f/2,248 MP Fusion Telephoto, f/2,8Telephoto 2x chất lượng quang họ",
+    "Camera trước": "18 MP Center Stage, f/1,9Tự động lấy nét theo pha Focus Pixels",
+    "Pin": "Pin lithium-ion tích hợp",
+    "Hệ điều hành": "iOS 27",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-18-PRO-MAX-256GB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "256GB",
+     "price": 41990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-do-burgundy.webp",
+     "stock": 68
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-256GB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "256GB",
+     "price": 41990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bang-thanh.webp",
+     "stock": 59
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 41990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-den.webp",
+     "stock": 52
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "256GB",
+     "price": 41990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bac.webp",
+     "stock": 19
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-512GB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "512GB",
+     "price": 48490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-do-burgundy.webp",
+     "stock": 34
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-512GB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "512GB",
+     "price": 48490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bang-thanh.webp",
+     "stock": 26
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-512GB-DEN",
+     "color": "Đen",
+     "capacity": "512GB",
+     "price": 48490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-den.webp",
+     "stock": 20
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-512GB-BAC",
+     "color": "Bạc",
+     "capacity": "512GB",
+     "price": 48490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bac.webp",
+     "stock": 8
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-1TB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "1TB",
+     "price": 61490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-do-burgundy.webp",
+     "stock": 44
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-1TB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "1TB",
+     "price": 61490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bang-thanh.webp",
+     "stock": 34
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-1TB-DEN",
+     "color": "Đen",
+     "capacity": "1TB",
+     "price": 61490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-den.webp",
+     "stock": 46
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-1TB-BAC",
+     "color": "Bạc",
+     "capacity": "1TB",
+     "price": 61490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bac.webp",
+     "stock": 9
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-2TB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "2TB",
+     "price": 80990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-do-burgundy.webp",
+     "stock": 58
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-2TB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "2TB",
+     "price": 80990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bang-thanh.webp",
+     "stock": 9
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-2TB-DEN",
+     "color": "Đen",
+     "capacity": "2TB",
+     "price": 80990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-den.webp",
+     "stock": 80
+    },
+    {
+     "sku": "IPHONE-18-PRO-MAX-2TB-BAC",
+     "color": "Bạc",
+     "capacity": "2TB",
+     "price": 80990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-max-bac.webp",
+     "stock": 44
+    }
+   ]
+  },
+  {
+   "slug": "iphone-18-pro",
+   "name": "iPhone 18 Pro",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 18 Pro chính hãng, A20 Pro, màn hình 6.3 inches Super Retina XDR.",
+   "specs": {
+    "Màn hình": "6.3 inches Super Retina XDR",
+    "Chip": "A20 Pro",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "48 MP Fusion Main, f/1,48 / f/1,8 / f/2,8 / f/4,048 MP Fusion Ultra Wide, f/2,248 MP Fusion Telephoto, f/2,8Telephoto 2x chất lượng quang họ",
+    "Camera trước": "18 MP Center Stagef/1,9 Tự động lấy nét theo pha Focus Pixels",
+    "Pin": "Pin lithium-ion tích hợp",
+    "Hệ điều hành": "iOS 27",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-18-PRO-256GB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "256GB",
+     "price": 38990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-do-burgundy.webp",
+     "stock": 33
+    },
+    {
+     "sku": "IPHONE-18-PRO-256GB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "256GB",
+     "price": 38990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bang-thanh.webp",
+     "stock": 40
+    },
+    {
+     "sku": "IPHONE-18-PRO-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "256GB",
+     "price": 38990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bac.webp",
+     "stock": 33
+    },
+    {
+     "sku": "IPHONE-18-PRO-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 38690000,
+     "originalPrice": 38990000,
+     "imageUrl": "/assets/products/v/iphone-18-pro-den.webp",
+     "stock": 35
+    },
+    {
+     "sku": "IPHONE-18-PRO-512GB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "512GB",
+     "price": 45490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-do-burgundy.webp",
+     "stock": 15
+    },
+    {
+     "sku": "IPHONE-18-PRO-512GB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "512GB",
+     "price": 45490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bang-thanh.webp",
+     "stock": 29
+    },
+    {
+     "sku": "IPHONE-18-PRO-512GB-DEN",
+     "color": "Đen",
+     "capacity": "512GB",
+     "price": 45490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-den.webp",
+     "stock": 22
+    },
+    {
+     "sku": "IPHONE-18-PRO-512GB-BAC",
+     "color": "Bạc",
+     "capacity": "512GB",
+     "price": 45490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bac.webp",
+     "stock": 8
+    },
+    {
+     "sku": "IPHONE-18-PRO-1TB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "1TB",
+     "price": 58490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-do-burgundy.webp",
+     "stock": 46
+    },
+    {
+     "sku": "IPHONE-18-PRO-1TB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "1TB",
+     "price": 58490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bang-thanh.webp",
+     "stock": 49
+    },
+    {
+     "sku": "IPHONE-18-PRO-1TB-DEN",
+     "color": "Đen",
+     "capacity": "1TB",
+     "price": 57990000,
+     "originalPrice": 58490000,
+     "imageUrl": "/assets/products/v/iphone-18-pro-den.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPHONE-18-PRO-1TB-BAC",
+     "color": "Bạc",
+     "capacity": "1TB",
+     "price": 58490000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bac.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPHONE-18-PRO-2TB-DO-BURGUNDY",
+     "color": "Đỏ Burgundy",
+     "capacity": "2TB",
+     "price": 76990000,
+     "originalPrice": 77990000,
+     "imageUrl": "/assets/products/v/iphone-18-pro-do-burgundy.webp",
+     "stock": 79
+    },
+    {
+     "sku": "IPHONE-18-PRO-2TB-BANG-THANH",
+     "color": "Băng Thanh",
+     "capacity": "2TB",
+     "price": 76990000,
+     "originalPrice": 77990000,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bang-thanh.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPHONE-18-PRO-2TB-DEN",
+     "color": "Đen",
+     "capacity": "2TB",
+     "price": 76990000,
+     "originalPrice": 77990000,
+     "imageUrl": "/assets/products/v/iphone-18-pro-den.webp",
+     "stock": 10
+    },
+    {
+     "sku": "IPHONE-18-PRO-2TB-BAC",
+     "color": "Bạc",
+     "capacity": "2TB",
+     "price": 76990000,
+     "originalPrice": 77990000,
+     "imageUrl": "/assets/products/v/iphone-18-pro-bac.webp",
+     "stock": 80
+    }
+   ]
+  },
+  {
+   "slug": "iphone-17-pro",
+   "name": "iPhone 17 Pro",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 17 Pro chính hãng, Chip A19 Pro, màn hình 6.3 inches Super Retina XDR.",
+   "specs": {
+    "Màn hình": "6.3 inches Super Retina XDR",
+    "Chip": "Chip A19 Pro",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Chính: 48MP khẩu độ ƒ/1.6 OIS hỗ trợ chụp 24MP hoặc 48MPGóc Siêu Rộng: 48MP khẩu độ ƒ/2.2 góc nhìn 120°Telephoto: 48MP khẩu độ ƒ/2.8 OIS zoo",
+    "Camera trước": "Camera 18MP Center Stage Khẩu độ ƒ/1.9",
+    "Hệ điều hành": "iOS 26",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-17-PRO-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "256GB",
+     "price": 31990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-bac.webp",
+     "stock": 64
+    },
+    {
+     "sku": "IPHONE-17-PRO-256GB-CAM-VU-TRU",
+     "color": "Cam Vũ Trụ",
+     "capacity": "256GB",
+     "price": 31990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-cam-vu-tru.webp",
+     "stock": 75
+    },
+    {
+     "sku": "IPHONE-17-PRO-256GB-XANH-DAM",
+     "color": "Xanh Đậm",
+     "capacity": "256GB",
+     "price": 31990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-xanh-dam.webp",
+     "stock": 46
+    },
+    {
+     "sku": "IPHONE-17-PRO-512GB-BAC",
+     "color": "Bạc",
+     "capacity": "512GB",
+     "price": 38490000,
+     "originalPrice": 41490000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-bac.webp",
+     "stock": 13
+    },
+    {
+     "sku": "IPHONE-17-PRO-512GB-CAM-VU-TRU",
+     "color": "Cam Vũ Trụ",
+     "capacity": "512GB",
+     "price": 38490000,
+     "originalPrice": 41490000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-cam-vu-tru.webp",
+     "stock": 25
+    },
+    {
+     "sku": "IPHONE-17-PRO-512GB-XANH-DAM",
+     "color": "Xanh Đậm",
+     "capacity": "512GB",
+     "price": 38490000,
+     "originalPrice": 41490000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-xanh-dam.webp",
+     "stock": 76
+    },
+    {
+     "sku": "IPHONE-17-PRO-1TB-BAC",
+     "color": "Bạc",
+     "capacity": "1TB",
+     "price": 44790000,
+     "originalPrice": 47990000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-bac.webp",
+     "stock": 29
+    },
+    {
+     "sku": "IPHONE-17-PRO-1TB-CAM-VU-TRU",
+     "color": "Cam Vũ Trụ",
+     "capacity": "1TB",
+     "price": 44790000,
+     "originalPrice": 47990000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-cam-vu-tru.webp",
+     "stock": 71
+    },
+    {
+     "sku": "IPHONE-17-PRO-1TB-XANH-DAM",
+     "color": "Xanh Đậm",
+     "capacity": "1TB",
+     "price": 44690000,
+     "originalPrice": 47990000,
+     "imageUrl": "/assets/products/v/iphone-17-pro-xanh-dam.webp",
+     "stock": 47
+    }
+   ]
+  },
+  {
+   "slug": "iphone-17",
+   "name": "iPhone 17",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 17 chính hãng, Apple A19, màn hình 6.3 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.3 inches Super Retina XDR OLED",
+    "Chip": "Apple A19",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "48MP Fusion Main f/1.6 OIS12MP Tele 2x f/1.6 OIS48MP Ultra Wide f/2.2 120°",
+    "Camera trước": "18MP Center Stage, f/1.9, PDAF",
+    "Pin": "Xem video: 30 giờXem video trực tuyến: 27 giờ",
+    "Hệ điều hành": "iOS 26",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-17-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 28690000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-17-den.webp",
+     "stock": 29
+    },
+    {
+     "sku": "IPHONE-17-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "256GB",
+     "price": 28690000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-17-trang.webp",
+     "stock": 79
+    },
+    {
+     "sku": "IPHONE-17-256GB-XANH-LAM-KHOI",
+     "color": "Xanh Lam Khói",
+     "capacity": "256GB",
+     "price": 28690000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-17-xanh-lam-khoi.webp",
+     "stock": 79
+    },
+    {
+     "sku": "IPHONE-17-256GB-TIM-OAI-HUONG",
+     "color": "Tím Oải Hương",
+     "capacity": "256GB",
+     "price": 28690000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-17-tim-oai-huong.webp",
+     "stock": 54
+    },
+    {
+     "sku": "IPHONE-17-256GB-XANH-LA-XO-THOM",
+     "color": "Xanh Lá Xô Thơm",
+     "capacity": "256GB",
+     "price": 28490000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-17-xanh-la-xo-thom.webp",
+     "stock": 42
+    },
+    {
+     "sku": "IPHONE-17-512GB-DEN",
+     "color": "Đen",
+     "capacity": "512GB",
+     "price": 33990000,
+     "originalPrice": 35490000,
+     "imageUrl": "/assets/products/v/iphone-17-den.webp",
+     "stock": 9
+    },
+    {
+     "sku": "IPHONE-17-512GB-TRANG",
+     "color": "Trắng",
+     "capacity": "512GB",
+     "price": 33990000,
+     "originalPrice": 35490000,
+     "imageUrl": "/assets/products/v/iphone-17-trang.webp",
+     "stock": 58
+    },
+    {
+     "sku": "IPHONE-17-512GB-XANH-LAM-KHOI",
+     "color": "Xanh Lam Khói",
+     "capacity": "512GB",
+     "price": 33990000,
+     "originalPrice": 35490000,
+     "imageUrl": "/assets/products/v/iphone-17-xanh-lam-khoi.webp",
+     "stock": 45
+    },
+    {
+     "sku": "IPHONE-17-512GB-TIM-OAI-HUONG",
+     "color": "Tím Oải Hương",
+     "capacity": "512GB",
+     "price": 33990000,
+     "originalPrice": 35490000,
+     "imageUrl": "/assets/products/v/iphone-17-tim-oai-huong.webp",
+     "stock": 44
+    },
+    {
+     "sku": "IPHONE-17-512GB-XANH-LA-XO-THOM",
+     "color": "Xanh Lá Xô Thơm",
+     "capacity": "512GB",
+     "price": 33990000,
+     "originalPrice": 35490000,
+     "imageUrl": "/assets/products/v/iphone-17-xanh-la-xo-thom.webp",
+     "stock": 68
+    }
+   ]
+  },
+  {
+   "slug": "iphone-air",
+   "name": "iPhone Air",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone Air chính hãng, Chip A19 Pro, màn hình 6.5 inches Super Retina XDR.",
+   "specs": {
+    "Màn hình": "6.5 inches Super Retina XDR",
+    "Chip": "Chip A19 Pro",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "48MP Fusion Main f/1.6",
+    "Camera trước": "18MP Center Stage f/1.6",
+    "Pin": "Xem video: 27 giờXem video trực tuyến: 22 giờ",
+    "Hệ điều hành": "iOS 26",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-AIR-256GB-DEN-KHONG-GIAN",
+     "color": "Đen Không Gian",
+     "capacity": "256GB",
+     "price": 23890000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-air-den-khong-gian.webp",
+     "stock": 47
+    },
+    {
+     "sku": "IPHONE-AIR-256GB-TRANG-MAY",
+     "color": "Trắng Mây",
+     "capacity": "256GB",
+     "price": 23890000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-air-trang-may.webp",
+     "stock": 14
+    },
+    {
+     "sku": "IPHONE-AIR-256GB-VANG-NHAT",
+     "color": "Vàng Nhạt",
+     "capacity": "256GB",
+     "price": 23390000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-air-vang-nhat.webp",
+     "stock": 73
+    },
+    {
+     "sku": "IPHONE-AIR-256GB-XANH-DA-TROI",
+     "color": "Xanh Da Trời",
+     "capacity": "256GB",
+     "price": 23890000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-air-xanh-da-troi.webp",
+     "stock": 23
+    },
+    {
+     "sku": "IPHONE-AIR-512GB-DEN-KHONG-GIAN",
+     "color": "Đen Không Gian",
+     "capacity": "512GB",
+     "price": 28990000,
+     "originalPrice": 38490000,
+     "imageUrl": "/assets/products/v/iphone-air-den-khong-gian.webp",
+     "stock": 30
+    },
+    {
+     "sku": "IPHONE-AIR-512GB-TRANG-MAY",
+     "color": "Trắng Mây",
+     "capacity": "512GB",
+     "price": 28990000,
+     "originalPrice": 38490000,
+     "imageUrl": "/assets/products/v/iphone-air-trang-may.webp",
+     "stock": 11
+    },
+    {
+     "sku": "IPHONE-AIR-512GB-VANG-NHAT",
+     "color": "Vàng Nhạt",
+     "capacity": "512GB",
+     "price": 28990000,
+     "originalPrice": 38490000,
+     "imageUrl": "/assets/products/v/iphone-air-vang-nhat.webp",
+     "stock": 50
+    },
+    {
+     "sku": "IPHONE-AIR-512GB-XANH-DA-TROI",
+     "color": "Xanh Da Trời",
+     "capacity": "512GB",
+     "price": 28990000,
+     "originalPrice": 38490000,
+     "imageUrl": "/assets/products/v/iphone-air-xanh-da-troi.webp",
+     "stock": 48
+    },
+    {
+     "sku": "IPHONE-AIR-1TB-DEN-KHONG-GIAN",
+     "color": "Đen Không Gian",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 44990000,
+     "imageUrl": "/assets/products/v/iphone-air-den-khong-gian.webp",
+     "stock": 55
+    },
+    {
+     "sku": "IPHONE-AIR-1TB-TRANG-MAY",
+     "color": "Trắng Mây",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 44990000,
+     "imageUrl": "/assets/products/v/iphone-air-trang-may.webp",
+     "stock": 23
+    },
+    {
+     "sku": "IPHONE-AIR-1TB-VANG-NHAT",
+     "color": "Vàng Nhạt",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 44990000,
+     "imageUrl": "/assets/products/v/iphone-air-vang-nhat.webp",
+     "stock": 32
+    },
+    {
+     "sku": "IPHONE-AIR-1TB-XANH-DA-TROI",
+     "color": "Xanh Da Trời",
+     "capacity": "1TB",
+     "price": 31990000,
+     "originalPrice": 44990000,
+     "imageUrl": "/assets/products/v/iphone-air-xanh-da-troi.webp",
+     "stock": 32
+    }
+   ]
+  },
+  {
+   "slug": "iphone-16-pro-max",
+   "name": "iPhone 16 Pro Max",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 16 Pro Max chính hãng, Apple A18 Pro, màn hình 6.9 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.9 inches Super Retina XDR OLED",
+    "Chip": "Apple A18 Pro",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính: 48MP, f/1.78, 24mm, 2µm, chống rung quang học dịch chuyển cảm biến thế hệ thứ hai, Focus Pixels 100%Telephoto 2x 12MP: 52 mm, ",
+    "Camera trước": "12MP, ƒ/1.9, Tự động lấy nét theo pha Focus Pixels",
+    "Hệ điều hành": "iOS 18",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-16-PRO-MAX-256GB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "256GB",
+     "price": 30990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-den.webp",
+     "stock": 53
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-256GB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "256GB",
+     "price": 30990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-trang.webp",
+     "stock": 18
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-256GB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "256GB",
+     "price": 30990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-tu-nhien.webp",
+     "stock": 6
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-256GB-TITAN-SA-MAC",
+     "color": "Titan Sa Mạc",
+     "capacity": "256GB",
+     "price": 30990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-sa-mac.webp",
+     "stock": 35
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-512GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "512GB",
+     "price": 38990000,
+     "originalPrice": null,
+     "imageUrl": null,
+     "stock": 73
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-1TB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "1TB",
+     "price": 42990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-den.webp",
+     "stock": 38
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-1TB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "1TB",
+     "price": 42990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-trang.webp",
+     "stock": 69
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-1TB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "1TB",
+     "price": 42990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-tu-nhien.webp",
+     "stock": 32
+    },
+    {
+     "sku": "IPHONE-16-PRO-MAX-1TB-TITAN-SA-MAC",
+     "color": "Titan Sa Mạc",
+     "capacity": "1TB",
+     "price": 42990000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-max-titan-sa-mac.webp",
+     "stock": 63
+    }
+   ]
+  },
+  {
+   "slug": "iphone-16-pro",
+   "name": "iPhone 16 Pro",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 16 Pro chính hãng, Apple A18 Pro, màn hình 6.3 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.3 inches Super Retina XDR OLED",
+    "Chip": "Apple A18 Pro",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera chính: 48MP, f/1.78, 24mm, chống rung quang học dịch chuyển cảm biến thế hệ thứ hai, Focus Pixels 100%, hỗ trợ ảnh có độ phân giải si",
+    "Camera trước": "12MP, ƒ/1.9, Tự động lấy nét theo pha Focus Pixels",
+    "Hệ điều hành": "iOS 18",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-16-PRO-128GB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "128GB",
+     "price": 23990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-den.webp",
+     "stock": 52
+    },
+    {
+     "sku": "IPHONE-16-PRO-128GB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "128GB",
+     "price": 23990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-trang.webp",
+     "stock": 23
+    },
+    {
+     "sku": "IPHONE-16-PRO-128GB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "128GB",
+     "price": 23990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-tu-nhien.webp",
+     "stock": 26
+    },
+    {
+     "sku": "IPHONE-16-PRO-128GB-TITAN-SA-MAC",
+     "color": "Titan Sa Mạc",
+     "capacity": "128GB",
+     "price": 23990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-sa-mac.webp",
+     "stock": 42
+    },
+    {
+     "sku": "IPHONE-16-PRO-256GB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "256GB",
+     "price": 27990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-den.webp",
+     "stock": 57
+    },
+    {
+     "sku": "IPHONE-16-PRO-256GB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "256GB",
+     "price": 27990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-trang.webp",
+     "stock": 58
+    },
+    {
+     "sku": "IPHONE-16-PRO-256GB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "256GB",
+     "price": 27990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-tu-nhien.webp",
+     "stock": 22
+    },
+    {
+     "sku": "IPHONE-16-PRO-256GB-TITAN-SA-MAC",
+     "color": "Titan Sa Mạc",
+     "capacity": "256GB",
+     "price": 27990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-sa-mac.webp",
+     "stock": 77
+    },
+    {
+     "sku": "IPHONE-16-PRO-512GB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "512GB",
+     "price": 31990000,
+     "originalPrice": 37990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-den.webp",
+     "stock": 12
+    },
+    {
+     "sku": "IPHONE-16-PRO-512GB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "512GB",
+     "price": 31990000,
+     "originalPrice": 37990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-trang.webp",
+     "stock": 65
+    },
+    {
+     "sku": "IPHONE-16-PRO-512GB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "512GB",
+     "price": 31990000,
+     "originalPrice": 37990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-tu-nhien.webp",
+     "stock": 20
+    },
+    {
+     "sku": "IPHONE-16-PRO-512GB-TITAN-SA-MAC",
+     "color": "Titan Sa Mạc",
+     "capacity": "512GB",
+     "price": 31990000,
+     "originalPrice": 37990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-sa-mac.webp",
+     "stock": 60
+    },
+    {
+     "sku": "IPHONE-16-PRO-1TB-TITAN-DEN",
+     "color": "Titan Đen",
+     "capacity": "1TB",
+     "price": 35990000,
+     "originalPrice": 43990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-den.webp",
+     "stock": 29
+    },
+    {
+     "sku": "IPHONE-16-PRO-1TB-TITAN-TRANG",
+     "color": "Titan Trắng",
+     "capacity": "1TB",
+     "price": 35990000,
+     "originalPrice": 43990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-trang.webp",
+     "stock": 47
+    },
+    {
+     "sku": "IPHONE-16-PRO-1TB-TITAN-TU-NHIEN",
+     "color": "Titan Tự Nhiên",
+     "capacity": "1TB",
+     "price": 35990000,
+     "originalPrice": 43990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-tu-nhien.webp",
+     "stock": 20
+    },
+    {
+     "sku": "IPHONE-16-PRO-1TB-TITAN-SA-MAC",
+     "color": "Titan Sa Mạc",
+     "capacity": "1TB",
+     "price": 35990000,
+     "originalPrice": 43990000,
+     "imageUrl": "/assets/products/v/iphone-16-pro-titan-sa-mac.webp",
+     "stock": 46
+    }
+   ]
+  },
+  {
+   "slug": "iphone-16",
+   "name": "iPhone 16",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 16 chính hãng, Apple A18, màn hình 6.1 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.1 inches Super Retina XDR OLED",
+    "Chip": "Apple A18",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera chính: 48MP, f/1.6, 26mm, Focus Pixels 100%, hỗ trợ ảnh có độ phân giải siêu cao Camera góc siêu rộng: 12MP, ƒ/2.2, 13 mm, Focus Pixe",
+    "Camera trước": "12MP, ƒ/1.9, Tự động lấy nét theo pha Focus Pixels",
+    "Hệ điều hành": "iOS 18",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-16-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 22190000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/iphone-16-den.webp",
+     "stock": 16
+    },
+    {
+     "sku": "IPHONE-16-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "256GB",
+     "price": 22190000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/iphone-16-trang.webp",
+     "stock": 58
+    },
+    {
+     "sku": "IPHONE-16-256GB-HONG",
+     "color": "Hồng",
+     "capacity": "256GB",
+     "price": 22190000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/iphone-16-hong.webp",
+     "stock": 44
+    },
+    {
+     "sku": "IPHONE-16-256GB-XANH-MONG-KET",
+     "color": "Xanh Mòng Két",
+     "capacity": "256GB",
+     "price": 22190000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/iphone-16-xanh-mong-ket.webp",
+     "stock": 56
+    },
+    {
+     "sku": "IPHONE-16-256GB-XANH-LUU-LY",
+     "color": "Xanh Lưu Ly",
+     "capacity": "256GB",
+     "price": 22190000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/iphone-16-xanh-luu-ly.webp",
+     "stock": 71
+    },
+    {
+     "sku": "IPHONE-16-128GB-DEN",
+     "color": "Đen",
+     "capacity": "128GB",
+     "price": 24490000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/iphone-16-den.webp",
+     "stock": 49
+    },
+    {
+     "sku": "IPHONE-16-128GB-TRANG",
+     "color": "Trắng",
+     "capacity": "128GB",
+     "price": 24690000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/iphone-16-trang.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPHONE-16-128GB-HONG",
+     "color": "Hồng",
+     "capacity": "128GB",
+     "price": 24690000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/iphone-16-hong.webp",
+     "stock": 42
+    },
+    {
+     "sku": "IPHONE-16-128GB-XANH-MONG-KET",
+     "color": "Xanh Mòng Két",
+     "capacity": "128GB",
+     "price": 24690000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/iphone-16-xanh-mong-ket.webp",
+     "stock": 27
+    },
+    {
+     "sku": "IPHONE-16-128GB-XANH-LUU-LY",
+     "color": "Xanh Lưu Ly",
+     "capacity": "128GB",
+     "price": 24690000,
+     "originalPrice": 24990000,
+     "imageUrl": "/assets/products/v/iphone-16-xanh-luu-ly.webp",
+     "stock": 71
+    },
+    {
+     "sku": "IPHONE-16-512GB-DEN",
+     "color": "Đen",
+     "capacity": "512GB",
+     "price": 26990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-den.webp",
+     "stock": 56
+    },
+    {
+     "sku": "IPHONE-16-512GB-TRANG",
+     "color": "Trắng",
+     "capacity": "512GB",
+     "price": 26990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-trang.webp",
+     "stock": 55
+    },
+    {
+     "sku": "IPHONE-16-512GB-HONG",
+     "color": "Hồng",
+     "capacity": "512GB",
+     "price": 26990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-hong.webp",
+     "stock": 66
+    },
+    {
+     "sku": "IPHONE-16-512GB-XANH-MONG-KET",
+     "color": "Xanh Mòng Két",
+     "capacity": "512GB",
+     "price": 26990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-xanh-mong-ket.webp",
+     "stock": 53
+    },
+    {
+     "sku": "IPHONE-16-512GB-XANH-LUU-LY",
+     "color": "Xanh Lưu Ly",
+     "capacity": "512GB",
+     "price": 26990000,
+     "originalPrice": 31990000,
+     "imageUrl": "/assets/products/v/iphone-16-xanh-luu-ly.webp",
+     "stock": 42
+    }
+   ]
+  },
+  {
+   "slug": "iphone-14",
+   "name": "iPhone 14",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 14 chính hãng, Apple A15 Bionic 6 nhân, màn hình 6.1 inches OLED.",
+   "specs": {
+    "Màn hình": "6.1 inches OLED",
+    "Chip": "Apple A15 Bionic 6 nhân",
+    "RAM": "6 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera góc rộng: 12MP, ƒ/1.5Camera góc siêu rộng: 12MP, ƒ/2.4",
+    "Camera trước": "12MP, ƒ/1.9",
+    "Pin": "3,279mAh",
+    "Hệ điều hành": "iOS 16",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-14-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 16290000,
+     "originalPrice": 20990000,
+     "imageUrl": "/assets/products/v/iphone-14-den.webp",
+     "stock": 64
+    },
+    {
+     "sku": "IPHONE-14-256GB-DO",
+     "color": "Đỏ",
+     "capacity": "256GB",
+     "price": 16290000,
+     "originalPrice": 20990000,
+     "imageUrl": "/assets/products/v/iphone-14-do.webp",
+     "stock": 56
+    },
+    {
+     "sku": "IPHONE-14-256GB-TIM",
+     "color": "Tím",
+     "capacity": "256GB",
+     "price": 16290000,
+     "originalPrice": 20990000,
+     "imageUrl": "/assets/products/v/iphone-14-tim.webp",
+     "stock": 19
+    },
+    {
+     "sku": "IPHONE-14-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "256GB",
+     "price": 16290000,
+     "originalPrice": 20990000,
+     "imageUrl": "/assets/products/v/iphone-14-trang.webp",
+     "stock": 57
+    },
+    {
+     "sku": "IPHONE-14-256GB-XANH",
+     "color": "Xanh",
+     "capacity": "256GB",
+     "price": 16290000,
+     "originalPrice": 20990000,
+     "imageUrl": "/assets/products/v/iphone-14-xanh.webp",
+     "stock": 44
+    },
+    {
+     "sku": "IPHONE-14-256GB-VANG",
+     "color": "Vàng",
+     "capacity": "256GB",
+     "price": 16290000,
+     "originalPrice": 20990000,
+     "imageUrl": "/assets/products/v/iphone-14-vang.webp",
+     "stock": 60
+    },
+    {
+     "sku": "IPHONE-14-128GB-XANH",
+     "color": "Xanh",
+     "capacity": "128GB",
+     "price": 16990000,
+     "originalPrice": 17990000,
+     "imageUrl": "/assets/products/v/iphone-14-xanh.webp",
+     "stock": 53
+    },
+    {
+     "sku": "IPHONE-14-128GB-DEN",
+     "color": "Đen",
+     "capacity": "128GB",
+     "price": 16990000,
+     "originalPrice": 17990000,
+     "imageUrl": "/assets/products/v/iphone-14-den.webp",
+     "stock": 13
+    },
+    {
+     "sku": "IPHONE-14-128GB-DO",
+     "color": "Đỏ",
+     "capacity": "128GB",
+     "price": 16990000,
+     "originalPrice": 17990000,
+     "imageUrl": "/assets/products/v/iphone-14-do.webp",
+     "stock": 38
+    },
+    {
+     "sku": "IPHONE-14-128GB-TIM",
+     "color": "Tím",
+     "capacity": "128GB",
+     "price": 16990000,
+     "originalPrice": 17990000,
+     "imageUrl": "/assets/products/v/iphone-14-tim.webp",
+     "stock": 64
+    },
+    {
+     "sku": "IPHONE-14-128GB-TRANG",
+     "color": "Trắng",
+     "capacity": "128GB",
+     "price": 16990000,
+     "originalPrice": 17990000,
+     "imageUrl": "/assets/products/v/iphone-14-trang.webp",
+     "stock": 13
+    },
+    {
+     "sku": "IPHONE-14-128GB-VANG",
+     "color": "Vàng",
+     "capacity": "128GB",
+     "price": 16990000,
+     "originalPrice": 17990000,
+     "imageUrl": "/assets/products/v/iphone-14-vang.webp",
+     "stock": 72
+    }
+   ]
+  },
+  {
+   "slug": "iphone-13",
+   "name": "iPhone 13",
+   "category": "Điện thoại",
+   "brand": "Apple",
+   "description": "iPhone 13 chính hãng, Apple A15, màn hình 6.1 inches Super Retina XDR OLED.",
+   "specs": {
+    "Màn hình": "6.1 inches Super Retina XDR OLED",
+    "Chip": "Apple A15",
+    "RAM": "4 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera góc rộng: 12MP, f/1.6 Camera góc siêu rộng: 12MP, ƒ/2.4",
+    "Camera trước": "12MP, f/2.2",
+    "Pin": "3240mAh",
+    "Hệ điều hành": "iOS 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "IPHONE-13-128GB-TRANG",
+     "color": "Trắng",
+     "capacity": "128GB",
+     "price": 15290000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/iphone-13-trang.webp",
+     "stock": 36
+    },
+    {
+     "sku": "IPHONE-13-128GB-DO",
+     "color": "Đỏ",
+     "capacity": "128GB",
+     "price": 13490000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/iphone-13-do.webp",
+     "stock": 8
+    },
+    {
+     "sku": "IPHONE-13-128GB-HONG",
+     "color": "Hồng",
+     "capacity": "128GB",
+     "price": 13490000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/iphone-13-hong.webp",
+     "stock": 12
+    },
+    {
+     "sku": "IPHONE-13-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "128GB",
+     "price": 13490000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/iphone-13-xanh-duong.webp",
+     "stock": 23
+    },
+    {
+     "sku": "IPHONE-13-128GB-DEN",
+     "color": "Đen",
+     "capacity": "128GB",
+     "price": 15290000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/iphone-13-den.webp",
+     "stock": 62
+    },
+    {
+     "sku": "IPHONE-13-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "128GB",
+     "price": 13490000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/iphone-13-xanh-la.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPHONE-13-256GB-HONG",
+     "color": "Hồng",
+     "capacity": "256GB",
+     "price": 16990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-13-hong.webp",
+     "stock": 10
+    },
+    {
+     "sku": "IPHONE-13-256GB-DEN",
+     "color": "Đen",
+     "capacity": "256GB",
+     "price": 16990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-13-den.webp",
+     "stock": 25
+    },
+    {
+     "sku": "IPHONE-13-256GB-DO",
+     "color": "Đỏ",
+     "capacity": "256GB",
+     "price": 16990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-13-do.webp",
+     "stock": 14
+    },
+    {
+     "sku": "IPHONE-13-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "256GB",
+     "price": 16990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-13-trang.webp",
+     "stock": 19
+    },
+    {
+     "sku": "IPHONE-13-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "256GB",
+     "price": 16990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-13-xanh-duong.webp",
+     "stock": 34
+    },
+    {
+     "sku": "IPHONE-13-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "256GB",
+     "price": 16990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/iphone-13-xanh-la.webp",
+     "stock": 73
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-s25-ultra",
+   "name": "Galaxy S25 Ultra",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy S25 Ultra chính hãng, Snapdragon 8 Elite dành cho Galaxy (3nm), màn hình 6.9 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "6.9 inches Dynamic AMOLED 2X",
+    "Chip": "Snapdragon 8 Elite dành cho Galaxy (3nm)",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera siêu rộng 50MPCamera góc rộng 200 MPCamera Tele (5x) 50MPCamera Tele (3x) 10MP\"",
+    "Camera trước": "12 MP",
+    "Pin": "5000 mAh",
+    "Hệ điều hành": "Android 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-S25-ULTRA-12GB-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "12GB 256GB",
+     "price": 25990000,
+     "originalPrice": 33380000,
+     "imageUrl": "/assets/products/v/galaxy-s25-ultra-xanh-duong.webp",
+     "stock": 63
+    },
+    {
+     "sku": "GALAXY-S25-ULTRA-12GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 256GB",
+     "price": 25990000,
+     "originalPrice": 33380000,
+     "imageUrl": "/assets/products/v/galaxy-s25-ultra-den.webp",
+     "stock": 13
+    },
+    {
+     "sku": "GALAXY-S25-ULTRA-12GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "12GB 256GB",
+     "price": 25990000,
+     "originalPrice": 33380000,
+     "imageUrl": "/assets/products/v/galaxy-s25-ultra-xam.webp",
+     "stock": 44
+    },
+    {
+     "sku": "GALAXY-S25-ULTRA-12GB-256GB-TRANG-BAC",
+     "color": "Trắng/bạc",
+     "capacity": "12GB 256GB",
+     "price": 25990000,
+     "originalPrice": 33380000,
+     "imageUrl": "/assets/products/v/galaxy-s25-ultra-trang-bac.webp",
+     "stock": 45
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-s25-plus",
+   "name": "Galaxy S25+",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy S25+ chính hãng, Snapdragon 8 Elite dành cho Galaxy (3nm), màn hình 6.2 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "6.2 inches Dynamic AMOLED 2X",
+    "Chip": "Snapdragon 8 Elite dành cho Galaxy (3nm)",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera siêu rộng 12MP Camera góc rộng 50MPCamera Tele 10MP",
+    "Camera trước": "12MP",
+    "Pin": "4000 mAh",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-S25-PLUS-256GB-XANH-NAVY",
+     "color": "Xanh navy",
+     "capacity": "256GB",
+     "price": 19990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xanh-navy.webp",
+     "stock": 66
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-256GB-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "256GB",
+     "price": 19990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xanh-da-troi.webp",
+     "stock": 21
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "256GB",
+     "price": 19990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xanh-la.webp",
+     "stock": 5
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-256GB-XAM-BAC",
+     "color": "Xám bạc",
+     "capacity": "256GB",
+     "price": 19990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xam-bac.webp",
+     "stock": 79
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-512GB-XANH-NAVY",
+     "color": "Xanh navy",
+     "capacity": "512GB",
+     "price": 21590000,
+     "originalPrice": 29490000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xanh-navy.webp",
+     "stock": 38
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-512GB-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "512GB",
+     "price": 21590000,
+     "originalPrice": 29490000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xanh-da-troi.webp",
+     "stock": 71
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-512GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "512GB",
+     "price": 21590000,
+     "originalPrice": 29490000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xanh-la.webp",
+     "stock": 55
+    },
+    {
+     "sku": "GALAXY-S25-PLUS-512GB-XAM-BAC",
+     "color": "Xám bạc",
+     "capacity": "512GB",
+     "price": 21590000,
+     "originalPrice": 29490000,
+     "imageUrl": "/assets/products/v/galaxy-s25-plus-xam-bac.webp",
+     "stock": 31
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-s25",
+   "name": "Galaxy S25",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy S25 chính hãng, Snapdragon 8 Elite dành cho Galaxy (3nm), màn hình 6.2 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "6.2 inches Dynamic AMOLED 2X",
+    "Chip": "Snapdragon 8 Elite dành cho Galaxy (3nm)",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera siêu rộng 12MP Camera góc rộng 50MPCamera Tele 10MP",
+    "Camera trước": "12MP",
+    "Pin": "4000 mAh",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-S25-256GB-XANH-NAVY",
+     "color": "Xanh navy",
+     "capacity": "256GB",
+     "price": 17490000,
+     "originalPrice": 22580000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xanh-navy.webp",
+     "stock": 12
+    },
+    {
+     "sku": "GALAXY-S25-256GB-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "256GB",
+     "price": 17490000,
+     "originalPrice": 22580000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xanh-da-troi.webp",
+     "stock": 76
+    },
+    {
+     "sku": "GALAXY-S25-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "256GB",
+     "price": 17490000,
+     "originalPrice": 22580000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xanh-la.webp",
+     "stock": 51
+    },
+    {
+     "sku": "GALAXY-S25-256GB-XAM-BAC",
+     "color": "Xám bạc",
+     "capacity": "256GB",
+     "price": 17490000,
+     "originalPrice": 22580000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xam-bac.webp",
+     "stock": 26
+    },
+    {
+     "sku": "GALAXY-S25-512GB-XANH-NAVY",
+     "color": "Xanh navy",
+     "capacity": "512GB",
+     "price": 20090000,
+     "originalPrice": 26010000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xanh-navy.webp",
+     "stock": 39
+    },
+    {
+     "sku": "GALAXY-S25-512GB-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "512GB",
+     "price": 20090000,
+     "originalPrice": 26010000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xanh-da-troi.webp",
+     "stock": 37
+    },
+    {
+     "sku": "GALAXY-S25-512GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "512GB",
+     "price": 20090000,
+     "originalPrice": 26010000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xanh-la.webp",
+     "stock": 67
+    },
+    {
+     "sku": "GALAXY-S25-512GB-XAM-BAC",
+     "color": "Xám bạc",
+     "capacity": "512GB",
+     "price": 20090000,
+     "originalPrice": 26010000,
+     "imageUrl": "/assets/products/v/galaxy-s25-xam-bac.webp",
+     "stock": 23
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-s25-fe",
+   "name": "Galaxy S25 FE",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy S25 FE chính hãng, Exynos 2400, màn hình 6.7 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "6.7 inches Dynamic AMOLED 2X",
+    "Chip": "Exynos 2400",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "50MP, f/1.8 góc rộng12MP, f/2.2 góc siêu rộng8MP, f/2.4 Tele",
+    "Camera trước": "12MP, f/2.2",
+    "Pin": "4900 mAh",
+    "Hệ điều hành": "Android 16, One UI 8",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-S25-FE-8GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 128GB",
+     "price": 13590000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-s25-fe-den.webp",
+     "stock": 8
+    },
+    {
+     "sku": "GALAXY-S25-FE-8GB-128GB-TRANG",
+     "color": "Trắng",
+     "capacity": "8GB 128GB",
+     "price": 13590000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-s25-fe-trang.webp",
+     "stock": 48
+    },
+    {
+     "sku": "GALAXY-S25-FE-8GB-128GB-XANH-DUONG-NHAT",
+     "color": "Xanh dương nhạt",
+     "capacity": "8GB 128GB",
+     "price": 13590000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-s25-fe-xanh-duong-nhat.webp",
+     "stock": 73
+    },
+    {
+     "sku": "GALAXY-S25-FE-8GB-128GB-XANH-NAVY",
+     "color": "Xanh navy",
+     "capacity": "8GB 128GB",
+     "price": 13590000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-s25-fe-xanh-navy.webp",
+     "stock": 67
+    },
+    {
+     "sku": "GALAXY-S25-FE-8GB-512GB-TRANG",
+     "color": "Trắng",
+     "capacity": "8GB 512GB",
+     "price": 17990000,
+     "originalPrice": 25690000,
+     "imageUrl": "/assets/products/v/galaxy-s25-fe-trang.webp",
+     "stock": 74
+    },
+    {
+     "sku": "GALAXY-S25-FE-8GB-512GB-XANH-NAVY",
+     "color": "Xanh navy",
+     "capacity": "8GB 512GB",
+     "price": 17990000,
+     "originalPrice": 25690000,
+     "imageUrl": "/assets/products/v/galaxy-s25-fe-xanh-navy.webp",
+     "stock": 56
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-z-fold7",
+   "name": "Galaxy Z Fold7",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy Z Fold7 chính hãng, Qualcomm Snapdragon 8 Elite For Galaxy, màn hình Chính 8.0 inches, Phụ 6.5 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "Chính 8.0 inches, Phụ 6.5 inches Dynamic AMOLED 2X",
+    "Chip": "Qualcomm Snapdragon 8 Elite For Galaxy",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "200 MP + 12 MP + 10 MP, f/1.7, f/2.2, f/2.4",
+    "Camera trước": "Trong 10 MP, f/2.2Ngoài 10 MP, f/2.2",
+    "Pin": "4400 mAh",
+    "Hệ điều hành": "Android 16",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-Z-FOLD7-12GB-256GB-XAM-BONG",
+     "color": "Xám bóng",
+     "capacity": "12GB 256GB",
+     "price": 37490000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/galaxy-z-fold7-xam-bong.webp",
+     "stock": 11
+    },
+    {
+     "sku": "GALAXY-Z-FOLD7-12GB-256GB-XANH-BONG",
+     "color": "Xanh bóng",
+     "capacity": "12GB 256GB",
+     "price": 37490000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/galaxy-z-fold7-xanh-bong.webp",
+     "stock": 8
+    },
+    {
+     "sku": "GALAXY-Z-FOLD7-12GB-256GB-DEN-TUYEN",
+     "color": "Đen tuyền",
+     "capacity": "12GB 256GB",
+     "price": 37490000,
+     "originalPrice": 46990000,
+     "imageUrl": "/assets/products/v/galaxy-z-fold7-den-tuyen.webp",
+     "stock": 19
+    },
+    {
+     "sku": "GALAXY-Z-FOLD7-12GB-512GB-XAM-BONG",
+     "color": "Xám bóng",
+     "capacity": "12GB 512GB",
+     "price": 38490000,
+     "originalPrice": 52990000,
+     "imageUrl": "/assets/products/v/galaxy-z-fold7-xam-bong.webp",
+     "stock": 70
+    },
+    {
+     "sku": "GALAXY-Z-FOLD7-12GB-512GB-XANH-BONG",
+     "color": "Xanh bóng",
+     "capacity": "12GB 512GB",
+     "price": 38490000,
+     "originalPrice": 52990000,
+     "imageUrl": "/assets/products/v/galaxy-z-fold7-xanh-bong.webp",
+     "stock": 17
+    },
+    {
+     "sku": "GALAXY-Z-FOLD7-12GB-512GB-DEN-TUYEN",
+     "color": "Đen tuyền",
+     "capacity": "12GB 512GB",
+     "price": 38490000,
+     "originalPrice": 52990000,
+     "imageUrl": "/assets/products/v/galaxy-z-fold7-den-tuyen.webp",
+     "stock": 72
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-z-flip7",
+   "name": "Galaxy Z Flip7",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy Z Flip7 chính hãng, Exynos 2500, màn hình Chính 6.9 inches - Phụ 4.1 inches Dynamic AMOLED 2X.",
+   "specs": {
+    "Màn hình": "Chính 6.9 inches - Phụ 4.1 inches Dynamic AMOLED 2X",
+    "Chip": "Exynos 2500",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "50 MP + 12 MP, f/1.8, f/2.2",
+    "Camera trước": "10.0 MP, f/2.2",
+    "Pin": "4300 mAh",
+    "Hệ điều hành": "Android",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-Z-FLIP7-12GB-256GB-XANH-BONG",
+     "color": "Xanh bóng",
+     "capacity": "12GB 256GB",
+     "price": 22990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/galaxy-z-flip7-xanh-bong.webp",
+     "stock": 34
+    },
+    {
+     "sku": "GALAXY-Z-FLIP7-12GB-256GB-DEN-TUYEN",
+     "color": "Đen tuyền",
+     "capacity": "12GB 256GB",
+     "price": 22990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/galaxy-z-flip7-den-tuyen.webp",
+     "stock": 64
+    },
+    {
+     "sku": "GALAXY-Z-FLIP7-12GB-256GB-DO-SAN-HO",
+     "color": "Đỏ san hô",
+     "capacity": "12GB 256GB",
+     "price": 22990000,
+     "originalPrice": 28990000,
+     "imageUrl": "/assets/products/v/galaxy-z-flip7-do-san-ho.webp",
+     "stock": 29
+    },
+    {
+     "sku": "GALAXY-Z-FLIP7-12GB-512GB-XANH-BONG",
+     "color": "Xanh bóng",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/galaxy-z-flip7-xanh-bong.webp",
+     "stock": 68
+    },
+    {
+     "sku": "GALAXY-Z-FLIP7-12GB-512GB-DEN-TUYEN",
+     "color": "Đen tuyền",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/galaxy-z-flip7-den-tuyen.webp",
+     "stock": 33
+    },
+    {
+     "sku": "GALAXY-Z-FLIP7-12GB-512GB-DO-SAN-HO",
+     "color": "Đỏ san hô",
+     "capacity": "12GB 512GB",
+     "price": 23990000,
+     "originalPrice": 34990000,
+     "imageUrl": "/assets/products/v/galaxy-z-flip7-do-san-ho.webp",
+     "stock": 9
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-a56",
+   "name": "Galaxy A56 5G",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy A56 5G chính hãng, Exynos 1580, màn hình 6.7 inches Super AMOLED.",
+   "specs": {
+    "Màn hình": "6.7 inches Super AMOLED",
+    "Chip": "Exynos 1580",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "50.0 MP, F/1.8 + 12.0 MP, F/2.2 + 5.0 MP, F/2.4",
+    "Camera trước": "12.0 MP, F/2.2",
+    "Pin": "5000 mAh",
+    "Hệ điều hành": "Android",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-A56-8GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 128GB",
+     "price": 8990000,
+     "originalPrice": 9810000,
+     "imageUrl": "/assets/products/v/galaxy-a56-den.webp",
+     "stock": 48
+    },
+    {
+     "sku": "GALAXY-A56-8GB-128GB-XAM",
+     "color": "Xám",
+     "capacity": "8GB 128GB",
+     "price": 8990000,
+     "originalPrice": 9810000,
+     "imageUrl": "/assets/products/v/galaxy-a56-xam.webp",
+     "stock": 51
+    },
+    {
+     "sku": "GALAXY-A56-8GB-128GB-XANH",
+     "color": "Xanh",
+     "capacity": "8GB 128GB",
+     "price": 8990000,
+     "originalPrice": 9810000,
+     "imageUrl": "/assets/products/v/galaxy-a56-xanh.webp",
+     "stock": 40
+    },
+    {
+     "sku": "GALAXY-A56-8GB-128GB-HONG",
+     "color": "Hồng",
+     "capacity": "8GB 128GB",
+     "price": 8990000,
+     "originalPrice": 9810000,
+     "imageUrl": "/assets/products/v/galaxy-a56-hong.webp",
+     "stock": 46
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-a36",
+   "name": "Galaxy A36 5G",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy A36 5G chính hãng, Snapdragon 6 Gen 3, màn hình 6.7 inches Super AMOLED.",
+   "specs": {
+    "Màn hình": "6.7 inches Super AMOLED",
+    "Chip": "Snapdragon 6 Gen 3",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "50.0 MP, F/1.8 + 8.0 MP, F/2.2 + 5.0 MP, F/2.4",
+    "Camera trước": "12.0 MP, F/2.2",
+    "Pin": "5000 mAh",
+    "Hệ điều hành": "Android",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-A36-8GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 128GB",
+     "price": 7490000,
+     "originalPrice": 8140000,
+     "imageUrl": "/assets/products/v/galaxy-a36-den.webp",
+     "stock": 62
+    },
+    {
+     "sku": "GALAXY-A36-8GB-128GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 128GB",
+     "price": 7490000,
+     "originalPrice": 8140000,
+     "imageUrl": "/assets/products/v/galaxy-a36-tim.webp",
+     "stock": 77
+    },
+    {
+     "sku": "GALAXY-A36-8GB-128GB-XANH",
+     "color": "Xanh",
+     "capacity": "8GB 128GB",
+     "price": 7490000,
+     "originalPrice": 8140000,
+     "imageUrl": "/assets/products/v/galaxy-a36-xanh.webp",
+     "stock": 44
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-a16",
+   "name": "Galaxy A16 5G",
+   "category": "Điện thoại",
+   "brand": "Samsung",
+   "description": "Galaxy A16 5G chính hãng, MediaTek Dimensity 6300(6nm), màn hình 6.7 inches Super AMOLED.",
+   "specs": {
+    "Màn hình": "6.7 inches Super AMOLED",
+    "Chip": "MediaTek Dimensity 6300(6nm)",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera góc rộng: 50MP, f/1.8 AFCamera góc siêu rộng: 5MP, f/2.2 Camera Macro: 2MP, f/2.4",
+    "Camera trước": "13MP, f/2.0",
+    "Pin": "5,000mAh",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-A16-8GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 128GB",
+     "price": 4990000,
+     "originalPrice": 5980000,
+     "imageUrl": "/assets/products/v/galaxy-a16-den.webp",
+     "stock": 22
+    },
+    {
+     "sku": "GALAXY-A16-8GB-128GB-VANG",
+     "color": "Vàng",
+     "capacity": "8GB 128GB",
+     "price": 4990000,
+     "originalPrice": 5980000,
+     "imageUrl": "/assets/products/v/galaxy-a16-vang.webp",
+     "stock": 30
+    },
+    {
+     "sku": "GALAXY-A16-8GB-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "8GB 128GB",
+     "price": 4990000,
+     "originalPrice": 5980000,
+     "imageUrl": "/assets/products/v/galaxy-a16-xanh-la.webp",
+     "stock": 44
+    }
+   ]
+  },
+  {
+   "slug": "xiaomi-15-ultra",
+   "name": "Xiaomi 15 Ultra",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Xiaomi 15 Ultra chính hãng, Snapdragon 8 Elite (Tiến trình sản xuất 3nm), màn hình 6.36 inches CrystalRes AMOLED.",
+   "specs": {
+    "Màn hình": "6.36 inches CrystalRes AMOLED",
+    "Chip": "Snapdragon 8 Elite (Tiến trình sản xuất 3nm)",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính Leica: 50MP, ƒ/1.62, OIS, Tiêu cự tương đương 23mmCamera tele Leica: 50MP, ƒ/2.0, OISCamera góc siêu rộng Leica: 50MP, ƒ/2.2, 1",
+    "Camera trước": "Camera trước: 32MP, ƒ/2.0, 90°, Tiêu cự 21mm",
+    "Pin": "5240mAh",
+    "Hệ điều hành": "Xiaomi HyperOS 2",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "XIAOMI-15-ULTRA-16GB-512GB-BAC",
+     "color": "Bạc",
+     "capacity": "16GB 512GB",
+     "price": 25490000,
+     "originalPrice": 34360000,
+     "imageUrl": "/assets/products/v/xiaomi-15-ultra-bac.webp",
+     "stock": 79
+    },
+    {
+     "sku": "XIAOMI-15-ULTRA-16GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "16GB 512GB",
+     "price": 25490000,
+     "originalPrice": 34360000,
+     "imageUrl": "/assets/products/v/xiaomi-15-ultra-den.webp",
+     "stock": 30
+    },
+    {
+     "sku": "XIAOMI-15-ULTRA-16GB-1TB-BAC",
+     "color": "Bạc",
+     "capacity": "16GB 1TB",
+     "price": 27990000,
+     "originalPrice": 38250000,
+     "imageUrl": "/assets/products/v/xiaomi-15-ultra-bac.webp",
+     "stock": 31
+    }
+   ]
+  },
+  {
+   "slug": "xiaomi-15",
+   "name": "Xiaomi 15",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Xiaomi 15 chính hãng, Snapdragon 8 Elite (Tiến trình sản xuất 3nm), màn hình 6.36 inches CrystalRes AMOLED.",
+   "specs": {
+    "Màn hình": "6.36 inches CrystalRes AMOLED",
+    "Chip": "Snapdragon 8 Elite (Tiến trình sản xuất 3nm)",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera chính Leica: 50MP, ƒ/1.62, OIS, Tiêu cự tương đương 23mmCamera tele Leica: 50MP, ƒ/2.0, OISCamera góc siêu rộng Leica: 50MP, ƒ/2.2, 1",
+    "Camera trước": "Camera trước: 32MP, ƒ/2.0, 90°, Tiêu cự 21mm",
+    "Pin": "5240mAh",
+    "Hệ điều hành": "Xiaomi HyperOS 2",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "XIAOMI-15-12GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 256GB",
+     "price": 16990000,
+     "originalPrice": 24540000,
+     "imageUrl": "/assets/products/v/xiaomi-15-den.webp",
+     "stock": 18
+    },
+    {
+     "sku": "XIAOMI-15-12GB-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "12GB 256GB",
+     "price": 16990000,
+     "originalPrice": 24540000,
+     "imageUrl": "/assets/products/v/xiaomi-15-trang.webp",
+     "stock": 26
+    },
+    {
+     "sku": "XIAOMI-15-12GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "12GB 256GB",
+     "price": 16990000,
+     "originalPrice": 24540000,
+     "imageUrl": "/assets/products/v/xiaomi-15-xanh-la.webp",
+     "stock": 79
+    },
+    {
+     "sku": "XIAOMI-15-12GB-512GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "12GB 512GB",
+     "price": 18990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/xiaomi-15-xanh-la.webp",
+     "stock": 49
+    },
+    {
+     "sku": "XIAOMI-15-12GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 512GB",
+     "price": 18990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/xiaomi-15-den.webp",
+     "stock": 68
+    },
+    {
+     "sku": "XIAOMI-15-12GB-512GB-TRANG",
+     "color": "Trắng",
+     "capacity": "12GB 512GB",
+     "price": 18990000,
+     "originalPrice": 26500000,
+     "imageUrl": "/assets/products/v/xiaomi-15-trang.webp",
+     "stock": 8
+    }
+   ]
+  },
+  {
+   "slug": "xiaomi-15t-pro",
+   "name": "Xiaomi 15T Pro",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Xiaomi 15T Pro chính hãng, MediaTek Dimensity 9400+, màn hình 6.83 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.83 inches AMOLED",
+    "Chip": "MediaTek Dimensity 9400+",
+    "RAM": "12 GB",
+    "Bộ nhớ": "512 GB",
+    "Camera sau": "Chính: 50MP, f/1.62, OIS, cảm biến Light Fusion 900Tele: 50MP, f/3.0, OIS, Samsung JN5, Zoom 5x, 10x lossless, Ultra Zoom 20xSiêu rộng: 12MP",
+    "Camera trước": "32MP, f/2.2, tiêu cự 21mm",
+    "Pin": "5500mAh",
+    "Hệ điều hành": "Xiaomi HyperOS 2"
+   },
+   "variants": [
+    {
+     "sku": "XIAOMI-15T-PRO-12GB-512GB-XAM",
+     "color": "Xám",
+     "capacity": "12GB 512GB",
+     "price": 15990000,
+     "originalPrice": 19490000,
+     "imageUrl": "/assets/products/v/xiaomi-15t-pro-xam.webp",
+     "stock": 29
+    },
+    {
+     "sku": "XIAOMI-15T-PRO-12GB-512GB-VANG",
+     "color": "Vàng",
+     "capacity": "12GB 512GB",
+     "price": 15990000,
+     "originalPrice": 19490000,
+     "imageUrl": "/assets/products/v/xiaomi-15t-pro-vang.webp",
+     "stock": 19
+    }
+   ]
+  },
+  {
+   "slug": "xiaomi-15t",
+   "name": "Xiaomi 15T",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Xiaomi 15T chính hãng, MediaTek Dimensity 8400-Ultra, màn hình 6.83 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.83 inches AMOLED",
+    "Chip": "MediaTek Dimensity 8400-Ultra",
+    "RAM": "12 GB",
+    "Bộ nhớ": "512 GB",
+    "Camera sau": "Chính: 50MP (23mm, f/1.7, OIS, Light Fusion 800)Tele: 50MP (46mm, f/1.9)Góc siêu rộng: 12MP (15mm, f/2.2, 120° FOV)",
+    "Camera trước": "32MP, f/2.2, tiêu cự 21mm",
+    "Pin": "5500mAh",
+    "Hệ điều hành": "Xiaomi HyperOS 2, tích hợp Xiaomi HyperAI & Google Gemini",
+    "Kết nối": "5G"
+   },
+   "variants": [
+    {
+     "sku": "XIAOMI-15T-12GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "12GB 512GB",
+     "price": 12390000,
+     "originalPrice": 14990000,
+     "imageUrl": "/assets/products/v/xiaomi-15t-den.webp",
+     "stock": 27
+    },
+    {
+     "sku": "XIAOMI-15T-12GB-512GB-VANG-HONG",
+     "color": "Vàng Hồng",
+     "capacity": "12GB 512GB",
+     "price": 12390000,
+     "originalPrice": 14990000,
+     "imageUrl": "/assets/products/v/xiaomi-15t-vang-hong.webp",
+     "stock": 49
+    },
+    {
+     "sku": "XIAOMI-15T-12GB-512GB-XAM",
+     "color": "Xám",
+     "capacity": "12GB 512GB",
+     "price": 12390000,
+     "originalPrice": 14990000,
+     "imageUrl": "/assets/products/v/xiaomi-15t-xam.webp",
+     "stock": 21
+    }
+   ]
+  },
+  {
+   "slug": "redmi-note-14-pro-plus",
+   "name": "Redmi Note 14 Pro+ 5G",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Redmi Note 14 Pro+ 5G chính hãng, MediaTek Helio G99-Ultra, màn hình 6.67 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.67 inches AMOLED",
+    "Chip": "MediaTek Helio G99-Ultra",
+    "RAM": "6 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Hệ thống camera AI 108MP Camera đo chiều sâu 2MP - f/2.4 Camera cận cảnh 2MP - f/2.4",
+    "Camera trước": "Camera trước 20MP - f/2.2",
+    "Pin": "5500mAh",
+    "Hệ điều hành": "Android 14",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "REDMI-NOTE-14-PRO-PLUS-8GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 256GB",
+     "price": 8490000,
+     "originalPrice": 10800000,
+     "imageUrl": "/assets/products/v/redmi-note-14-pro-plus-den.webp",
+     "stock": 47
+    },
+    {
+     "sku": "REDMI-NOTE-14-PRO-PLUS-8GB-256GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 256GB",
+     "price": 8490000,
+     "originalPrice": 10800000,
+     "imageUrl": "/assets/products/v/redmi-note-14-pro-plus-tim.webp",
+     "stock": 33
+    },
+    {
+     "sku": "REDMI-NOTE-14-PRO-PLUS-8GB-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "8GB 256GB",
+     "price": 8490000,
+     "originalPrice": 10800000,
+     "imageUrl": "/assets/products/v/redmi-note-14-pro-plus-xanh-duong.webp",
+     "stock": 30
+    },
+    {
+     "sku": "REDMI-NOTE-14-PRO-PLUS-8GB-256GB-VANG-CHI-CO-TAI",
+     "color": "Vàng (Chỉ có tại CPS)",
+     "capacity": "8GB 256GB",
+     "price": 8490000,
+     "originalPrice": 10800000,
+     "imageUrl": "/assets/products/v/redmi-note-14-pro-plus-vang-chi-co-tai-cps.webp",
+     "stock": 33
+    }
+   ]
+  },
+  {
+   "slug": "redmi-note-14-pro",
+   "name": "Redmi Note 14 Pro",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Redmi Note 14 Pro chính hãng, MediaTek Helio G100-Ultra 8 nhân, màn hình 6.67 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.67 inches AMOLED",
+    "Chip": "MediaTek Helio G100-Ultra 8 nhân",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Chính 200 MP & Phụ 8 MP, 2 MP",
+    "Camera trước": "32 MP",
+    "Pin": "5500 mAh",
+    "Hệ điều hành": "Xiaomi HyperOS (Android 14)",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "REDMI-NOTE-14-PRO-8GB-256GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "8GB/256GB",
+     "price": 6990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/redmi-note-14-pro-mac-dinh.webp",
+     "stock": 61
+    }
+   ]
+  },
+  {
+   "slug": "redmi-note-14",
+   "name": "Redmi Note 14",
+   "category": "Điện thoại",
+   "brand": "Xiaomi",
+   "description": "Redmi Note 14 chính hãng, MediaTek Helio G99-Ultra, màn hình 6.67 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.67 inches AMOLED",
+    "Chip": "MediaTek Helio G99-Ultra",
+    "RAM": "6 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Hệ thống camera AI 108MP Camera đo chiều sâu 2MP - f/2.4 Camera cận cảnh 2MP - f/2.4",
+    "Camera trước": "Camera trước 20MP - f/2.2",
+    "Pin": "5500mAh",
+    "Hệ điều hành": "Android 14",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "REDMI-NOTE-14-6GB-128GB-DEN",
+     "color": "Đen",
+     "capacity": "6GB 128GB",
+     "price": 4690000,
+     "originalPrice": 4900000,
+     "imageUrl": "/assets/products/v/redmi-note-14-den.webp",
+     "stock": 13
+    },
+    {
+     "sku": "REDMI-NOTE-14-6GB-128GB-TIM",
+     "color": "Tím",
+     "capacity": "6GB 128GB",
+     "price": 4690000,
+     "originalPrice": 4900000,
+     "imageUrl": "/assets/products/v/redmi-note-14-tim.webp",
+     "stock": 33
+    },
+    {
+     "sku": "REDMI-NOTE-14-6GB-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "6GB 128GB",
+     "price": 4690000,
+     "originalPrice": 4900000,
+     "imageUrl": "/assets/products/v/redmi-note-14-xanh-la.webp",
+     "stock": 15
+    },
+    {
+     "sku": "REDMI-NOTE-14-8GB-256GB-DEN",
+     "color": "Đen",
+     "capacity": "8GB 256GB",
+     "price": 6490000,
+     "originalPrice": 7160000,
+     "imageUrl": "/assets/products/v/redmi-note-14-den.webp",
+     "stock": 49
+    },
+    {
+     "sku": "REDMI-NOTE-14-8GB-256GB-TIM",
+     "color": "Tím",
+     "capacity": "8GB 256GB",
+     "price": 6490000,
+     "originalPrice": 7160000,
+     "imageUrl": "/assets/products/v/redmi-note-14-tim.webp",
+     "stock": 57
+    },
+    {
+     "sku": "REDMI-NOTE-14-8GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "8GB 256GB",
+     "price": 6490000,
+     "originalPrice": 7160000,
+     "imageUrl": "/assets/products/v/redmi-note-14-xanh-la.webp",
+     "stock": 30
+    }
+   ]
+  },
+  {
+   "slug": "oppo-find-x8",
+   "name": "OPPO Find X8",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Find X8 chính hãng, MediaTek Dimensity 9400, màn hình 6.59 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.59 inches AMOLED",
+    "Chip": "MediaTek Dimensity 9400",
+    "RAM": "16 GB",
+    "Bộ nhớ": "512 GB",
+    "Camera sau": "50MP OIS (Chính) + 50MP (Chân dung Tele) + 50MP (Góc rộng)",
+    "Camera trước": "32MP, khẩu độ F/2.4",
+    "Pin": "5630 mAh",
+    "Hệ điều hành": "ColorOS 15, nền tảng Android 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "OPPO-FIND-X8-16GB-512GB-DEN",
+     "color": "Đen",
+     "capacity": "16GB 512GB",
+     "price": 19490000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/oppo-find-x8-den.webp",
+     "stock": 71
+    },
+    {
+     "sku": "OPPO-FIND-X8-16GB-512GB-XAM",
+     "color": "Xám",
+     "capacity": "16GB 512GB",
+     "price": 19490000,
+     "originalPrice": 22990000,
+     "imageUrl": "/assets/products/v/oppo-find-x8-xam.webp",
+     "stock": 53
+    }
+   ]
+  },
+  {
+   "slug": "oppo-reno14",
+   "name": "OPPO Reno14 5G",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Reno14 5G chính hãng, MediaTek Dimensity 8350 5G, tối đa 3.35GHz, màn hình 6.59 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.59 inches AMOLED",
+    "Chip": "MediaTek Dimensity 8350 5G, tối đa 3.35GHz",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Chính 50MP OIS, F/1.8Tele 50MP OIS, F/2.8Góc rộng 8MP, F/2.2",
+    "Camera trước": "50MP, F/2.0",
+    "Pin": "6000mAh",
+    "Hệ điều hành": "ColorOS 15, Android 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "OPPO-RENO14-12GB-256GB-TRANG",
+     "color": "Trắng",
+     "capacity": "12GB 256GB",
+     "price": 15500000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/oppo-reno14-trang.webp",
+     "stock": 14
+    },
+    {
+     "sku": "OPPO-RENO14-12GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "12GB 256GB",
+     "price": 15500000,
+     "originalPrice": 15990000,
+     "imageUrl": "/assets/products/v/oppo-reno14-xanh-la.webp",
+     "stock": 9
+    }
+   ]
+  },
+  {
+   "slug": "oppo-reno14-f",
+   "name": "OPPO Reno14 F 5G",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Reno14 F 5G chính hãng, Qualcomm Snapdragon 6 Gen 1 5G, tối đa 2.2GHz, màn hình 6.57 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.57 inches AMOLED",
+    "Chip": "Qualcomm Snapdragon 6 Gen 1 5G, tối đa 2.2GHz",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Chính 50MP OIS, F/1.8Góc rộng 8MP, F/2.2Marco 2MP, F/2.4",
+    "Camera trước": "32MP, F/2.0",
+    "Pin": "6000mAh",
+    "Hệ điều hành": "ColorOS 15, Android 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "OPPO-RENO14-F-8GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "8GB 256GB",
+     "price": 10100000,
+     "originalPrice": 10490000,
+     "imageUrl": "/assets/products/v/oppo-reno14-f-xanh-la.webp",
+     "stock": 63
+    },
+    {
+     "sku": "OPPO-RENO14-F-8GB-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "8GB 256GB",
+     "price": 10100000,
+     "originalPrice": 10490000,
+     "imageUrl": "/assets/products/v/oppo-reno14-f-xanh-duong.webp",
+     "stock": 26
+    }
+   ]
+  },
+  {
+   "slug": "oppo-reno12",
+   "name": "OPPO Reno12 5G",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Reno12 5G chính hãng, MediaTek Dimensity 8350 5G, tối đa 3.35GHz, màn hình 6.59 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.59 inches AMOLED",
+    "Chip": "MediaTek Dimensity 8350 5G, tối đa 3.35GHz",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Chính 50MP OIS, F/1.8Tele 50MP OIS, F/2.8Góc rộng 8MP, F/2.2",
+    "Camera trước": "50MP, F/2.0",
+    "Pin": "6000mAh",
+    "Hệ điều hành": "ColorOS 15, Android 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "OPPO-RENO12-12GB-256GB-NAU-DONG",
+     "color": "Nâu Đồng",
+     "capacity": "12GB 256GB",
+     "price": 9690000,
+     "originalPrice": 12990000,
+     "imageUrl": "/assets/products/v/oppo-reno12-nau-dong.webp",
+     "stock": 75
+    },
+    {
+     "sku": "OPPO-RENO12-12GB-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "12GB 256GB",
+     "price": 9690000,
+     "originalPrice": 12990000,
+     "imageUrl": "/assets/products/v/oppo-reno12-bac.webp",
+     "stock": 71
+    }
+   ]
+  },
+  {
+   "slug": "oppo-reno12-f",
+   "name": "OPPO Reno12 F 5G",
+   "category": "Điện thoại",
+   "brand": "OPPO",
+   "description": "OPPO Reno12 F 5G chính hãng, MediaTek Dimensity 8350 5G, tối đa 3.35GHz, màn hình 6.59 inches AMOLED.",
+   "specs": {
+    "Màn hình": "6.59 inches AMOLED",
+    "Chip": "MediaTek Dimensity 8350 5G, tối đa 3.35GHz",
+    "RAM": "12 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Chính 50MP OIS, F/1.8Tele 50MP OIS, F/2.8Góc rộng 8MP, F/2.2",
+    "Camera trước": "50MP, F/2.0",
+    "Pin": "6000mAh",
+    "Hệ điều hành": "ColorOS 15, Android 15",
+    "Kết nối": "NFC"
+   },
+   "variants": [
+    {
+     "sku": "OPPO-RENO12-F-8GB-256GB-CAM",
+     "color": "Cam",
+     "capacity": "8GB 256GB",
+     "price": 7120000,
+     "originalPrice": 9490000,
+     "imageUrl": "/assets/products/v/oppo-reno12-f-cam.webp",
+     "stock": 77
+    },
+    {
+     "sku": "OPPO-RENO12-F-8GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "8GB 256GB",
+     "price": 7120000,
+     "originalPrice": 9490000,
+     "imageUrl": "/assets/products/v/oppo-reno12-f-xanh-la.webp",
+     "stock": 38
+    }
+   ]
+  },
+  {
+   "slug": "realme-14",
+   "name": "realme 14 5G",
+   "category": "Điện thoại",
+   "brand": "realme",
+   "description": "realme 14 5G chính hãng.",
+   "specs": {},
+   "variants": [
+    {
+     "sku": "REALME-14-12GB-256GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "12GB/256GB",
+     "price": 8990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/realme-14-mac-dinh.webp",
+     "stock": 28
+    }
+   ]
+  },
+  {
+   "slug": "realme-c75",
+   "name": "realme C75",
+   "category": "Điện thoại",
+   "brand": "realme",
+   "description": "realme C75 chính hãng.",
+   "specs": {
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB"
+   },
+   "variants": [
+    {
+     "sku": "REALME-C75-8GB-128GB-MAC-DINH",
+     "color": "Mặc định",
+     "capacity": "8GB/128GB",
+     "price": 4290000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/realme-c75-mac-dinh.webp",
+     "stock": 76
+    }
+   ]
+  },
+  {
+   "slug": "ipad-pro-m4-11",
+   "name": "iPad Pro M4 11 inch",
+   "category": "Máy tính bảng",
+   "brand": "Apple",
+   "description": "iPad Pro M4 11 inch chính hãng, Apple M4, màn hình 11 inches Ultra Retina XDR.",
+   "specs": {
+    "Màn hình": "11 inches Ultra Retina XDR",
+    "Chip": "Apple M4",
+    "CPU": "CPU 9 lõi với 3 lõi hiệu năng và 6 lõi tiết kiệm điện",
+    "RAM": "8 GB",
+    "Bộ nhớ": "256 GB",
+    "Camera sau": "Camera góc siêu rộng 12MP, ƒ/2.4",
+    "Camera trước": "Camera góc rộng: 12MP, ƒ/1.8",
+    "Hệ điều hành": "iPadOS 17"
+   },
+   "variants": [
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-256GB-DEN",
+     "color": "Đen",
+     "capacity": "Wifi 256GB",
+     "price": 26990000,
+     "originalPrice": 33290000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-den.webp",
+     "stock": 41
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 256GB",
+     "price": 26990000,
+     "originalPrice": 33290000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-bac.webp",
+     "stock": 13
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-512GB-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 512GB",
+     "price": 33890000,
+     "originalPrice": 39990000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-bac.webp",
+     "stock": 65
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-512GB-DEN",
+     "color": "Đen",
+     "capacity": "Wifi 512GB",
+     "price": 33890000,
+     "originalPrice": 39990000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-den.webp",
+     "stock": 33
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-1TB-DEN",
+     "color": "Đen",
+     "capacity": "Wifi 1TB",
+     "price": 34290000,
+     "originalPrice": 51490000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-den.webp",
+     "stock": 34
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-1TB-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 1TB",
+     "price": 34290000,
+     "originalPrice": 51490000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-bac.webp",
+     "stock": 77
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-1TB-NANO-DEN",
+     "color": "Đen",
+     "capacity": "Wifi 1TB Nano",
+     "price": 38490000,
+     "originalPrice": 54990000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-den.webp",
+     "stock": 64
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-1TB-NANO-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 1TB Nano",
+     "price": 38490000,
+     "originalPrice": 54990000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-bac.webp",
+     "stock": 56
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-2TB-DEN",
+     "color": "Đen",
+     "capacity": "Wifi 2TB",
+     "price": 41990000,
+     "originalPrice": 65490000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-den.webp",
+     "stock": 48
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-2TB-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 2TB",
+     "price": 41990000,
+     "originalPrice": 65490000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-bac.webp",
+     "stock": 52
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-2TB-NANO-DEN",
+     "color": "Đen",
+     "capacity": "Wifi 2TB Nano",
+     "price": 42990000,
+     "originalPrice": 68290000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-den.webp",
+     "stock": 72
+    },
+    {
+     "sku": "IPAD-PRO-M4-11-WIFI-2TB-NANO-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 2TB Nano",
+     "price": 42990000,
+     "originalPrice": 68290000,
+     "imageUrl": "/assets/products/v/ipad-pro-m4-11-bac.webp",
+     "stock": 21
+    }
+   ]
+  },
+  {
+   "slug": "ipad-air-m3-11",
+   "name": "iPad Air M3 11 inch",
+   "category": "Máy tính bảng",
+   "brand": "Apple",
+   "description": "iPad Air M3 11 inch chính hãng, Chip Apple M3, màn hình 11 inches Liquid Retina.",
+   "specs": {
+    "Màn hình": "11 inches Liquid Retina",
+    "Chip": "Chip Apple M3",
+    "CPU": "CPU 8 lõi với 4 lõi hiệu năng và 4 lõi tiết kiệm điện",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera góc rộng: 12MP, ƒ/1.8, Độ thu phóng kỹ thuật số lên đến 5xChụp ảnh toàn cảnh Panorama: 63MP",
+    "Camera trước": "Camera 12MP, ƒ/2.0",
+    "Pin": "Tích hợp pin sạc Li-Po 28,93 watt‑giờ",
+    "Hệ điều hành": "iPadOS 18"
+   },
+   "variants": [
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-128GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 128GB",
+     "price": 16990000,
+     "originalPrice": 21490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xam.webp",
+     "stock": 33
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 128GB",
+     "price": 16990000,
+     "originalPrice": 21490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xanh-duong.webp",
+     "stock": 57
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-128GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 128GB",
+     "price": 16990000,
+     "originalPrice": 21490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-trang-vang.webp",
+     "stock": 18
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-128GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 128GB",
+     "price": 16990000,
+     "originalPrice": 21490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-tim.webp",
+     "stock": 17
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-256GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 256GB",
+     "price": 20990000,
+     "originalPrice": 23990000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xam.webp",
+     "stock": 23
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 256GB",
+     "price": 20990000,
+     "originalPrice": 23990000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xanh-duong.webp",
+     "stock": 58
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-256GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 256GB",
+     "price": 20990000,
+     "originalPrice": 23990000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-trang-vang.webp",
+     "stock": 41
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-256GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 256GB",
+     "price": 20990000,
+     "originalPrice": 23990000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-tim.webp",
+     "stock": 70
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-512GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 512GB",
+     "price": 27290000,
+     "originalPrice": 29290000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xam.webp",
+     "stock": 71
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-512GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 512GB",
+     "price": 27290000,
+     "originalPrice": 29290000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xanh-duong.webp",
+     "stock": 12
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-512GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 512GB",
+     "price": 27290000,
+     "originalPrice": 29290000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-trang-vang.webp",
+     "stock": 69
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-512GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 512GB",
+     "price": 27290000,
+     "originalPrice": 29290000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-tim.webp",
+     "stock": 70
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-1TB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 1TB",
+     "price": 34290000,
+     "originalPrice": 37490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xam.webp",
+     "stock": 41
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-1TB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 1TB",
+     "price": 34290000,
+     "originalPrice": 37490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-xanh-duong.webp",
+     "stock": 29
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-1TB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 1TB",
+     "price": 34290000,
+     "originalPrice": 37490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-trang-vang.webp",
+     "stock": 31
+    },
+    {
+     "sku": "IPAD-AIR-M3-11-WIFI-1TB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 1TB",
+     "price": 34290000,
+     "originalPrice": 37490000,
+     "imageUrl": "/assets/products/v/ipad-air-m3-11-tim.webp",
+     "stock": 30
+    }
+   ]
+  },
+  {
+   "slug": "ipad-mini-7",
+   "name": "iPad mini 7",
+   "category": "Máy tính bảng",
+   "brand": "Apple",
+   "description": "iPad mini 7 chính hãng, Chip A17 Pro, màn hình 8.3 inches Liquid Retina.",
+   "specs": {
+    "Màn hình": "8.3 inches Liquid Retina",
+    "Chip": "Chip A17 Pro",
+    "CPU": "CPU 6 lõi với 2 lõi hiệu năng và 4 lõi tiết kiệm điện",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "Camera Wide 12MP, khẩu độ ƒ/1.8",
+    "Camera trước": "Camera trước Ultra Wide 12MP, Khẩu độ ƒ/2.4",
+    "Pin": "Tích hợp pin sạc Li-Po 19,3 watt‑giờ",
+    "Hệ điều hành": "iPadOS 18"
+   },
+   "variants": [
+    {
+     "sku": "IPAD-MINI-7-WIFI-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 128GB",
+     "price": 15990000,
+     "originalPrice": 16490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xanh-duong.webp",
+     "stock": 33
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-128GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 128GB",
+     "price": 15990000,
+     "originalPrice": 16490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-tim.webp",
+     "stock": 56
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-128GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 128GB",
+     "price": 15990000,
+     "originalPrice": 16490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xam.webp",
+     "stock": 43
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-128GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 128GB",
+     "price": 15990000,
+     "originalPrice": 16490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-trang-vang.webp",
+     "stock": 77
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-256GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 256GB",
+     "price": 18790000,
+     "originalPrice": 19290000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-trang-vang.webp",
+     "stock": 55
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-256GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 256GB",
+     "price": 18790000,
+     "originalPrice": 19290000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-tim.webp",
+     "stock": 73
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 256GB",
+     "price": 18790000,
+     "originalPrice": 19290000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xanh-duong.webp",
+     "stock": 49
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-256GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 256GB",
+     "price": 18790000,
+     "originalPrice": 19290000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xam.webp",
+     "stock": 34
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "5G 128GB",
+     "price": 20290000,
+     "originalPrice": 20690000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xanh-duong.webp",
+     "stock": 23
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-128GB-TIM",
+     "color": "Tím",
+     "capacity": "5G 128GB",
+     "price": 20290000,
+     "originalPrice": 20690000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-tim.webp",
+     "stock": 11
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-128GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "5G 128GB",
+     "price": 20290000,
+     "originalPrice": 20690000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-trang-vang.webp",
+     "stock": 48
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-128GB-XAM",
+     "color": "Xám",
+     "capacity": "5G 128GB",
+     "price": 20290000,
+     "originalPrice": 20690000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xam.webp",
+     "stock": 42
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "5G 256GB",
+     "price": 23290000,
+     "originalPrice": 23490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xanh-duong.webp",
+     "stock": 51
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-256GB-TIM",
+     "color": "Tím",
+     "capacity": "5G 256GB",
+     "price": 23290000,
+     "originalPrice": 23490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-tim.webp",
+     "stock": 44
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-256GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "5G 256GB",
+     "price": 23290000,
+     "originalPrice": 23490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-trang-vang.webp",
+     "stock": 42
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-256GB-XAM",
+     "color": "Xám",
+     "capacity": "5G 256GB",
+     "price": 23290000,
+     "originalPrice": 23490000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xam.webp",
+     "stock": 40
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-512GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 512GB",
+     "price": 24590000,
+     "originalPrice": 24890000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xanh-duong.webp",
+     "stock": 25
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-512GB-TIM",
+     "color": "Tím",
+     "capacity": "Wifi 512GB",
+     "price": 24590000,
+     "originalPrice": 24890000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-tim.webp",
+     "stock": 52
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-512GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "Wifi 512GB",
+     "price": 24590000,
+     "originalPrice": 24890000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-trang-vang.webp",
+     "stock": 27
+    },
+    {
+     "sku": "IPAD-MINI-7-WIFI-512GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 512GB",
+     "price": 24590000,
+     "originalPrice": 24890000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xam.webp",
+     "stock": 33
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-512GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "5G 512GB",
+     "price": 28990000,
+     "originalPrice": 29090000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xanh-duong.webp",
+     "stock": 11
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-512GB-TIM",
+     "color": "Tím",
+     "capacity": "5G 512GB",
+     "price": 28990000,
+     "originalPrice": 29090000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-tim.webp",
+     "stock": 36
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-512GB-TRANG-VANG",
+     "color": "Trắng vàng",
+     "capacity": "5G 512GB",
+     "price": 28990000,
+     "originalPrice": 29090000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-trang-vang.webp",
+     "stock": 31
+    },
+    {
+     "sku": "IPAD-MINI-7-5G-512GB-XAM",
+     "color": "Xám",
+     "capacity": "5G 512GB",
+     "price": 28990000,
+     "originalPrice": 29090000,
+     "imageUrl": "/assets/products/v/ipad-mini-7-xam.webp",
+     "stock": 70
+    }
+   ]
+  },
+  {
+   "slug": "galaxy-tab-s10-fe",
+   "name": "Galaxy Tab S10 FE",
+   "category": "Máy tính bảng",
+   "brand": "Samsung",
+   "description": "Galaxy Tab S10 FE chính hãng, Exynos 1580 (4 nm), màn hình 10.9 inches TFT LCD.",
+   "specs": {
+    "Màn hình": "10.9 inches TFT LCD",
+    "Chip": "Exynos 1580 (4 nm)",
+    "CPU": "2.9GHz,2.6GHz,1.9GHz",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "13.0 MP",
+    "Camera trước": "12.0 MP",
+    "Pin": "8,000 mAh",
+    "Hệ điều hành": "Android 15"
+   },
+   "variants": [
+    {
+     "sku": "GALAXY-TAB-S10-FE-WIFI-8GB-128GB-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 8GB 128GB",
+     "price": 11190000,
+     "originalPrice": 13690000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-bac.webp",
+     "stock": 70
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-WIFI-8GB-128GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 8GB 128GB",
+     "price": 11190000,
+     "originalPrice": 13690000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xam.webp",
+     "stock": 46
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-WIFI-8GB-128GB-XANH",
+     "color": "Xanh",
+     "capacity": "Wifi 8GB 128GB",
+     "price": 11190000,
+     "originalPrice": 13690000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xanh.webp",
+     "stock": 52
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-5G-8GB-128GB-BAC",
+     "color": "Bạc",
+     "capacity": "5G 8GB 128GB",
+     "price": 13500000,
+     "originalPrice": 16190000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-bac.webp",
+     "stock": 7
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-5G-8GB-128GB-XAM",
+     "color": "Xám",
+     "capacity": "5G 8GB 128GB",
+     "price": 13500000,
+     "originalPrice": 16190000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xam.webp",
+     "stock": 58
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-5G-8GB-128GB-XANH",
+     "color": "Xanh",
+     "capacity": "5G 8GB 128GB",
+     "price": 13500000,
+     "originalPrice": 16190000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xanh.webp",
+     "stock": 61
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-WIFI-12GB-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "Wifi 12GB 256GB",
+     "price": 13990000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-bac.webp",
+     "stock": 47
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-WIFI-12GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 12GB 256GB",
+     "price": 13990000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xam.webp",
+     "stock": 8
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-WIFI-12GB-256GB-XANH",
+     "color": "Xanh",
+     "capacity": "Wifi 12GB 256GB",
+     "price": 13990000,
+     "originalPrice": 16690000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xanh.webp",
+     "stock": 65
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-PLUS-WIFI-8GB-128G-BAC",
+     "color": "Bạc",
+     "capacity": "Plus Wifi 8GB 128GB",
+     "price": 14000000,
+     "originalPrice": 17490000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-bac.webp",
+     "stock": 44
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-PLUS-WIFI-8GB-128G-XAM",
+     "color": "Xám",
+     "capacity": "Plus Wifi 8GB 128GB",
+     "price": 14000000,
+     "originalPrice": 17490000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xam.webp",
+     "stock": 59
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-PLUS-WIFI-8GB-128G-XANH",
+     "color": "Xanh",
+     "capacity": "Plus Wifi 8GB 128GB",
+     "price": 14000000,
+     "originalPrice": 17490000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xanh.webp",
+     "stock": 80
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-PLUS-WIFI-12GB-256-BAC",
+     "color": "Bạc",
+     "capacity": "Plus Wifi 12GB 256GB",
+     "price": 15990000,
+     "originalPrice": 20490000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-bac.webp",
+     "stock": 23
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-PLUS-WIFI-12GB-256-XAM",
+     "color": "Xám",
+     "capacity": "Plus Wifi 12GB 256GB",
+     "price": 15990000,
+     "originalPrice": 20490000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xam.webp",
+     "stock": 20
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-PLUS-WIFI-12GB-256-XANH",
+     "color": "Xanh",
+     "capacity": "Plus Wifi 12GB 256GB",
+     "price": 15990000,
+     "originalPrice": 20490000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xanh.webp",
+     "stock": 68
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-5G-12GB-256GB-BAC",
+     "color": "Bạc",
+     "capacity": "5G 12GB 256GB",
+     "price": 16290000,
+     "originalPrice": 19190000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-bac.webp",
+     "stock": 8
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-5G-12GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "5G 12GB 256GB",
+     "price": 16290000,
+     "originalPrice": 19190000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xam.webp",
+     "stock": 37
+    },
+    {
+     "sku": "GALAXY-TAB-S10-FE-5G-12GB-256GB-XANH",
+     "color": "Xanh",
+     "capacity": "5G 12GB 256GB",
+     "price": 16290000,
+     "originalPrice": 19190000,
+     "imageUrl": "/assets/products/v/galaxy-tab-s10-fe-xanh.webp",
+     "stock": 14
+    }
+   ]
+  },
+  {
+   "slug": "xiaomi-pad-7",
+   "name": "Xiaomi Pad 7",
+   "category": "Máy tính bảng",
+   "brand": "Xiaomi",
+   "description": "Xiaomi Pad 7 chính hãng, Snapdragon® 7+ Gen 3 Mobile Platform, màn hình 11.2 inches IPS LCD.",
+   "specs": {
+    "Màn hình": "11.2 inches IPS LCD",
+    "Chip": "Snapdragon® 7+ Gen 3 Mobile Platform",
+    "CPU": "8 lõi, tốc độ đến 2,8GHz",
+    "RAM": "8 GB",
+    "Bộ nhớ": "128 GB",
+    "Camera sau": "13 MP, f/2.2",
+    "Camera trước": "8 MP, f/2.28",
+    "Pin": "8850 mAh",
+    "Hệ điều hành": "Xiaomi HyperOS 2"
+   },
+   "variants": [
+    {
+     "sku": "XIAOMI-PAD-7-WIFI-8GB-128GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 8GB 128GB",
+     "price": 10300000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xam.webp",
+     "stock": 32
+    },
+    {
+     "sku": "XIAOMI-PAD-7-WIFI-8GB-128GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 8GB 128GB",
+     "price": 10300000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xanh-duong.webp",
+     "stock": 43
+    },
+    {
+     "sku": "XIAOMI-PAD-7-WIFI-8GB-128GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "Wifi 8GB 128GB",
+     "price": 10300000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xanh-la.webp",
+     "stock": 28
+    },
+    {
+     "sku": "XIAOMI-PAD-7-WIFI-8GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "Wifi 8GB 256GB",
+     "price": 11290000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xam.webp",
+     "stock": 71
+    },
+    {
+     "sku": "XIAOMI-PAD-7-WIFI-8GB-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Wifi 8GB 256GB",
+     "price": 11290000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xanh-duong.webp",
+     "stock": 44
+    },
+    {
+     "sku": "XIAOMI-PAD-7-WIFI-8GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "Wifi 8GB 256GB",
+     "price": 11290000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xanh-la.webp",
+     "stock": 56
+    },
+    {
+     "sku": "XIAOMI-PAD-7-PRO-8GB-256GB-XANH-LA",
+     "color": "Xanh lá",
+     "capacity": "Pro 8GB 256GB",
+     "price": 13740000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xanh-la.webp",
+     "stock": 20
+    },
+    {
+     "sku": "XIAOMI-PAD-7-PRO-8GB-256GB-XANH-DUONG",
+     "color": "Xanh dương",
+     "capacity": "Pro 8GB 256GB",
+     "price": 13740000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xanh-duong.webp",
+     "stock": 38
+    },
+    {
+     "sku": "XIAOMI-PAD-7-PRO-8GB-256GB-XAM",
+     "color": "Xám",
+     "capacity": "Pro 8GB 256GB",
+     "price": 13740000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/xiaomi-pad-7-xam.webp",
+     "stock": 25
+    }
+   ]
+  },
+  {
+   "slug": "macbook-air-m4-13",
+   "name": "MacBook Air M4 13 inch",
+   "category": "Laptop",
+   "brand": "Apple",
+   "description": "MacBook Air M4 13 inch chính hãng, CPU 10 lõi với 4 lõi hiệu năng và 6 lõi tiết kiệm điện, màn hình 13.6 inches Màn hình Liquid Retina Có đèn nền LEDMật độ 224 pixel mỗi inchĐộ sáng 500 nitHỗ trợ một tỷ màuDải màu rộng (P3)Công nghệ True To.",
+   "specs": {
+    "Màn hình": "13.6 inches Màn hình Liquid Retina Có đèn nền LEDMật độ 224 pixel mỗi inchĐộ sáng 500 nitHỗ trợ một tỷ màuDải màu rộng (P3)Công nghệ True To",
+    "CPU": "CPU 10 lõi với 4 lõi hiệu năng và 6 lõi tiết kiệm điện",
+    "RAM": "16GB",
+    "Bộ nhớ": "256GB",
+    "Card đồ họa": "GPU 8 lõi Neural Engine 16 lõi Công nghệ dò tia tốc độ cao bằng phần cứngBăng thông bộ nhớ 120GB/s",
+    "Pin": "Thời gian xem video trực tuyến lên đến 18 giờThời gian duyệt web trên mạng không dây lên đến 15 giờPin Li-Po 53.8 watt‑giờ tích hợp",
+    "Hệ điều hành": "macOS"
+   },
+   "variants": [
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "16GB/256GB 8GPU",
+     "price": 24990000,
+     "originalPrice": 26990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-xanh-da-troi.webp",
+     "stock": 29
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-BAC",
+     "color": "Bạc",
+     "capacity": "16GB/256GB 8GPU",
+     "price": 24990000,
+     "originalPrice": 26990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-bac.webp",
+     "stock": 43
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-ANH-SAO",
+     "color": "Ánh sao",
+     "capacity": "16GB/256GB 8GPU",
+     "price": 24990000,
+     "originalPrice": 26990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-anh-sao.webp",
+     "stock": 64
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-DEM-XANH-THAM",
+     "color": "Đêm xanh thẳm",
+     "capacity": "16GB/256GB 8GPU",
+     "price": 24990000,
+     "originalPrice": 26990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-dem-xanh-tham.webp",
+     "stock": 48
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-SA-BAC",
+     "color": "Bạc",
+     "capacity": "16GB/256GB 8GPU Sạc 70W",
+     "price": 25890000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-bac.webp",
+     "stock": 73
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-SA-ANH-SAO",
+     "color": "Ánh sao",
+     "capacity": "16GB/256GB 8GPU Sạc 70W",
+     "price": 25890000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-anh-sao.webp",
+     "stock": 62
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-SA-DEM-XANH-THAM",
+     "color": "Đêm xanh thẳm",
+     "capacity": "16GB/256GB 8GPU Sạc 70W",
+     "price": 25890000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-dem-xanh-tham.webp",
+     "stock": 71
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-256GB-8GPU-SA-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "16GB/256GB 8GPU Sạc 70W",
+     "price": 25890000,
+     "originalPrice": 27990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-xanh-da-troi.webp",
+     "stock": 65
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-S-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "16GB/512GB 10GPU Sạc 70W",
+     "price": 31990000,
+     "originalPrice": 32990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-xanh-da-troi.webp",
+     "stock": 52
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-S-BAC",
+     "color": "Bạc",
+     "capacity": "16GB/512GB 10GPU Sạc 70W",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-bac.webp",
+     "stock": 29
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-S-ANH-SAO",
+     "color": "Ánh sao",
+     "capacity": "16GB/512GB 10GPU Sạc 70W",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-anh-sao.webp",
+     "stock": 18
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-S-DEM-XANH-THAM",
+     "color": "Đêm xanh thẳm",
+     "capacity": "16GB/512GB 10GPU Sạc 70W",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-dem-xanh-tham.webp",
+     "stock": 58
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-XANH-DA-TROI",
+     "color": "Xanh da trời",
+     "capacity": "16GB/512GB 10GPU",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-xanh-da-troi.webp",
+     "stock": 14
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-BAC",
+     "color": "Bạc",
+     "capacity": "16GB/512GB 10GPU",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-bac.webp",
+     "stock": 24
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-ANH-SAO",
+     "color": "Ánh sao",
+     "capacity": "16GB/512GB 10GPU",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-anh-sao.webp",
+     "stock": 12
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-16GB-512GB-10GPU-DEM-XANH-THAM",
+     "color": "Đêm xanh thẳm",
+     "capacity": "16GB/512GB 10GPU",
+     "price": 32990000,
+     "originalPrice": null,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-dem-xanh-tham.webp",
+     "stock": 22
+    },
+    {
+     "sku": "MACBOOK-AIR-M4-13-24GB-1TB-10GPU-SAC-DEM-XANH-THAM",
+     "color": "Đêm xanh thẳm",
+     "capacity": "24GB/1TB 10GPU Sạc 70W",
+     "price": 34490000,
+     "originalPrice": 41990000,
+     "imageUrl": "/assets/products/v/macbook-air-m4-13-dem-xanh-tham.webp",
+     "stock": 73
+    }
+   ]
+  },
+  {
+   "slug": "airpods-4",
+   "name": "AirPods 4",
+   "category": "Phụ kiện",
+   "brand": "Apple",
+   "description": "AirPods 4 chính hãng, Chip tai nghe H2.",
+   "specs": {
+    "Chip": "Chip tai nghe H2",
+    "Pin": "Thời gian nghe lên đến 5 giờ với một lần sạc Thời gian đàm thoại lên đến 4,5 giờ với một lần sạc"
+   },
+   "variants": [
+    {
+     "sku": "AIRPODS-4-TIEU-CHUAN-TRANG",
+     "color": "Trắng",
+     "capacity": "Tiêu chuẩn",
+     "price": 3090000,
+     "originalPrice": 3790000,
+     "imageUrl": "/assets/products/v/airpods-4-trang.webp",
+     "stock": 57
+    },
+    {
+     "sku": "AIRPODS-4-CHONG-ON-CHU-DONG--TRANG",
+     "color": "Trắng",
+     "capacity": "Chống ồn chủ động (ANC)",
+     "price": 4090000,
+     "originalPrice": 4990000,
+     "imageUrl": "/assets/products/v/airpods-4-trang.webp",
+     "stock": 59
+    }
+   ]
+  },
+  {
+   "slug": "airpods-pro-3",
+   "name": "AirPods Pro 3",
+   "category": "Phụ kiện",
+   "brand": "Apple",
+   "description": "AirPods Pro 3 chính hãng.",
+   "specs": {},
+   "variants": [
+    {
+     "sku": "AIRPODS-PRO-3-USB-C-TRANG",
+     "color": "Trắng",
+     "capacity": "USB-C",
+     "price": 5890000,
+     "originalPrice": 6790000,
+     "imageUrl": "/assets/products/v/airpods-pro-3-trang.webp",
+     "stock": 12
+    }
+   ]
+  },
+  {
+   "slug": "apple-watch-s12",
+   "name": "Apple Watch Series 12",
+   "category": "Đồng hồ thông minh",
+   "brand": "Apple",
+   "description": "Apple Watch Series 12 chính hãng, màn hình Màn hình Retina OLED LTPO3 luôn bật, tần số quét 1Hz Độ sáng tối đa 2000 nit, tối thiểu 1 nit.",
+   "specs": {
+    "Màn hình": "Màn hình Retina OLED LTPO3 luôn bật, tần số quét 1Hz Độ sáng tối đa 2000 nit, tối thiểu 1 nit"
+   },
+   "variants": [
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-XAM-DAY-XAN",
+     "color": "Viền Xám / Dây Xanh",
+     "capacity": "42mm GPS Dây Cao Su S/M",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-xam-day-xanh.webp",
+     "stock": 80
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-DEN-DAY-DEN",
+     "color": "Viền Đen / Dây Đen",
+     "capacity": "42mm GPS Dây Cao Su S/M",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-den-day-den.webp",
+     "stock": 44
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-VANG-DAY-VA",
+     "color": "Viền Vàng / Dây Vàng",
+     "capacity": "42mm GPS Dây Cao Su S/M",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-day-vang.webp",
+     "stock": 24
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-VANG-DONG-D",
+     "color": "Viền Vàng Đồng / Dây Xanh",
+     "capacity": "42mm GPS Dây Cao Su S/M",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-dong-day-xanh.webp",
+     "stock": 52
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-XAM-DAY-XAN-2",
+     "color": "Viền Xám / Dây Xanh",
+     "capacity": "42mm GPS Dây Cao Su M/L",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-xam-day-xanh.webp",
+     "stock": 8
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-DEN-DAY-DEN-2",
+     "color": "Viền Đen / Dây Đen",
+     "capacity": "42mm GPS Dây Cao Su M/L",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-den-day-den.webp",
+     "stock": 18
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-VANG-DAY-VA-2",
+     "color": "Viền Vàng / Dây Vàng",
+     "capacity": "42mm GPS Dây Cao Su M/L",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-day-vang.webp",
+     "stock": 65
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-CAO-S-VIEN-VANG-DONG-D-2",
+     "color": "Viền Vàng Đồng / Dây Xanh",
+     "capacity": "42mm GPS Dây Cao Su M/L",
+     "price": 9990000,
+     "originalPrice": 11490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-dong-day-xanh.webp",
+     "stock": 24
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-GPS-DAY-THEP-VIEN-VANG-DONG-D",
+     "color": "Viền Vàng Đồng / Dây Đồng",
+     "capacity": "42mm GPS Dây Thép",
+     "price": 11490000,
+     "originalPrice": 12990000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-dong-day-dong.webp",
+     "stock": 38
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-XAM-DAY-XAN",
+     "color": "Viền Xám / Dây Xanh",
+     "capacity": "42mm 5G Dây Cao Su M/L",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-xam-day-xanh.webp",
+     "stock": 5
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-DEN-DAY-DEN",
+     "color": "Viền Đen / Dây Đen",
+     "capacity": "42mm 5G Dây Cao Su M/L",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-den-day-den.webp",
+     "stock": 8
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-VANG-DAY-VA",
+     "color": "Viền Vàng / Dây Vàng",
+     "capacity": "42mm 5G Dây Cao Su M/L",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-day-vang.webp",
+     "stock": 44
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-VANG-DONG-D",
+     "color": "Viền Vàng Đồng / Dây Xanh",
+     "capacity": "42mm 5G Dây Cao Su M/L",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-dong-day-xanh.webp",
+     "stock": 40
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-XAM-DAY-XAN-2",
+     "color": "Viền Xám / Dây Xanh",
+     "capacity": "42mm 5G Dây Cao Su S/M",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-xam-day-xanh.webp",
+     "stock": 19
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-DEN-DAY-DEN-2",
+     "color": "Viền Đen / Dây Đen",
+     "capacity": "42mm 5G Dây Cao Su S/M",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-den-day-den.webp",
+     "stock": 17
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-VANG-DAY-VA-2",
+     "color": "Viền Vàng / Dây Vàng",
+     "capacity": "42mm 5G Dây Cao Su S/M",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-day-vang.webp",
+     "stock": 62
+    },
+    {
+     "sku": "APPLE-WATCH-S12-42MM-5G-DAY-CAO-SU-VIEN-VANG-DONG-D-2",
+     "color": "Viền Vàng Đồng / Dây Xanh",
+     "capacity": "42mm 5G Dây Cao Su S/M",
+     "price": 12890000,
+     "originalPrice": 14490000,
+     "imageUrl": "/assets/products/v/apple-watch-s12-vien-vang-dong-day-xanh.webp",
+     "stock": 32
+    }
+   ]
+  }
+ ]
+}

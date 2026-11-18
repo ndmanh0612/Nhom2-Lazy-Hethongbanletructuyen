@@ -16,6 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Danh mục mẫu đầy đủ (phiên bản × màu, giá gốc, ảnh theo màu) cho SampleCatalogImporter. -->
+    <EmbeddedResource Include="Seeding\sample-catalog.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\PhoneStore.BuildingBlocks\PhoneStore.BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\Modules\Identity\PhoneStore.Modules.Identity\PhoneStore.Modules.Identity.csproj" />
     <ProjectReference Include="..\..\Modules\Catalog\PhoneStore.Modules.Catalog\PhoneStore.Modules.Catalog.csproj" />

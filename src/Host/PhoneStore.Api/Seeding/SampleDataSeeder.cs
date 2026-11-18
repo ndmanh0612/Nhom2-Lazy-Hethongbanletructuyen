@@ -146,6 +146,7 @@ public static class SampleDataSeeder
         var inventory = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
 
         await SeedCatalogAsync(catalog, cancellationToken);
+        await SampleCatalogImporter.ImportAsync(catalog, cancellationToken);
         await SyncInventoryAsync(catalog, inventory, cancellationToken);
     }
 

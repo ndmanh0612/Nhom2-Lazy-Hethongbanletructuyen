@@ -852,7 +852,9 @@ public class CatalogService : ICatalogService
             variant.Capacity,
             variant.Price,
             variant.StockQuantity,
-            variant.IsActive);
+            variant.IsActive,
+            variant.ImageUrl,
+            variant.OriginalPrice);
     }
 
     private static ProductDetailDto ToDetailDto(Product product, string? categoryName, string? brandName)

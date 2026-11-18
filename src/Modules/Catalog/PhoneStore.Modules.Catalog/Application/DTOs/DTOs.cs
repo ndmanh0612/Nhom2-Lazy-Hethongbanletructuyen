@@ -23,7 +23,9 @@ public record ProductVariantDto(
     string Capacity,
     long Price,
     int StockQuantity,
-    bool IsActive
+    bool IsActive,
+    string? ImageUrl = null,
+    long? OriginalPrice = null
 );
 
 public record ProductImageDto(long Id, string ImageUrl, int SortOrder);
