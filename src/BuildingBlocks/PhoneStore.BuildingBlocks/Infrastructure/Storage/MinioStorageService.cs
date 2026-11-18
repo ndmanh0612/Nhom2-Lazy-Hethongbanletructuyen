@@ -32,7 +32,24 @@ public class MinioStorageService : IFileStorageService, IDisposable
         };
 
         _s3Client = new AmazonS3Client(credentials, config);
+
+        // Presigned URL được ký theo host trong ServiceURL. Endpoint nội bộ (vd. http://minio:9000)
+        // trình duyệt không truy cập được, nên ký bằng PublicBaseUrl (reverse proxy chuyển tiếp về MinIO).
+        // Việc ký diễn ra cục bộ, client này không gọi mạng.
+        _presignClient = string.IsNullOrWhiteSpace(_options.PublicBaseUrl)
+            ? _s3Client
+            : new AmazonS3Client(credentials, new AmazonS3Config
+            {
+                ServiceURL = _options.PublicBaseUrl.TrimEnd('/'),
+                ForcePathStyle = true,
+                AuthenticationRegion = "us-east-1",
+            });
     }
+
+    private readonly IAmazonS3 _presignClient;
+
+    /// <summary>Đã xác nhận bucket tồn tại (service là singleton) — khỏi liệt kê bucket mỗi lần upload.</summary>
+    private volatile bool _bucketReady;
 
     /// <inheritdoc />
     public async Task<string> UploadAsync(
@@ -104,7 +121,7 @@ public class MinioStorageService : IFileStorageService, IDisposable
             Verb = HttpVerb.GET,
         };
 
-        var url = await _s3Client.GetPreSignedURLAsync(request);
+        var url = await _presignClient.GetPreSignedURLAsync(request);
         return url;
     }
 
@@ -113,11 +130,18 @@ public class MinioStorageService : IFileStorageService, IDisposable
     /// </summary>
     private async Task EnsureBucketExistsAsync(CancellationToken cancellationToken)
     {
+        if (_bucketReady)
+            return;
+
         try
         {
             var buckets = await _s3Client.ListBucketsAsync(cancellationToken);
-            if (buckets.Buckets.Any(b => b.BucketName == _options.BucketName))
+            // AWS SDK v4 trả Buckets = null (không phải danh sách rỗng) khi chưa có bucket nào.
+            if (buckets.Buckets?.Any(b => b.BucketName == _options.BucketName) == true)
+            {
+                _bucketReady = true;
                 return;
+            }
 
             await _s3Client.PutBucketAsync(_options.BucketName, cancellationToken);
             _logger.LogInformation("Đã tạo bucket MinIO: {Bucket}.", _options.BucketName);
@@ -143,6 +167,7 @@ public class MinioStorageService : IFileStorageService, IDisposable
                 Policy = policy,
             }, cancellationToken);
             _logger.LogInformation("Đã đặt policy public read cho bucket {Bucket}.", _options.BucketName);
+            _bucketReady = true;
         }
         catch (Exception ex)
         {
@@ -152,6 +177,10 @@ public class MinioStorageService : IFileStorageService, IDisposable
 
     public void Dispose()
     {
+        if (!ReferenceEquals(_presignClient, _s3Client))
+        {
+            _presignClient.Dispose();
+        }
         _s3Client?.Dispose();
     }
 }
