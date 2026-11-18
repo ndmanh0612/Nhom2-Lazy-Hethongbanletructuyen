@@ -25,9 +25,15 @@ public static class SampleDataSeeder
         string Slug, string Category, string Brand, string Name, string Description,
         string SpecsJson, VariantSeed[] Variants)
     {
-        /// <summary>Ảnh mặt sau chỉ có cho điện thoại, máy tính bảng, laptop.</summary>
-        public bool HasBackImage => Category is "Điện thoại" or "Máy tính bảng" or "Laptop";
+        /// <summary>Có ảnh thứ hai (<c>{slug}-2.webp</c>) trong wwwroot/assets/products.</summary>
+        public bool HasSecondImage => SlugsWithSecondImage.Contains(Slug);
     }
+
+    private static readonly HashSet<string> SlugsWithSecondImage =
+    [
+        "iphone-15", "iphone-15-pro-max", "galaxy-s24", "galaxy-s24-ultra", "xiaomi-14-ultra",
+        "redmi-note-13-pro", "ipad-air-m2-11", "galaxy-tab-s9-fe",
+    ];
 
     private static readonly string[] Categories = ["Điện thoại", "Laptop", "Máy tính bảng", "Phụ kiện"];
 
@@ -189,12 +195,23 @@ public static class SampleDataSeeder
                 db.ProductVariants.Add(ProductVariant.Create(product.Id, v.Sku, v.Color, v.Capacity, v.Price, v.Stock));
             }
 
-            if (product.Images.Count == 0)
+            // Ảnh minh họa SVG cũ của seed đã được thay bằng ảnh thật (.webp): gỡ để gắn lại.
+            var legacySvg = product.Images
+                .Where(i => i.ImageUrl.StartsWith(ImageBase + "/", StringComparison.Ordinal)
+                            && i.ImageUrl.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            var replaceLegacy = legacySvg.Count > 0 && legacySvg.Count == product.Images.Count;
+            if (replaceLegacy)
             {
-                db.ProductImages.Add(ProductImage.Create(product.Id, $"{ImageBase}/{seed.Slug}.svg", 0));
-                if (seed.HasBackImage)
+                db.ProductImages.RemoveRange(legacySvg);
+            }
+
+            if (replaceLegacy || product.Images.Count == 0)
+            {
+                db.ProductImages.Add(ProductImage.Create(product.Id, $"{ImageBase}/{seed.Slug}.webp", 0));
+                if (seed.HasSecondImage)
                 {
-                    db.ProductImages.Add(ProductImage.Create(product.Id, $"{ImageBase}/{seed.Slug}-2.svg", 1));
+                    db.ProductImages.Add(ProductImage.Create(product.Id, $"{ImageBase}/{seed.Slug}-2.webp", 1));
                 }
             }
         }

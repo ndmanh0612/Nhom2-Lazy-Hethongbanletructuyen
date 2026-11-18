@@ -444,6 +444,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 .flash-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
 .flash-card__media { aspect-ratio: 1/1; background: #f7f8fa; display: grid; place-items: center; }
 .flash-card__media span { font-size: 40px; font-weight: 700; color: #b6bcc7; }
+.flash-card__media img { width: 100%; height: 100%; object-fit: contain; padding: 12px; }
 .flash-card__body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
 .flash-card__name { font-size: 13px; font-weight: 600; line-height: 1.35; min-height: 36px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .flash-card__price { font-size: 16px; font-weight: 800; color: var(--brand); }

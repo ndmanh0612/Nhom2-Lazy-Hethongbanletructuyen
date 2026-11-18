@@ -209,12 +209,12 @@ const Mock = (() => {
         title: 'Săn deal giá sốc',
         endsAtHours: 6,
         items: [
-            { id: 1, name: 'iPhone 15 128GB Titanium', price: 21990000, originalPrice: 27990000, discount: 21, sold: 62, total: 100, badge: 'Siêu giá' },
-            { id: 2, name: 'Samsung Galaxy S24 Ultra 256GB', price: 24990000, originalPrice: 29990000, discount: 16, sold: 45, total: 80, badge: 'Hot' },
-            { id: 3, name: 'Xiaomi 14 Ultra 512GB', price: 17990000, originalPrice: 22990000, discount: 21, sold: 88, total: 120, badge: 'Flash sale' },
-            { id: 4, name: 'OPPO Find X7 256GB', price: 15990000, originalPrice: 19990000, discount: 19, sold: 30, total: 60, badge: 'Săn sale' },
-            { id: 5, name: 'iPad Air 11" M2 128GB WiFi', price: 14990000, originalPrice: 17990000, discount: 16, sold: 21, total: 50, badge: 'Hot' },
-            { id: 6, name: 'Laptop gaming Acer Nitro V5', price: 22990000, originalPrice: 27990000, discount: 17, sold: 12, total: 40, badge: 'Siêu giá' }
+            { id: 1, name: 'iPhone 15 128GB', image: '/assets/products/iphone-15.webp', price: 21990000, originalPrice: 27990000, discount: 21, sold: 62, total: 100, badge: 'Siêu giá' },
+            { id: 2, name: 'Samsung Galaxy S24 Ultra 256GB', image: '/assets/products/galaxy-s24-ultra.webp', price: 24990000, originalPrice: 29990000, discount: 16, sold: 45, total: 80, badge: 'Hot' },
+            { id: 3, name: 'Xiaomi 14 Ultra 512GB', image: '/assets/products/xiaomi-14-ultra.webp', price: 17990000, originalPrice: 22990000, discount: 21, sold: 88, total: 120, badge: 'Flash sale' },
+            { id: 4, name: 'OPPO Find X7 256GB', image: '/assets/products/oppo-find-x7.webp', price: 15990000, originalPrice: 19990000, discount: 19, sold: 30, total: 60, badge: 'Săn sale' },
+            { id: 5, name: 'iPad Air 11" M2 128GB WiFi', image: '/assets/products/ipad-air-m2-11.webp', price: 14990000, originalPrice: 17990000, discount: 16, sold: 21, total: 50, badge: 'Hot' },
+            { id: 6, name: 'MacBook Air M2 13 inch 256GB', image: '/assets/products/macbook-air-m2-13.webp', price: 22990000, originalPrice: 27990000, discount: 17, sold: 12, total: 40, badge: 'Siêu giá' }
         ]
     };
 

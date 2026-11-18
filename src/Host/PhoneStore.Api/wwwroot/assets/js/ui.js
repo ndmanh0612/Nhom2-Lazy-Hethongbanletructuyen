@@ -298,7 +298,7 @@ const UI = (() => {
         return `
             <article class="flash-card">
                 <span class="flash-card__badge">${escapeHtml(item.badge)}</span>
-                <div class="flash-card__media">${placeholderThumb({ name: item.name, brandName: item.name.split(' ')[0] })}</div>
+                <div class="flash-card__media">${productThumb({ name: item.name, brandName: item.name.split(' ')[0], mainImageUrl: item.image })}</div>
                 <div class="flash-card__body">
                     <div class="flash-card__name">${escapeHtml(item.name)}</div>
                     <div class="flash-card__price">
