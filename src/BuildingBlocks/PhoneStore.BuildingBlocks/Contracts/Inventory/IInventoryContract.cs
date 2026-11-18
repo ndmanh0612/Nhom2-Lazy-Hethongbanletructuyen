@@ -6,7 +6,12 @@ namespace PhoneStore.BuildingBlocks.Contracts.Inventory;
 public record StockChangeItem(long ProductVariantId, int Quantity);
 
 /// <summary>
-/// Contract để module khác (Order) điều chỉnh tồn kho mà không reference InventoryDbContext.
+/// Thông tin tồn kho thấp của một phiên bản sản phẩm phục vụ báo cáo FR-16 / N2LHTBLTT-32.
+/// </summary>
+public record LowStockItemDto(long ProductVariantId, int StockQuantity);
+
+/// <summary>
+/// Contract để module khác (Order, Reports) làm việc với tồn kho mà không reference InventoryDbContext.
 /// </summary>
 public interface IInventoryContract
 {
@@ -24,5 +29,12 @@ public interface IInventoryContract
     Task RestoreStockAsync(
         IReadOnlyCollection<StockChangeItem> items,
         long? orderId = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// FR-16: Lấy danh sách phiên bản có tồn kho thấp hơn hoặc bằng ngưỡng quy định.
+    /// </summary>
+    Task<IReadOnlyList<LowStockItemDto>> GetLowStockAsync(
+        int threshold = 10,
         CancellationToken cancellationToken = default);
 }

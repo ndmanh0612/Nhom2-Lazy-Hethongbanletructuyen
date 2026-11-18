@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhoneStore.BuildingBlocks.Application;
 using PhoneStore.BuildingBlocks.Common;
@@ -53,7 +54,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPost("/api/v1/admin/products")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
         var result = await _catalogService.CreateProductAsync(request, cancellationToken);
@@ -65,7 +65,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPut("/api/v1/admin/products/{productId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> UpdateProduct(
         long productId,
         [FromBody] UpdateProductRequest request,
@@ -80,7 +79,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpDelete("/api/v1/admin/products/{productId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> DeleteProduct(long productId, CancellationToken cancellationToken)
     {
         await _catalogService.DeleteProductAsync(productId, cancellationToken);
@@ -92,7 +90,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpGet("/api/v1/admin/products/variants")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> GetVariants([FromQuery] VariantFilterQuery query, CancellationToken cancellationToken)
     {
         var result = await _catalogService.GetVariantsAsync(query, cancellationToken);
@@ -104,7 +101,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPost("/api/v1/admin/products/{productId:long}/variants")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> CreateVariant(
         long productId,
         [FromBody] CreateVariantRequest request,
@@ -119,7 +115,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPut("/api/v1/admin/products/variants/{variantId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> UpdateVariant(
         long variantId,
         [FromBody] UpdateVariantRequest request,
@@ -134,7 +129,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpDelete("/api/v1/admin/products/variants/{variantId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> DeleteVariant(long variantId, CancellationToken cancellationToken)
     {
         await _catalogService.DeleteVariantAsync(variantId, cancellationToken);
@@ -146,7 +140,6 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpPost("/api/v1/admin/products/{productId:long}/images")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> AddImage(
         long productId,
         [FromBody] CreateProductImageRequest request,
@@ -161,10 +154,69 @@ public class ProductsController : ControllerBase
     /// </summary>
     [HttpDelete("/api/v1/admin/products/images/{imageId:long}")]
     [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
-    [ApiExplorerSettings(IgnoreApi = true)] // Tạm ẩn trên Swagger cho Sprint 1 (bật lại ở Sprint 2)
     public async Task<IActionResult> DeleteImage(long imageId, CancellationToken cancellationToken)
     {
         await _catalogService.DeleteProductImageAsync(imageId, cancellationToken);
         return Ok(ApiResponse.Ok("Xoá ảnh sản phẩm thành công."));
+    }
+
+    // -----------------------------------------------------------------------
+    // N2LHTBLTT-30: Upload ảnh sản phẩm lên MinIO (S3-compatible object storage).
+    // N2LHTBLTT-31: Sinh Presigned URL để truy cập ảnh.
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên MinIO.
+    /// Chỉ chấp nhận .jpg, .jpeg, .png, .webp. Dung lượng tối đa 5MB.
+    /// </summary>
+    [HttpPost("/api/v1/admin/products/{productId:long}/images/upload")]
+    [Authorize(Policy = AuthorizationPolicies.RequireStaff)]
+    [RequestSizeLimit(6 * 1024 * 1024)] // 6MB buffer cho multipart overhead
+    public async Task<IActionResult> UploadImage(
+        long productId,
+        IFormFile file,
+        [FromForm] int sortOrder,
+        CancellationToken cancellationToken)
+    {
+        // Validate file
+        if (file is null || file.Length == 0)
+        {
+            throw new PhoneStore.BuildingBlocks.Exceptions.ValidationException("file", "Vui lòng chọn file ảnh để upload.");
+        }
+
+        const long maxFileSize = 5 * 1024 * 1024; // 5MB
+        if (file.Length > maxFileSize)
+        {
+            throw new PhoneStore.BuildingBlocks.Exceptions.ValidationException("file", "Dung lượng file không được vượt quá 5MB.");
+        }
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(fileExtension))
+        {
+            throw new PhoneStore.BuildingBlocks.Exceptions.ValidationException("file", "Chỉ chấp nhận file ảnh định dạng .jpg, .jpeg, .png, .webp.");
+        }
+
+        await using var stream = file.OpenReadStream();
+        var result = await _catalogService.UploadProductImageAsync(
+            productId,
+            stream,
+            file.FileName,
+            file.ContentType,
+            sortOrder,
+            cancellationToken);
+
+        return StatusCode(201, ApiResponse<ProductImageDto>.Ok(result.Value, "Upload ảnh sản phẩm thành công."));
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-31: Sinh Presigned URL để truy cập ảnh sản phẩm (có thời hạn 1 giờ).
+    /// </summary>
+    [HttpGet("/api/v1/products/images/{imageId:long}/presigned-url")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPresignedUrl(long imageId, CancellationToken cancellationToken)
+    {
+        var result = await _catalogService.GetProductImagePresignedUrlAsync(imageId, cancellationToken);
+        return Ok(ApiResponse<object>.Ok(new { presignedUrl = result.Value }));
     }
 }

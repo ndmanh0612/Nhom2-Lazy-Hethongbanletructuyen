@@ -36,17 +36,25 @@ public interface ICatalogService
     Task<Result<PagedResult<ProductVariantDto>>> GetVariantsAsync(VariantFilterQuery query, CancellationToken cancellationToken = default);
     Task<Result<ProductImageDto>> AddProductImageAsync(long productId, CreateProductImageRequest request, CancellationToken cancellationToken = default);
     Task<Result> DeleteProductImageAsync(long imageId, CancellationToken cancellationToken = default);
+
+    // N2LHTBLTT-30: Upload ảnh sản phẩm lên MinIO / S3 storage.
+    Task<Result<ProductImageDto>> UploadProductImageAsync(long productId, Stream fileStream, string fileName, string contentType, int sortOrder, CancellationToken cancellationToken = default);
+
+    // N2LHTBLTT-31: Sinh presigned URL cho ảnh sản phẩm.
+    Task<Result<string>> GetProductImagePresignedUrlAsync(long imageId, CancellationToken cancellationToken = default);
 }
 
 public class CatalogService : ICatalogService
 {
     private readonly CatalogDbContext _dbContext;
     private readonly IEventBus? _eventBus;
+    private readonly IFileStorageService? _fileStorageService;
 
-    public CatalogService(CatalogDbContext dbContext, IEventBus? eventBus = null)
+    public CatalogService(CatalogDbContext dbContext, IEventBus? eventBus = null, IFileStorageService? fileStorageService = null)
     {
         _dbContext = dbContext;
         _eventBus = eventBus;
+        _fileStorageService = fileStorageService;
     }
 
     // -----------------------------------------------------------------------
@@ -435,8 +443,13 @@ public class CatalogService : ICatalogService
             throw new NotFoundException("Sản phẩm không tồn tại hoặc đã bị ẩn.", "PRODUCT_NOT_FOUND");
         }
 
-        var category = await _dbContext.Categories.FindAsync([product.CategoryId], cancellationToken);
-        var brand = await _dbContext.Brands.FindAsync([product.BrandId], cancellationToken);
+        var category = await _dbContext.Categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == product.CategoryId, cancellationToken);
+
+        var brand = await _dbContext.Brands
+            .AsNoTracking()
+            .FirstOrDefaultAsync(b => b.Id == product.BrandId, cancellationToken);
 
         return Result.Success(ToDetailDto(product, category?.Name, brand?.Name));
     }
@@ -681,15 +694,112 @@ public class CatalogService : ICatalogService
             throw new NotFoundException("Không tìm thấy ảnh sản phẩm.", "PRODUCT_IMAGE_NOT_FOUND");
         }
 
+        // N2LHTBLTT-30: Xóa file trên MinIO / S3 nếu URL thuộc về storage.
+        if (_fileStorageService is not null)
+        {
+            var objectKey = ExtractObjectKeyFromUrl(image.ImageUrl);
+            if (!string.IsNullOrEmpty(objectKey))
+            {
+                try
+                {
+                    await _fileStorageService.DeleteAsync(objectKey, cancellationToken);
+                }
+                catch
+                {
+                    // Không chặn việc xóa record DB nếu xóa file storage thất bại.
+                }
+            }
+        }
+
         _dbContext.ProductImages.Remove(image);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
 
+    /// <summary>
+    /// N2LHTBLTT-30: Upload file ảnh sản phẩm lên MinIO / S3 và lưu URL vào DB.
+    /// </summary>
+    public async Task<Result<ProductImageDto>> UploadProductImageAsync(
+        long productId,
+        Stream fileStream,
+        string fileName,
+        string contentType,
+        int sortOrder,
+        CancellationToken cancellationToken = default)
+    {
+        if (_fileStorageService is null)
+        {
+            throw new InvalidOperationException("Dịch vụ lưu trữ file chưa được cấu hình.");
+        }
+
+        var product = await LoadProductAsync(productId, includeInactive: true, tracking: true, cancellationToken);
+        if (product is null)
+        {
+            throw new NotFoundException("Không tìm thấy sản phẩm.", "PRODUCT_NOT_FOUND");
+        }
+
+        // Upload lên Storage với folder = "products/{productId}"
+        var folder = $"products/{productId}";
+        var objectKey = await _fileStorageService.UploadAsync(fileStream, fileName, contentType, folder, cancellationToken);
+        var publicUrl = _fileStorageService.GetPublicUrl(objectKey);
+
+        // Lưu vào DB
+        var image = ProductImage.Create(productId, publicUrl, sortOrder);
+        product.AddImage(image);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success(new ProductImageDto(image.Id, image.ImageUrl, image.SortOrder));
+    }
+
+    /// <summary>
+    /// N2LHTBLTT-31: Sinh presigned URL cho ảnh sản phẩm.
+    /// </summary>
+    public async Task<Result<string>> GetProductImagePresignedUrlAsync(long imageId, CancellationToken cancellationToken = default)
+    {
+        if (_fileStorageService is null)
+        {
+            throw new InvalidOperationException("Dịch vụ lưu trữ file chưa được cấu hình.");
+        }
+
+        var image = await _dbContext.ProductImages
+            .AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == imageId, cancellationToken);
+
+        if (image is null)
+        {
+            throw new NotFoundException("Không tìm thấy ảnh sản phẩm.", "PRODUCT_IMAGE_NOT_FOUND");
+        }
+
+        var objectKey = ExtractObjectKeyFromUrl(image.ImageUrl);
+        if (string.IsNullOrEmpty(objectKey))
+        {
+            // Ảnh không nằm trên R2 (là URL ngoài), trả về URL gốc.
+            return Result.Success(image.ImageUrl);
+        }
+
+        var presignedUrl = await _fileStorageService.GetPresignedUrlAsync(objectKey, TimeSpan.FromHours(1), cancellationToken);
+        return Result.Success(presignedUrl);
+    }
+
     // -----------------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Trích xuất object key từ URL ảnh trên MinIO / S3.
+    /// Ví dụ: "http://localhost:9000/phonestore-images/products/123/abc.jpg" → "products/123/abc.jpg"
+    /// </summary>
+    private static string? ExtractObjectKeyFromUrl(string imageUrl)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl))
+            return null;
+
+        // Nếu URL chứa "products/" thì lấy phần từ "products/" trở đi làm object key.
+        const string marker = "products/";
+        var idx = imageUrl.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+        return idx >= 0 ? imageUrl[idx..] : null;
+    }
 
     private Task<Product?> LoadProductAsync(long id, bool includeInactive, CancellationToken cancellationToken)
     {
@@ -749,11 +859,13 @@ public class CatalogService : ICatalogService
     {
         var variantDtos = product.Variants
             .Where(v => v.IsActive)
+            .OrderBy(v => v.Id)
             .Select(ToVariantDto)
             .ToList();
 
         var imageDtos = product.Images
             .OrderBy(i => i.SortOrder)
+            .ThenBy(i => i.Id)
             .Select(i => new ProductImageDto(i.Id, i.ImageUrl, i.SortOrder))
             .ToList();
 

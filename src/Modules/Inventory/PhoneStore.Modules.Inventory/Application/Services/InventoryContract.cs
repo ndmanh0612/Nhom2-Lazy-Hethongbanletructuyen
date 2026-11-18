@@ -110,4 +110,16 @@ public class InventoryContract : IInventoryContract
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<LowStockItemDto>> GetLowStockAsync(
+        int threshold = 10,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.ProductStocks
+            .AsNoTracking()
+            .Where(stock => stock.StockQuantity <= threshold)
+            .OrderBy(stock => stock.StockQuantity)
+            .Select(stock => new LowStockItemDto(stock.ProductVariantId, stock.StockQuantity))
+            .ToListAsync(cancellationToken);
+    }
 }

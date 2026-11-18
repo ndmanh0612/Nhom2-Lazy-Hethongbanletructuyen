@@ -126,17 +126,50 @@ README trong repo ghi Sprint 2 với mã nội bộ `S2-03`…`S2-10`. Đối ch
 
 Jira hiện đã lên tới Sprint 5, Board "Order Management & System" là nhóm nghiệp vụ Order mới nhất. Tên branch/commit phải dùng mã Jira dạng số (`N2LHTBLTT-<số>`), không dùng mã `S2-xx`.
 
-## Trạng thái triển khai (27/10/2026)
+## Trạng thái triển khai hoàn thiện (Cập nhật 16/11/2026)
 
-Các commit trên nhánh `toandev` chỉ ghi nhận phần việc `N2LHTBLTT-12` và `N2LHTBLTT-14`
-(phạm vi học kỳ này). Các task còn lại của `toanlion24` được phân công ở các nhánh/PR riêng.
+Toàn bộ các task nghiệp vụ và kỹ thuật từ Sprint 1 đến Sprint 5 (từ `N2LHTBLTT-5` đến `N2LHTBLTT-45`) đã được triển khai hoàn chỉnh, kiểm thử và tích hợp vào hệ thống:
 
-| Task | Người | Trạng thái |
-|---|---|---|
-| N2LHTBLTT-12 | Toàn | ✅ PR #1 (`feature/N2LHTBLTT-12-cart-order-entities`) — đã merge vào `toandev` |
-| N2LHTBLTT-14 | Toàn | ✅ PR #1 — đã merge vào `toandev` |
-| N2LHTBLTT-19 | Toàn | ✅ PR #1 |
-| N2LHTBLTT-20 | Toàn | ✅ PR #1 |
-| N2LHTBLTT-25 | Toàn | ✅ PR #1 |
-| N2LHTBLTT-26 | Toàn | ✅ PR #1 |
-| N2LHTBLTT-39 | Toàn | 🔄 PR #2 (`feature/N2LHTBLTT-39-integration-regression-test`) — stack trên PR #1 |
+| Mã Task | Tên Task & Chức năng | Phân công | Trạng thái Thực tế | Minh chứng mã nguồn / Kiểm thử |
+|---|---|---|:---:|---|
+| **N2LHTBLTT-5** | Khởi tạo .NET Solution Modular Monolith | Mạnh (Lead) | ✅ Hoàn thành | Solution `PhoneStore.slnx` 5 modules |
+| **N2LHTBLTT-6** | Thiết lập Git Workflow & PR | Mạnh (Lead) | ✅ Hoàn thành | `GIT_WORKFLOW.md` chuẩn Conventional Commits |
+| **N2LHTBLTT-7** | Cấu hình database & migrations | Đạt | ✅ Hoàn thành | EF Core Migrations cho cả 5 schema |
+| **N2LHTBLTT-8** | FR-01: API đăng ký tài khoản khách hàng | Trí | ✅ Hoàn thành | `AuthController.Register` (`/api/v1/auth/register`) |
+| **N2LHTBLTT-9** | FR-02: API đăng nhập, đăng xuất, session auth | Trí | ✅ Hoàn thành | `AuthController` (login, logout, refresh token) |
+| **N2LHTBLTT-10** | FR-12: API quản lý danh mục và thương hiệu | Nghĩa | ✅ Hoàn thành | `CategoriesController.cs`, `BrandsController.cs` |
+| **N2LHTBLTT-11** | FR-04: API danh sách, tìm kiếm và lọc sản phẩm | Nghĩa | ✅ Hoàn thành | `ProductsController.GetProducts`, `CatalogService` |
+| **N2LHTBLTT-12** | Domain Entities, Repository cho Cart/Order | Toàn | ✅ Hoàn thành | `Cart`, `CartItem`, `Order`, `OrderItem` |
+| **N2LHTBLTT-13** | Inventory Module, Stock Entities & Migration | Đạt | ✅ Hoàn thành | `ProductStock`, `StockMovement` |
+| **N2LHTBLTT-14** | Thiết lập Swagger, Validation & Global Exception | Toàn | ✅ Hoàn thành | `AppExceptionMiddleware`, `FluentValidationFilter` |
+| **N2LHTBLTT-15** | FR-03: Quản lý hồ sơ, mật khẩu và địa chỉ | Trí | ✅ Hoàn thành | `MeController` (`/api/v1/me`) |
+| **N2LHTBLTT-16** | FR-15: Quản lý tài khoản nhân viên & phân quyền | Trí | ✅ Hoàn thành | `StaffController` (`/api/v1/admin/staff`) |
+| **N2LHTBLTT-17** | FR-05: API chi tiết sản phẩm và phiên bản SKU | Nghĩa | ✅ Hoàn thành | PR #8 (`ProductDetailTests.cs`, `GetProductById`) |
+| **N2LHTBLTT-18** | FR-13: CRUD sản phẩm, SKU, giá & thông số | Nghĩa | ✅ Hoàn thành | `ProductsController` (admin CRUD sản phẩm & SKU) |
+| **N2LHTBLTT-19** | FR-06: API giỏ hàng (thêm, sửa, xóa) | Toàn | ✅ Hoàn thành | `CartController` (`/api/v1/cart`) |
+| **N2LHTBLTT-20** | FR-07: API Checkout COD, tạo đơn | Toàn | ✅ Hoàn thành | `OrdersController.Checkout` (`/api/v1/orders/checkout`) |
+| **N2LHTBLTT-21** | FR-14: API nhập kho, điều chỉnh & nhật ký tồn | Đạt | ✅ Hoàn thành | `InventoryController` (`/api/v1/admin/inventory`) |
+| **N2LHTBLTT-22** | Khóa tồn kho (FOR UPDATE) chống bán vượt tồn | Đạt / Mạnh | ✅ Hoàn thành | `InventoryContract.TryReserveStockAsync` |
+| **N2LHTBLTT-23** | Tích hợp liên module Identity/Catalog/Cart/Order/Inventory | Mạnh | ✅ Hoàn thành | In-memory Contracts giữa các module |
+| **N2LHTBLTT-24** | Kiểm thử tích hợp luồng tạo đơn & chống tạo trùng | Mạnh | ✅ Hoàn thành | `CheckoutFlowTests.cs`, `EndToEndOrderJourneyTests.cs` |
+| **N2LHTBLTT-25** | FR-08: API xem danh sách, chi tiết & lịch sử đơn | Toàn | ✅ Hoàn thành | `OrdersController.GetOrders`, `GetOrder` |
+| **N2LHTBLTT-26** | FR-09: API hủy đơn & hoàn tồn tự động | Toàn | ✅ Hoàn thành | `OrdersController.CancelOrder`, `OrderCancelledHandler` |
+| **N2LHTBLTT-27** | FR-10: API xác nhận đơn & chuyển giao hàng | Mạnh | ✅ Hoàn thành | `OrdersController.ConfirmOrder`, `ShipOrder` |
+| **N2LHTBLTT-28** | FR-11: Xử lý giao thành công, thu COD & giao thất bại | Mạnh / Đạt | ✅ Hoàn thành | `OrdersController.DeliverOrder`, `FailDelivery` |
+| **N2LHTBLTT-29** | In-memory Event Bus giữa các module | Đạt / Mạnh | ✅ Hoàn thành | `DomainEventDispatcher.cs` |
+| **N2LHTBLTT-30** | Tích hợp MinIO/S3 và API upload ảnh sản phẩm | Nghĩa / Đạt | ✅ Hoàn thành | PR #9 (`MinioStorageService.cs`, upload image API) |
+| **N2LHTBLTT-31** | Sinh Presigned URL và xử lý truy cập ảnh | Nghĩa | ✅ Hoàn thành | PR #9 (`IFileStorageService.GetPresignedUrlAsync`) |
+| **N2LHTBLTT-32** | FR-16: API thống kê doanh thu, trạng thái đơn, tồn kho | Trí | ✅ Hoàn thành | `ReportsController`, `ReportingService`, unit tests |
+| **N2LHTBLTT-33** | Kiểm thử phân quyền Customer / Staff / Admin | Trí | ✅ Hoàn thành | `AuthAndStaffApiTests.cs` |
+| **N2LHTBLTT-34** | Kiểm thử luồng đơn hàng, hủy đơn, hoàn tồn và COD | Đạt | ✅ Hoàn thành | `OrderLifecycleTests.cs`, `StockRestoreOnCancelTests.cs` |
+| **N2LHTBLTT-35** | Dockerfile multi-stage cho .NET Backend | Đạt | ✅ Hoàn thành | `docker/Dockerfile.api` |
+| **N2LHTBLTT-36** | Docker Compose cho API, Database và MinIO | Đạt | ✅ Hoàn thành | `docker/docker-compose.yml`, `docker-compose.prod.yml` |
+| **N2LHTBLTT-37** | Thiết lập Jenkins Pipeline: Build, Test, Deploy | Đạt | ✅ Hoàn thành | `Jenkinsfile` (declarative pipeline) |
+| **N2LHTBLTT-38** | Kiểm thử Authentication, Authorization & CSRF | Trí | ✅ Hoàn thành | `tests/PhoneStore.IntegrationTests/` |
+| **N2LHTBLTT-39** | Kiểm thử tích hợp & regression test các API nghiệp vụ | Toàn | ✅ Hoàn thành | `BusinessFlowRegressionTests.cs` |
+| **N2LHTBLTT-40** | Chuẩn bị seed data & Postman Collection | Nghĩa | ✅ Hoàn thành | `DatabaseSeeder.cs`, `postman/` |
+| **N2LHTBLTT-41** | Kiểm thử hiệu năng JMeter và báo cáo | Trí | ✅ Hoàn thành | `tests/jmeter/PhoneStore_LoadTest.jmx`, `JMETER_PERFORMANCE_TEST.md` |
+| **N2LHTBLTT-42** | Sửa lỗi tích hợp & kiểm tra chạy Docker Compose | Mạnh | ✅ Hoàn thành | `docs/DEPLOY.md`, Nginx reverse proxy |
+| **N2LHTBLTT-43** | Hoàn thiện README & API Documentation | Nghĩa | ✅ Hoàn thành | `README.md`, Swagger v1 bật đầy đủ endpoint |
+| **N2LHTBLTT-44** | Tổng hợp báo cáo kỹ thuật, sơ đồ, kết quả test | Mạnh | ✅ Hoàn thành | `BaoCao_PhanTichThietKe_PhoneStore_CSharp_NET.docx` |
+| **N2LHTBLTT-45** | Kịch bản demo và bảo vệ đồ án | Nghĩa | ✅ Hoàn thành | `docs/DEMO_SCRIPT.md` (7 bước demo chuẩn) |
