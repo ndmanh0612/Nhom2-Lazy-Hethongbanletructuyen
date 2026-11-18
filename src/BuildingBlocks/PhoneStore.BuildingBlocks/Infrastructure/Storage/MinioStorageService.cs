@@ -68,15 +68,33 @@ public class MinioStorageService : IFileStorageService, IDisposable
             ? $"{Guid.NewGuid()}{extension}"
             : $"{folder.TrimEnd('/')}/{Guid.NewGuid()}{extension}";
 
+        // Bảo mật: KHÔNG tin content-type do client gửi (có thể là text/html → stored XSS khi
+        // trình duyệt mở link ảnh). Luôn suy ra từ đuôi file đã nằm trong whitelist; đuôi lạ → octet-stream.
+        var safeContentType = extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream",
+        };
+
         var putRequest = new PutObjectRequest
         {
             BucketName = _options.BucketName,
             Key = objectKey,
             InputStream = stream,
-            ContentType = contentType,
+            ContentType = safeContentType,
             // Cache ảnh sản phẩm 1 năm (immutable vì tên file là GUID).
-            Headers = { CacheControl = "public, max-age=31536000, immutable" },
+            Headers =
+            {
+                CacheControl = "public, max-age=31536000, immutable",
+                ContentDisposition = "inline",
+            },
         };
+        // Chống MIME sniffing ngay tại tầng lưu trữ (phòng khi phục vụ trực tiếp, không qua nginx).
+        putRequest.Metadata.Add("x-amz-meta-x-content-type-options", "nosniff");
+        _ = contentType; // content-type client chỉ dùng để tham chiếu, không lưu.
 
         await _s3Client.PutObjectAsync(putRequest, cancellationToken);
         _logger.LogInformation("Đã upload file {ObjectKey} lên MinIO bucket {Bucket}.", objectKey, _options.BucketName);
