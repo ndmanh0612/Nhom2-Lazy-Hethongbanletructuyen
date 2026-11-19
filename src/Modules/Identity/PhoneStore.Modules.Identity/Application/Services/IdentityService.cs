@@ -35,7 +35,7 @@ public interface IIdentityService
     Task<Result> ResetPasswordAsync(long userId, ResetPasswordRequest request, long actorId, CancellationToken cancellationToken = default);
 }
 
-public class IdentityService : IIdentityService
+public partial class IdentityService : IIdentityService
 {
     private readonly IdentityDbContext _dbContext;
     private readonly IPasswordHasher _passwordHasher;
@@ -206,14 +206,17 @@ public class IdentityService : IIdentityService
 
     public async Task<Result<UserProfileDto>> UpdateProfileAsync(long userId, UpdateProfileRequest request, CancellationToken cancellationToken = default)
     {
-        var user = await _dbContext.Users.FindAsync([userId], cancellationToken);
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var user = await LockUserAsync(userId, cancellationToken);
         if (user == null)
         {
             throw new NotFoundException("Không tìm thấy người dùng.", "USER_NOT_FOUND");
         }
 
         user.UpdateProfile(request.FullName, request.Phone);
+        await InvalidateChallengesAsync(userId, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return Result.Success(ToProfileDto(user));
     }
@@ -239,6 +242,7 @@ public class IdentityService : IIdentityService
         // Đổi mật khẩu phải thu hồi mọi phiên đang mở (N2LHTBLTT-38).
         await RevokeAllSessionsAsync(userId, cancellationToken);
 
+        await WriteAuditAsync(userId, userId, "PasswordChanged", null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return Result.Success();
     }
@@ -319,6 +323,7 @@ public class IdentityService : IIdentityService
             throw new ConflictException("Email này đã được sử dụng trong hệ thống.", "EMAIL_ALREADY_EXISTS");
         }
 
+        await WriteAuditAsync(actorId, user.Id, "StaffCreated", null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         _logger?.LogInformation("IdentityAdmin StaffCreated ActorId={ActorId} TargetId={TargetId} Role={Role}", actorId, user.Id, role);
         return Result.Success(ToProfileDto(user));
@@ -393,6 +398,7 @@ public class IdentityService : IIdentityService
         // Vai trò cũ không còn hợp lệ nên phải đăng nhập lại để lấy claim mới.
         await RevokeAllSessionsAsync(userId, cancellationToken);
 
+        await WriteAuditAsync(actorId, userId, "RoleChanged:" + role, null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         _logger?.LogInformation("IdentityAdmin RoleChanged ActorId={ActorId} TargetId={TargetId} Role={Role}", actorId, userId, role);
         return Result.Success(ToProfileDto(user));
@@ -424,6 +430,7 @@ public class IdentityService : IIdentityService
             await RevokeAllSessionsAsync(userId, cancellationToken);
         }
 
+        await WriteAuditAsync(actorId, userId, request.IsLocked ? "AccountLocked" : "AccountUnlocked", request.Reason, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         _logger?.LogInformation("IdentityAdmin AccountLockChanged ActorId={ActorId} TargetId={TargetId} IsLocked={IsLocked}", actorId, userId, request.IsLocked);
         return Result.Success(ToProfileDto(user));
@@ -444,6 +451,7 @@ public class IdentityService : IIdentityService
 
         await RevokeAllSessionsAsync(userId, cancellationToken);
 
+        await WriteAuditAsync(actorId, userId, "PasswordResetByAdmin", null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         _logger?.LogInformation("IdentityAdmin PasswordReset ActorId={ActorId} TargetId={TargetId}", actorId, userId);
         return Result.Success();
@@ -463,6 +471,7 @@ public class IdentityService : IIdentityService
     /// </summary>
     private async Task RevokeAllSessionsAsync(long userId, CancellationToken cancellationToken)
     {
+        await InvalidateChallengesAsync(userId, cancellationToken);
         var tokens = await _dbContext.RefreshTokens
             .Where(t => t.UserId == userId && !t.IsRevoked)
             .ToListAsync(cancellationToken);
@@ -503,7 +512,11 @@ public class IdentityService : IIdentityService
             user.Phone,
             user.Role.ToString(),
             user.IsActive,
-            user.CreatedAt);
+            user.CreatedAt)
+        {
+            UpdatedAt = new DateTimeOffset(user.UpdatedAt.Ticks - user.UpdatedAt.Ticks % 10, TimeSpan.Zero),
+            PhoneVerified = user.VerifiedPhone is not null
+        };
     }
 
     private static UserRole ParseStaffRole(string? value)

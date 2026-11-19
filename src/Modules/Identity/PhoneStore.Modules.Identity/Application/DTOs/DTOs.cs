@@ -45,7 +45,11 @@ public record UserProfileDto(
     string Role,
     bool IsActive,
     DateTimeOffset CreatedAt
-);
+)
+{
+    public DateTimeOffset UpdatedAt { get; init; }
+    public bool PhoneVerified { get; init; }
+}
 
 public record UpdateProfileRequest(
     string FullName,

@@ -105,9 +105,9 @@ Bổ sung:
 
 ## Phần chưa mở rộng
 
-Quên mật khẩu tự phục vụ qua email/SMS, OTP, bảng audit bền vững và quản lý khách hàng đầy đủ
-chưa được xác định thành luồng hoàn chỉnh trong các yêu cầu đối chiếu.
-Không thêm endpoint giả lập gửi email/SMS hoặc báo tính năng này đã hoạt động.
+Đợt FR-03/FR-15 ban đầu chưa gồm quên mật khẩu tự phục vụ, OTP, audit database và quản lý khách hàng.
+Phần bổ sung theo yêu cầu tiếp theo được mô tả trong [OTP, khách hàng và audit](RECOVERY-CUSTOMERS-AUDIT.md),
+bao gồm trạng thái kiểm thử và điều kiện cấu hình gửi email/SMS thật.
 Các module hàng hóa, tồn kho và vòng đời đơn hàng giữ nguyên ngoài phần gọi báo cáo đã có.
 
 Kết quả thực thi, trở ngại môi trường và trạng thái Git được ghi riêng trong `ACCOUNT-ADMIN-VALIDATION.md`.

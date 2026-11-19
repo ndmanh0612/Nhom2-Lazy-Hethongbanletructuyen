@@ -140,7 +140,9 @@ app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/api/v1/auth")
         || context.Request.Path.StartsWithSegments("/api/v1/me")
-        || context.Request.Path.StartsWithSegments("/api/v1/admin/staff"))
+        || context.Request.Path.StartsWithSegments("/api/v1/admin/staff")
+        || context.Request.Path.StartsWithSegments("/api/v1/admin/customers")
+        || context.Request.Path.StartsWithSegments("/api/v1/admin/audit"))
     {
         context.Response.Headers.CacheControl = "no-store";
         context.Response.Headers.Pragma = "no-cache";

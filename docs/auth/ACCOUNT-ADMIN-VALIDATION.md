@@ -1,5 +1,8 @@
 # Kiểm chứng Tài khoản và Quản trị — 19/11/2026
 
+Đây là bằng chứng đợt đầu đã xuất bản ở `d43054e`; không phải kết quả kiểm thử cho đợt OTP/audit/khách hàng.
+Xem [bổ sung tiếp theo](RECOVERY-CUSTOMERS-AUDIT.md) để biết phạm vi và trạng thái kiểm chứng mới.
+
 Phạm vi: FR-03 / FR-15, dựa trên `tricong@352de8065d202073aa9d504b0837fe261602bb5c`.
 Không thay schema database hoặc phiên bản dependency của dự án.
 

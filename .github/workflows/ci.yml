@@ -55,7 +55,7 @@ jobs:
         node-version: '22'
 
     - name: Run storefront identity regression tests
-      run: node --test tests/frontend/identity-api.test.cjs
+      run: node --test tests/frontend/identity-api.test.cjs tests/frontend/recovery-ui.test.cjs
 
     - name: Build Solution
       run: dotnet build PhoneStore.slnx --no-restore --configuration Release

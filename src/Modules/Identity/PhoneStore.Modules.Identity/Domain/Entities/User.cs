@@ -11,6 +11,7 @@ public class User : AggregateRoot<long>
     public string? Phone { get; private set; }
     public UserRole Role { get; private set; } = UserRole.CUSTOMER;
     public bool IsActive { get; private set; } = true;
+    public string? VerifiedPhone { get; private set; }
 
     private readonly List<Address> _addresses = [];
     public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
@@ -83,6 +84,7 @@ public class User : AggregateRoot<long>
 
     public void UpdateProfile(string fullName, string? phone)
     {
+        if (!string.Equals(Phone, phone?.Trim(), StringComparison.Ordinal)) VerifiedPhone = null;
         FullName = fullName.Trim();
         Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
         Touch();
@@ -91,6 +93,12 @@ public class User : AggregateRoot<long>
     public void UpdatePassword(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+        Touch();
+    }
+
+    public void VerifyPhone(string normalizedPhone)
+    {
+        VerifiedPhone = normalizedPhone;
         Touch();
     }
 

@@ -10,6 +10,8 @@ public class IdentityDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Address> Addresses => Set<Address>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<VerificationChallenge> VerificationChallenges => Set<VerificationChallenge>();
+    public DbSet<IdentityAudit> AuditEntries => Set<IdentityAudit>();
 
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options)
     {
@@ -30,6 +32,8 @@ public class IdentityDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(255).IsRequired();
             entity.Property(e => e.FullName).HasMaxLength(100).IsRequired();
             entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.VerifiedPhone).HasMaxLength(20);
+            entity.HasIndex(e => e.VerifiedPhone).IsUnique().HasFilter("\"VerifiedPhone\" IS NOT NULL");
             entity.Property(e => e.Role).HasConversion<string>().HasMaxLength(20).IsRequired();
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
@@ -52,6 +56,30 @@ public class IdentityDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();
             entity.HasIndex(e => e.UserId);
+        });
+
+        modelBuilder.Entity<VerificationChallenge>(entity =>
+        {
+            entity.ToTable("verification_challenges");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Purpose).HasMaxLength(30).IsRequired();
+            entity.Property(e => e.Channel).HasMaxLength(10).IsRequired();
+            entity.Property(e => e.Destination).HasMaxLength(254).IsRequired();
+            entity.Property(e => e.CodeHash).HasMaxLength(64).IsRequired();
+            entity.Property(e => e.ResetTokenHash).HasMaxLength(64);
+            entity.HasIndex(e => new { e.UserId, e.Purpose, e.CreatedAt });
+            entity.HasIndex(e => e.ExpiresAt);
+            entity.HasOne<User>().WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Restrict);
+        });
+        modelBuilder.Entity<IdentityAudit>(entity =>
+        {
+            entity.ToTable("audit_entries");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Action).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Reason).HasMaxLength(500);
+            entity.HasIndex(e => new { e.CreatedAt, e.Id });
+            entity.HasIndex(e => e.ActorId);
+            entity.HasIndex(e => e.TargetId);
         });
 
         // N2LHTBLTT-9: Bảng refresh token cho cơ chế session + xoay vòng token.

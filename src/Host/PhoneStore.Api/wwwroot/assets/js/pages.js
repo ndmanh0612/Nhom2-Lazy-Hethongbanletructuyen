@@ -942,6 +942,8 @@ const Pages = (() => {
                     <div class="panel">
                         <div class="panel__head">Thông tin tài khoản</div>
                         <div class="panel__body">
+                            <p><a href="#/xac-minh-so">Xác minh số điện thoại cho khôi phục SMS</a></p>
+                            ${profile.role === 'ADMIN' ? '<p><a href="#/quan-ly-khach-hang">Quản lý khách hàng</a> · <a href="#/nhat-ky-quan-tri">Nhật ký quản trị</a></p>' : ''}
                             <form class="form" id="profile-form">
                                 <div class="form__grid-2">
                                     <label class="field"><span class="field__label">Email</span><input value="${escapeHtml(profile.email)}" disabled></label>
@@ -1277,6 +1279,7 @@ const Pages = (() => {
                         <label class="field"><span class="field__label">Email</span><input type="email" name="email" required placeholder="ban@email.com" autocomplete="username"></label>
                         <label class="field"><span class="field__label">Mật khẩu</span><input type="password" name="password" required placeholder="••••••••" autocomplete="current-password"></label>
                         <div class="form__error" id="login-error" hidden></div>
+                        <a href="#/quen-mat-khau">Quên mật khẩu?</a>
                         <button class="btn btn--primary btn--block" type="submit">Đăng nhập</button>
                         <p class="form__hint">Chưa có tài khoản? <a href="#/dang-ky">Đăng ký ngay</a></p>
                     </form>
