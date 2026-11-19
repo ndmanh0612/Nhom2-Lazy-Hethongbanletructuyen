@@ -1203,11 +1203,9 @@ const Pages = (() => {
                         <p class="form__hint">Chưa có tài khoản? <a href="#/dang-ky">Đăng ký ngay</a></p>
                     </form>
                     <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:14px">
-                        <p class="field__hint" style="margin:0 0 8px">Tài khoản demo (mật khẩu: Customer@123 / Staff@123 / Admin@123)</p>
+                        <p class="field__hint" style="margin:0 0 8px">Tài khoản khách (ai cũng đăng nhập được)</p>
                         <div class="demo-accounts">
-                            <button class="demo-account" type="button" data-demo-email="customer@phonestore.vn" data-demo-password="Customer@123"><strong>Khách</strong><span>customer@phonestore.vn</span></button>
-                            <button class="demo-account" type="button" data-demo-email="staff@phonestore.vn" data-demo-password="Staff@123"><strong>Nhân viên</strong><span>staff@phonestore.vn</span></button>
-                            <button class="demo-account" type="button" data-demo-email="admin@phonestore.vn" data-demo-password="Admin@123"><strong>Quản trị</strong><span>admin@phonestore.vn</span></button>
+                            <button class="demo-account" type="button" data-demo-email="guest@phonestore.vn" data-demo-password="Guest@123"><strong>Khách</strong><span>guest@phonestore.vn</span></button>
                         </div>
                     </div>
                 </div>

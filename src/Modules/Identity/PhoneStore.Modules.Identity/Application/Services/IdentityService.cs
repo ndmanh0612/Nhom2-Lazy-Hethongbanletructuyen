@@ -221,6 +221,11 @@ public class IdentityService : IIdentityService
             throw new NotFoundException("Không tìm thấy người dùng.", "USER_NOT_FOUND");
         }
 
+        if (string.Equals(user.Email, "guest@phonestore.vn", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ValidationException("currentPassword", "Tài khoản khách dùng chung, không thể đổi mật khẩu.");
+        }
+
         if (!_passwordHasher.VerifyPassword(request.CurrentPassword, user.PasswordHash))
         {
             throw new ValidationException("currentPassword", "Mật khẩu hiện tại không chính xác.");

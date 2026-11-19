@@ -129,6 +129,12 @@ if (app.Environment.IsProduction())
     await DefaultCredentialGuard.EnforceAsync(app.Services, app.Configuration, app.Logger);
 }
 
+// Tài khoản khách công khai (guest@phonestore.vn) — chỉ khi DB đã được migrate/seed bởi app.
+if (autoSeed || autoMigrate)
+{
+    await GuestAccountSeeder.EnsureAsync(app.Services);
+}
+
 // N2LHTBLTT-41: Swagger bật theo cấu hình để dùng được trên môi trường demo/staging.
 // Ở Development Swagger chiếm root ("/") cho tiện; ở Production phải để prefix
 // "swagger" vì root dành cho storefront SPA.
