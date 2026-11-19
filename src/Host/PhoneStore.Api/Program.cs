@@ -82,8 +82,9 @@ builder.Services.AddCors(options =>
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-    options.KnownIPNetworks.Clear();
-    options.KnownProxies.Clear();
+    // Keep framework loopback defaults; never trust forwarded IPs from every client.
+    foreach (var proxy in builder.Configuration.GetSection("ReverseProxy:KnownProxies").Get<string[]>() ?? [])
+        options.KnownProxies.Add(System.Net.IPAddress.Parse(proxy));
 });
 
 var app = builder.Build();
@@ -138,7 +139,8 @@ app.UseMiddleware<AppExceptionMiddleware>();
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/api/v1/auth")
-        || context.Request.Path.StartsWithSegments("/api/v1/me"))
+        || context.Request.Path.StartsWithSegments("/api/v1/me")
+        || context.Request.Path.StartsWithSegments("/api/v1/admin/staff"))
     {
         context.Response.Headers.CacheControl = "no-store";
         context.Response.Headers.Pragma = "no-cache";
@@ -150,6 +152,7 @@ app.UseCors("AllowApp");
 // Exception middleware bao cả xác thực vì việc kiểm tra phiên có truy vấn DB.
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 // N2LHTBLTT-38: Bảo vệ CSRF cho các endpoint dùng cookie để xác thực.
 app.UseMiddleware<CsrfProtectionMiddleware>();

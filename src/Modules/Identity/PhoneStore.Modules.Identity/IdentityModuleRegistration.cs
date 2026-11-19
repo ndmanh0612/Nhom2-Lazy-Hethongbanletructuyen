@@ -20,6 +20,7 @@ public static class IdentityModuleRegistration
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", IdentityDbContext.Schema)));
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddIdentityRateLimiting(configuration);
 
         // N2LHTBLTT-9: Phát JWT + lưu refresh token trong schema identity.
         services.AddSingleton(TimeProvider.System);

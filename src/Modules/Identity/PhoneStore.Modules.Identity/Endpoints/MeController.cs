@@ -77,6 +77,20 @@ public class MeController : ControllerBase
         return StatusCode(201, ApiResponse<AddressDto>.Ok(result.Value, "Thêm địa chỉ thành công."));
     }
 
+    [HttpPut("addresses/{addressId:long}")]
+    public async Task<IActionResult> UpdateAddress(long addressId, [FromBody] UpdateAddressRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _identityService.UpdateAddressAsync(RequireUserId(), addressId, request, cancellationToken);
+        return Ok(ApiResponse<AddressDto>.Ok(result.Value, "Cập nhật địa chỉ thành công."));
+    }
+
+    [HttpDelete("addresses/{addressId:long}")]
+    public async Task<IActionResult> DeleteAddress(long addressId, CancellationToken cancellationToken)
+    {
+        await _identityService.DeleteAddressAsync(RequireUserId(), addressId, cancellationToken);
+        return Ok(ApiResponse.Ok("Xóa địa chỉ thành công."));
+    }
+
     private long RequireUserId()
     {
         return _currentUser.UserId

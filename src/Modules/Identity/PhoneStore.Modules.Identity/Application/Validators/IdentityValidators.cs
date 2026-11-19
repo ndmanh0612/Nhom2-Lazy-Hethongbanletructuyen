@@ -1,3 +1,4 @@
+using System.Text;
 using FluentValidation;
 using PhoneStore.BuildingBlocks.Validation;
 using PhoneStore.Modules.Identity.Application.DTOs;
@@ -21,6 +22,8 @@ public class RegisterRequestValidator : AppValidator<RegisterRequest>
             .NotEmpty()
             .MinimumLength(8)
             .MaximumLength(72)
+            .Must(value => value is null || Encoding.UTF8.GetByteCount(value) <= 72)
+            .WithMessage("Mật khẩu không được vượt quá 72 byte UTF-8.")
             .Matches(@"^(?=.*[A-Za-z])(?=.*\d).+$")
             .WithMessage("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ và số.");
 
@@ -49,7 +52,8 @@ public class LoginRequestValidator : AppValidator<LoginRequest>
         RuleFor(request => request.Password)
             .NotEmpty()
             .MaximumLength(72)
-            .WithMessage("Mật khẩu không được để trống và tối đa 72 ký tự.");
+            .Must(value => value is null || Encoding.UTF8.GetByteCount(value) <= 72)
+            .WithMessage("Mật khẩu không được để trống và tối đa 72 byte UTF-8.");
     }
 }
 
@@ -75,12 +79,16 @@ public class ChangePasswordRequestValidator : AppValidator<ChangePasswordRequest
     {
         RuleFor(request => request.CurrentPassword)
             .NotEmpty()
-            .WithMessage("Mật khẩu hiện tại không được để trống.");
+            .MaximumLength(72)
+            .Must(value => value is null || Encoding.UTF8.GetByteCount(value) <= 72)
+            .WithMessage("Mật khẩu hiện tại không được để trống và tối đa 72 byte UTF-8.");
 
         RuleFor(request => request.NewPassword)
             .NotEmpty()
             .MinimumLength(8)
             .MaximumLength(72)
+            .Must(value => value is null || Encoding.UTF8.GetByteCount(value) <= 72)
+            .WithMessage("Mật khẩu không được vượt quá 72 byte UTF-8.")
             .Matches(@"^(?=.*[A-Za-z])(?=.*\d).+$")
             .WithMessage("Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ và số.");
 
@@ -129,6 +137,8 @@ public class CreateStaffRequestValidator : AppValidator<CreateStaffRequest>
             .NotEmpty()
             .MinimumLength(8)
             .MaximumLength(72)
+            .Must(value => value is null || Encoding.UTF8.GetByteCount(value) <= 72)
+            .WithMessage("Mật khẩu không được vượt quá 72 byte UTF-8.")
             .Matches(@"^(?=.*[A-Za-z])(?=.*\d).+$")
             .WithMessage("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ và số.");
 
@@ -139,8 +149,8 @@ public class CreateStaffRequestValidator : AppValidator<CreateStaffRequest>
 
         RuleFor(request => request.Role)
             .NotEmpty()
-            .Must(role => role.Equals("STAFF", StringComparison.OrdinalIgnoreCase)
-                || role.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
+            .Must(role => string.Equals(role, "STAFF", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(role, "ADMIN", StringComparison.OrdinalIgnoreCase))
             .WithMessage("Vai trò chỉ nhận STAFF hoặc ADMIN.");
 
         RuleFor(request => request.Phone)
@@ -156,8 +166,8 @@ public class ChangeRoleRequestValidator : AppValidator<ChangeRoleRequest>
     {
         RuleFor(request => request.Role)
             .NotEmpty()
-            .Must(role => role.Equals("STAFF", StringComparison.OrdinalIgnoreCase)
-                || role.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
+            .Must(role => string.Equals(role, "STAFF", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(role, "ADMIN", StringComparison.OrdinalIgnoreCase))
             .WithMessage("Vai trò chỉ nhận STAFF hoặc ADMIN.");
     }
 }
@@ -170,6 +180,8 @@ public class ResetPasswordRequestValidator : AppValidator<ResetPasswordRequest>
             .NotEmpty()
             .MinimumLength(8)
             .MaximumLength(72)
+            .Must(value => value is null || Encoding.UTF8.GetByteCount(value) <= 72)
+            .WithMessage("Mật khẩu không được vượt quá 72 byte UTF-8.")
             .Matches(@"^(?=.*[A-Za-z])(?=.*\d).+$")
             .WithMessage("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ và số.");
     }
@@ -187,10 +199,34 @@ public class StaffFilterQueryValidator : AppValidator<StaffFilterQuery>
             .InclusiveBetween(1, 100)
             .WithMessage("Số bản ghi mỗi trang phải từ 1 đến 100.");
 
+        RuleFor(query => query.Page)
+            .Must((query, page) => ((long)page - 1) * query.PageSize <= int.MaxValue)
+            .WithMessage("Số trang vượt quá giới hạn cho phép.");
+
+        RuleFor(query => query.Search).MaximumLength(254);
+
         RuleFor(query => query.Role)
             .Must(role => string.IsNullOrWhiteSpace(role)
                 || role.Equals("STAFF", StringComparison.OrdinalIgnoreCase)
                 || role.Equals("ADMIN", StringComparison.OrdinalIgnoreCase))
             .WithMessage("Vai trò chỉ nhận STAFF hoặc ADMIN.");
+    }
+}
+
+public class UpdateAddressRequestValidator : AppValidator<UpdateAddressRequest>
+{
+    public UpdateAddressRequestValidator()
+    {
+        RuleFor(request => request.ReceiverName).NotEmpty().MaximumLength(100);
+        RuleFor(request => request.ReceiverPhone).NotEmpty().Matches(@"^(0|\+84)\d{8,11}$");
+        RuleFor(request => request.AddressText).NotEmpty().MaximumLength(500);
+    }
+}
+
+public class LockAccountRequestValidator : AppValidator<LockAccountRequest>
+{
+    public LockAccountRequestValidator()
+    {
+        RuleFor(request => request.Reason).MaximumLength(500);
     }
 }

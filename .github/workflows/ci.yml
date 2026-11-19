@@ -2,7 +2,7 @@ name: .NET CI Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, tricong ]
   pull_request:
     # Không giới hạn branch để các PR stack trên nhánh feature (vd. PR #2 base
     # là feature/N2LHTBLTT-12-cart-order-entities) vẫn chạy CI.
@@ -48,6 +48,14 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore PhoneStore.slnx
+
+    - name: Setup Node.js for storefront regression tests
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Run storefront identity regression tests
+      run: node --test tests/frontend/identity-api.test.cjs
 
     - name: Build Solution
       run: dotnet build PhoneStore.slnx --no-restore --configuration Release

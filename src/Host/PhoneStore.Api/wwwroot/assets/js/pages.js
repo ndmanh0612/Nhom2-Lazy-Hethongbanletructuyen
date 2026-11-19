@@ -966,9 +966,15 @@ const Pages = (() => {
                                         <b>${escapeHtml(address.receiverName)}</b>
                                         <span>${escapeHtml(address.receiverPhone)}</span>
                                         <span>${escapeHtml(address.addressText)}</span>
+                                        <div>
+                                            <button class="btn btn--outline" type="button" data-edit-address="${address.id}">Sửa</button>
+                                            <button class="btn btn--outline" type="button" data-delete-address="${address.id}">Xóa</button>
+                                        </div>
                                     </div>`).join('')}</div>`
                                 : '<p style="font-size:13.5px;color:var(--ink-soft)">Bạn chưa có địa chỉ nào. Thêm địa chỉ để checkout nhanh hơn.</p>'}
                             <form class="form" id="address-form" style="margin-top:16px">
+                                <input type="hidden" name="addressId">
+                                <button class="btn btn--outline" type="button" id="cancel-address-edit" hidden>Hủy sửa</button>
                                 <div class="form__grid-2">
                                     <label class="field"><span class="field__label">Người nhận *</span><input name="receiverName" required></label>
                                     <label class="field"><span class="field__label">Số điện thoại *</span><input name="receiverPhone" required></label>
@@ -1029,17 +1035,53 @@ const Pages = (() => {
             event.preventDefault();
             const form = event.target;
             try {
-                await Api.auth.addAddress({
-                    receiverName: form.receiverName.value.trim(),
-                    receiverPhone: form.receiverPhone.value.trim(),
-                    addressText: form.addressText.value.trim()
-                });
-                UI.toast('Thêm địa chỉ thành công.', 'success');
-                account();
+                const button = form.querySelector('[type="submit"]');
+                button.disabled = true;
+                try {
+                    const payload = {
+                        receiverName: form.receiverName.value.trim(),
+                        receiverPhone: form.receiverPhone.value.trim(),
+                        addressText: form.addressText.value.trim()
+                    };
+                    if (form.addressId.value) await Api.auth.updateAddress(form.addressId.value, payload);
+                    else await Api.auth.addAddress(payload);
+                    UI.toast('Lưu địa chỉ thành công.', 'success');
+                    await account();
+                    document.querySelector('[data-tab="addresses"]')?.click();
+                } finally { button.disabled = false; }
             } catch (error) {
                 UI.toast(error.message, 'error');
             }
         });
+
+        const addressForm = document.getElementById('address-form');
+        document.getElementById('cancel-address-edit').addEventListener('click', () => {
+            addressForm.reset();
+            addressForm.addressId.value = '';
+            document.getElementById('cancel-address-edit').hidden = true;
+            addressForm.querySelector('[type="submit"]').textContent = 'Thêm địa chỉ';
+        });
+        document.querySelectorAll('[data-edit-address]').forEach(button => button.addEventListener('click', () => {
+            const address = addresses.find(item => String(item.id) === button.dataset.editAddress);
+            if (!address) return;
+            addressForm.addressId.value = address.id;
+            addressForm.receiverName.value = address.receiverName;
+            addressForm.receiverPhone.value = address.receiverPhone;
+            addressForm.addressText.value = address.addressText;
+            addressForm.querySelector('[type="submit"]').textContent = 'Lưu địa chỉ';
+            document.getElementById('cancel-address-edit').hidden = false;
+        }));
+        document.querySelectorAll('[data-delete-address]').forEach(button => button.addEventListener('click', async () => {
+            if (!window.confirm('Xóa địa chỉ nhận hàng này?')) return;
+            button.disabled = true;
+            try {
+                await Api.auth.deleteAddress(button.dataset.deleteAddress);
+                await account();
+                document.querySelector('[data-tab="addresses"]')?.click();
+                UI.toast('Xóa địa chỉ thành công.', 'success');
+            } catch (error) { UI.toast(error.message, 'error'); }
+            finally { button.disabled = false; }
+        }));
 
         document.getElementById('password-form').addEventListener('submit', async event => {
             event.preventDefault();
@@ -1049,7 +1091,8 @@ const Pages = (() => {
                 await Api.auth.changePassword(form.currentPassword.value, form.newPassword.value);
                 errorBox.hidden = true;
                 form.reset();
-                UI.toast('Đổi mật khẩu thành công. Các phiên khác đã bị thu hồi.', 'success');
+                UI.toast('Đổi mật khẩu thành công. Mọi phiên đã bị thu hồi, vui lòng đăng nhập lại.', 'success');
+                window.location.hash = '#/dang-nhap';
             } catch (error) {
                 errorBox.hidden = false;
                 errorBox.textContent = error.message;
@@ -1074,49 +1117,151 @@ const Pages = (() => {
     async function loadStaffDashboard() {
         const container = document.getElementById('staff-dashboard');
         if (!container) return;
-
         try {
-            const [lowStock, cod] = await Promise.all([
-                Api.admin.lowStock(10).catch(() => []),
-                Api.admin.codCollections({ page: 1, pageSize: 5 }).catch(() => ({ items: [] }))
-            ]);
-
-            const codItems = cod.items || [];
-            const codTotal = codItems.reduce((sum, item) => sum + (item.collectedAmount || 0), 0);
-
+            const report = await Api.admin.dashboard();
             container.innerHTML = `
                 <div class="admin-stats">
-                    <div class="admin-stat"><b>${(lowStock || []).length}</b><span>SKU tồn kho thấp</span></div>
-                    <div class="admin-stat"><b>${codItems.length}</b><span>Đơn COD đã thu (gần nhất)</span></div>
-                    <div class="admin-stat"><b>${formatCurrency(codTotal)}</b><span>Tiền COD đã thu</span></div>
-                    <div class="admin-stat"><b>${Mock.stores.length}</b><span>Cửa hàng trên hệ thống</span></div>
+                    <div class="admin-stat"><b>${formatCurrency(report.revenue.totalRevenue)}</b><span>Doanh thu đã thu</span></div>
+                    <div class="admin-stat"><b>${report.totalOrders}</b><span>Tổng đơn hàng</span></div>
+                    <div class="admin-stat"><b>${report.revenue.deliveredOrderCount}</b><span>Đơn giao thành công đã thu tiền</span></div>
+                    <div class="admin-stat"><b>${report.lowStockItems.length}</b><span>SKU tồn kho thấp</span></div>
                 </div>
-                <h4 style="font-size:15px">Đơn hàng COD đã thu tiền</h4>
-                ${codItems.length ? `
-                    <table class="data-table">
-                        <thead><tr><th>Mã đơn</th><th>Tổng tiền</th><th>Đã thu</th><th>Thời điểm</th></tr></thead>
-                        <tbody>
-                            ${codItems.map(item => `
-                                <tr>
-                                    <td>${escapeHtml(item.orderNumber)}</td>
-                                    <td>${formatCurrency(item.totalAmount)}</td>
-                                    <td><b>${formatCurrency(item.collectedAmount)}</b></td>
-                                    <td>${formatDate(item.collectedAt)}</td>
-                                </tr>`).join('')}
-                        </tbody>
-                    </table>` : '<p style="font-size:13.5px;color:var(--ink-soft)">Chưa có dữ liệu thu COD.</p>'}
-
-                <h4 style="font-size:15px;margin-top:20px">SKU tồn kho thấp</h4>
-                ${(lowStock || []).length ? `
-                    <table class="data-table">
-                        <thead><tr><th>Phiên bản</th><th>Tồn kho</th></tr></thead>
-                        <tbody>
-                            ${(lowStock || []).map(stock => `
-                                <tr><td>#${stock.productVariantId}</td><td><b style="color:var(--brand)">${stock.availableQuantity ?? stock.quantity ?? 0}</b></td></tr>`).join('')}
-                        </tbody>
-                    </table>` : '<p style="font-size:13.5px;color:var(--ink-soft)">Không có SKU nào tồn kho thấp.</p>'}`;
+                <h4>Đơn hàng theo trạng thái</h4>
+                <table class="data-table"><thead><tr><th>Trạng thái</th><th>Số đơn</th></tr></thead><tbody>
+                    ${Object.entries(report.orderCountsByStatus).map(([status, count]) => `<tr><td>${escapeHtml(status)}</td><td>${count}</td></tr>`).join('')}
+                </tbody></table>
+                <h4>SKU tồn kho thấp</h4>
+                ${report.lowStockItems.length ? `<table class="data-table"><thead><tr><th>Phiên bản</th><th>Tồn khả dụng</th></tr></thead><tbody>
+                    ${report.lowStockItems.map(stock => `<tr><td>#${stock.productVariantId}</td><td>${stock.stockQuantity}</td></tr>`).join('')}
+                </tbody></table>` : '<p>Không có SKU tồn kho thấp.</p>'}`;
         } catch (error) {
-            container.innerHTML = `<p style="color:var(--brand);font-size:13.5px">${escapeHtml(error.message)}</p>`;
+            container.innerHTML = `<p role="alert">${escapeHtml(error.message)}</p>`;
+        }
+        // Staff may see reports; only admins receive account administration controls.
+        if (Api.getUser()?.role === 'ADMIN') {
+            container.insertAdjacentHTML('beforeend', '<div id="staff-management"></div>');
+            await loadStaffManagement();
+        }
+    }
+
+    async function loadStaffManagement(query = {}) {
+        const container = document.getElementById('staff-management');
+        if (!container) return;
+        const filters = { page: 1, pageSize: 10, ...query };
+        container.innerHTML = '<p>Đang tải tài khoản nhân viên...</p>';
+        try {
+            const result = await Api.admin.staff(filters);
+            const actorId = String(Api.getUser()?.id);
+            container.innerHTML = `
+                <h4 style="margin-top:24px">Quản lý tài khoản nhân viên</h4>
+                <form class="form" id="staff-filter-form">
+                    <label class="field"><span class="field__label">Tìm tên hoặc email</span><input name="search" maxlength="254" value="${escapeHtml(filters.search || '')}"></label>
+                    <label class="field"><span class="field__label">Vai trò</span><select name="role"><option value="">Tất cả</option><option value="STAFF">STAFF</option><option value="ADMIN">ADMIN</option></select></label>
+                    <label class="field"><span class="field__label">Trạng thái</span><select name="isActive"><option value="">Tất cả</option><option value="true">Hoạt động</option><option value="false">Đã khóa</option></select></label>
+                    <button class="btn btn--outline" type="submit">Lọc tài khoản</button>
+                </form>
+                ${result.items.length ? `<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Họ tên / email</th><th>Vai trò</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>
+                    ${result.items.map(user => `<tr>
+                        <td>${escapeHtml(user.fullName)}<br>${escapeHtml(user.email)}</td>
+                        <td><select aria-label="Vai trò của ${escapeHtml(user.email)}" data-staff-role="${user.id}" ${String(user.id) === actorId ? 'disabled' : ''}>
+                            <option value="STAFF" ${user.role === 'STAFF' ? 'selected' : ''}>STAFF</option>
+                            <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>ADMIN</option></select></td>
+                        <td>${user.isActive ? 'Hoạt động' : 'Đã khóa'}</td>
+                        <td><button class="btn btn--outline" type="button" data-staff-lock="${user.id}" data-locked="${user.isActive}" ${String(user.id) === actorId ? 'disabled' : ''}>${user.isActive ? 'Khóa' : 'Mở khóa'}</button>
+                        <button class="btn btn--outline" type="button" data-staff-reset="${user.id}">Đặt mật khẩu</button></td>
+                    </tr>`).join('')}
+                </tbody></table></div>` : '<p>Không có tài khoản phù hợp.</p>'}
+                <p>Trang ${result.page} · Tổng ${result.totalCount} tài khoản</p>
+                <button class="btn btn--outline" type="button" id="staff-prev" ${result.page <= 1 ? 'disabled' : ''}>Trang trước</button>
+                <button class="btn btn--outline" type="button" id="staff-next" ${result.page * result.pageSize >= result.totalCount ? 'disabled' : ''}>Trang sau</button>
+                <form class="form" id="staff-reset-form" hidden style="margin-top:16px">
+                    <input type="hidden" name="userId">
+                    <b id="staff-reset-label"></b>
+                    <label class="field"><span class="field__label">Mật khẩu mới</span><input type="password" name="newPassword" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+                    <button class="btn btn--primary" type="submit">Đặt lại mật khẩu</button>
+                    <button class="btn btn--outline" type="button" id="staff-reset-cancel">Hủy</button>
+                </form>
+                <details style="margin-top:24px"><summary>Tạo tài khoản nhân viên</summary>
+                    <form class="form" id="staff-create-form" style="margin-top:16px">
+                        <label class="field"><span class="field__label">Họ tên</span><input name="fullName" required maxlength="100"></label>
+                        <label class="field"><span class="field__label">Email</span><input name="email" type="email" required maxlength="254"></label>
+                        <label class="field"><span class="field__label">Điện thoại</span><input name="phone" maxlength="20"></label>
+                        <label class="field"><span class="field__label">Vai trò</span><select name="role"><option value="STAFF">STAFF</option><option value="ADMIN">ADMIN</option></select></label>
+                        <label class="field"><span class="field__label">Mật khẩu</span><input type="password" name="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+                        <button class="btn btn--primary" type="submit">Tạo tài khoản</button>
+                    </form>
+                </details>`;
+            const filterForm = document.getElementById('staff-filter-form');
+            filterForm.role.value = filters.role || '';
+            filterForm.isActive.value = filters.isActive ?? '';
+            filterForm.addEventListener('submit', event => {
+                event.preventDefault();
+                const values = { search: filterForm.search.value.trim(), role: filterForm.role.value, isActive: filterForm.isActive.value };
+                Object.keys(values).forEach(key => { if (values[key] === '') delete values[key]; });
+                loadStaffManagement(values);
+            });
+            document.getElementById('staff-prev').addEventListener('click', () => loadStaffManagement({ ...filters, page: result.page - 1 }));
+            document.getElementById('staff-next').addEventListener('click', () => loadStaffManagement({ ...filters, page: result.page + 1 }));
+            const perform = async (button, operation) => {
+                button.disabled = true;
+                try {
+                    await operation();
+                    UI.toast('Cập nhật tài khoản thành công.', 'success');
+                } catch (error) { UI.toast(error.message, 'error'); }
+                finally { await loadStaffManagement(filters); }
+            };
+            container.querySelectorAll('[data-staff-role]').forEach(select => select.addEventListener('change', () => {
+                if (!window.confirm('Đổi quyền sẽ thu hồi mọi phiên của tài khoản này. Tiếp tục?')) {
+                    loadStaffManagement(filters);
+                    return;
+                }
+                perform(select, () => Api.admin.changeRole(select.dataset.staffRole, select.value));
+            }));
+            container.querySelectorAll('[data-staff-lock]').forEach(button => button.addEventListener('click', () => {
+                if (window.confirm('Thay đổi trạng thái tài khoản này?'))
+                    perform(button, () => Api.admin.lockAccount(button.dataset.staffLock, button.dataset.locked === 'true', null));
+            }));
+            const resetForm = document.getElementById('staff-reset-form');
+            container.querySelectorAll('[data-staff-reset]').forEach(button => button.addEventListener('click', () => {
+                resetForm.reset();
+                resetForm.userId.value = button.dataset.staffReset;
+                document.getElementById('staff-reset-label').textContent = 'Đặt lại mật khẩu cho tài khoản #' + button.dataset.staffReset;
+                resetForm.hidden = false;
+            }));
+            document.getElementById('staff-reset-cancel').addEventListener('click', () => { resetForm.reset(); resetForm.hidden = true; });
+            resetForm.addEventListener('submit', async event => {
+                event.preventDefault();
+                const button = resetForm.querySelector('[type="submit"]');
+                button.disabled = true;
+                try {
+                    await Api.admin.resetPassword(resetForm.userId.value, resetForm.newPassword.value);
+                    resetForm.newPassword.value = '';
+                    if (resetForm.userId.value === actorId) {
+                        Api.setSession(null, null);
+                        window.location.hash = '#/dang-nhap';
+                    } else await loadStaffManagement(filters);
+                    UI.toast('Mật khẩu đã được đặt lại. Các phiên của tài khoản đã bị thu hồi.', 'success');
+                } catch (error) { UI.toast(error.message, 'error'); }
+                finally { button.disabled = false; }
+            });
+            const createForm = document.getElementById('staff-create-form');
+            createForm.addEventListener('submit', async event => {
+                event.preventDefault();
+                const button = createForm.querySelector('[type="submit"]');
+                button.disabled = true;
+                try {
+                    await Api.admin.createStaff({
+                        fullName: createForm.fullName.value.trim(), email: createForm.email.value.trim(),
+                        phone: createForm.phone.value.trim() || null, role: createForm.role.value, password: createForm.password.value
+                    });
+                    createForm.reset();
+                    UI.toast('Tạo tài khoản thành công.', 'success');
+                    await loadStaffManagement(filters);
+                } catch (error) { UI.toast(error.message, 'error'); }
+                finally { button.disabled = false; }
+            });
+        } catch (error) {
+            container.innerHTML = `<p role="alert">${escapeHtml(error.message)}</p>`;
         }
     }
 

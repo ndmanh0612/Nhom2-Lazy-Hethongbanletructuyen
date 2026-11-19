@@ -60,7 +60,7 @@ public class User : AggregateRoot<long>
         UserRole role,
         string? phone = null)
     {
-        if (role == UserRole.CUSTOMER)
+        if (role is not (UserRole.STAFF or UserRole.ADMIN))
         {
             throw new ValidationException(
                 "role",
@@ -84,7 +84,7 @@ public class User : AggregateRoot<long>
     public void UpdateProfile(string fullName, string? phone)
     {
         FullName = fullName.Trim();
-        Phone = phone?.Trim();
+        Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
         Touch();
     }
 
@@ -106,7 +106,7 @@ public class User : AggregateRoot<long>
     /// </summary>
     public void ChangeRole(UserRole newRole)
     {
-        if (newRole == UserRole.CUSTOMER)
+        if (Role == UserRole.CUSTOMER || newRole is not (UserRole.STAFF or UserRole.ADMIN))
         {
             throw new ValidationException(
                 "role",

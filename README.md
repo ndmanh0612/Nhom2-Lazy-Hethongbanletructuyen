@@ -1,5 +1,8 @@
 # 📱 PhoneStore Backend - Modular Monolith
 
+> Bổ sung FR-03/FR-15: [Tài khoản và Quản trị](docs/auth/ACCOUNT-ADMIN-COMPLETION.md),
+> [kết quả kiểm chứng](docs/auth/ACCOUNT-ADMIN-VALIDATION.md).
+
 > **Đề tài**: Phân tích và thiết kế hệ thống bán điện thoại và phụ kiện (Tham khảo CellphoneS)  
 > **Môn học**: Đồ Án Phát Triển Ứng Dụng Phía Máy Chủ Nâng Cao (Mã HP: 608819)  
 > **Trường**: Đại học Xây Dựng Hà Nội (HUCE) - Khoa Công Nghệ Thông Tin  
