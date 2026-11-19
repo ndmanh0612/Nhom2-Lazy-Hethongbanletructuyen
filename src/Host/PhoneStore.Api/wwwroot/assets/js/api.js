@@ -12,6 +12,7 @@ const Api = (() => {
     const USER_KEY = 'phonestore.user';
 
     let accessToken = sessionStorage.getItem(ACCESS_TOKEN_KEY) || null;
+    let refreshPromise = null;
 
     /* ---------------- Token / user state ---------------- */
 
@@ -58,46 +59,37 @@ const Api = (() => {
         return match ? decodeURIComponent(match.split('=')[1]) : null;
     }
 
-    async function request(path, options = {}) {
+    async function request(path, options = {}, mayRetry = true) {
         const method = (options.method || 'GET').toUpperCase();
         const headers = Object.assign({ 'Accept': 'application/json' }, options.headers || {});
-
-        if (options.body !== undefined && typeof options.body !== 'string') {
+        const requestToken = accessToken;
+        let body = options.body;
+        if (body !== undefined && typeof body !== 'string' && !(body instanceof FormData)) {
             headers['Content-Type'] = 'application/json';
-            options.body = JSON.stringify(options.body);
+            body = JSON.stringify(body);
         }
-
-        if (accessToken) {
-            headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-
-        // Endpoint dùng cookie (refresh / logout) cần CSRF token khớp cookie.
+        if (requestToken) headers['Authorization'] = `Bearer ${requestToken}`;
         if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
             const csrfToken = readCsrfToken();
-            if (csrfToken) {
-                headers['X-CSRF-TOKEN'] = csrfToken;
-            }
+            if (csrfToken) headers['X-CSRF-TOKEN'] = csrfToken;
         }
-
-        const response = await fetch(`${BASE}${path}`, Object.assign({}, options, { method, headers }));
-
-        if (response.status === 401) {
-            const refreshed = await tryRefreshToken();
-            if (refreshed) {
-                return request(path, options);
-            }
-            setSession(null, null);
-            throw new ApiError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 'UNAUTHORIZED', 401);
-        }
-
+        const response = await fetch(`${BASE}${path}`, { ...options, body, method, headers });
         const text = await response.text();
         const payload = text ? safeParse(text) : null;
 
-        if (!response.ok) {
-            const message = payload?.message || `Yêu cầu thất bại (HTTP ${response.status}).`;
-            throw new ApiError(message, payload?.code || 'HTTP_ERROR', response.status, payload?.fieldErrors);
+        // Credentials errors must retain the backend error. Protected requests retry once.
+        if (response.status === 401 && !path.startsWith('/auth/')) {
+            if (mayRetry && requestToken) {
+                const renewed = accessToken && accessToken !== requestToken
+                    ? true : await tryRefreshToken();
+                if (renewed) return request(path, options, false);
+            }
+            if (accessToken === requestToken) setSession(null, null);
         }
-
+        if (!response.ok) {
+            throw new ApiError(payload?.message || `Yêu cầu thất bại (HTTP ${response.status}).`,
+                payload?.code || 'HTTP_ERROR', response.status, payload?.fieldErrors);
+        }
         return payload?.data !== undefined ? payload.data : payload;
     }
 
@@ -110,25 +102,30 @@ const Api = (() => {
     }
 
     async function tryRefreshToken() {
-        try {
-            const csrfToken = readCsrfToken();
-            const response = await fetch(`${BASE}/auth/refresh`, {
-                method: 'POST',
-                headers: csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}
-            });
-            if (!response.ok) {
+        if (refreshPromise) return refreshPromise;
+        const previousToken = accessToken;
+        refreshPromise = (async () => {
+            try {
+                const csrfToken = readCsrfToken();
+                const response = await fetch(`${BASE}/auth/refresh`, {
+                    method: 'POST',
+                    headers: csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}
+                });
+                if (!response.ok) return false;
+                const payload = await response.json();
+                const data = payload?.data;
+                // A logout or another login while refreshing must win.
+                if (!data?.accessToken || accessToken !== previousToken) return false;
+                setSession(data.accessToken, {
+                    id: data.userId, email: data.email, fullName: data.fullName, role: data.role
+                });
+                return true;
+            } catch {
                 return false;
             }
-            const payload = await response.json();
-            const token = payload?.data?.accessToken;
-            if (!token) {
-                return false;
-            }
-            setSession(token, getUser());
-            return true;
-        } catch {
-            return false;
-        }
+        })();
+        try { return await refreshPromise; }
+        finally { refreshPromise = null; }
     }
 
     class ApiError extends Error {
@@ -169,15 +166,27 @@ const Api = (() => {
         },
 
         async updateProfile(payload) {
-            return request('/me', { method: 'PATCH', body: payload });
+            const profile = await request('/me', { method: 'PATCH', body: payload });
+            setSession(accessToken, { ...getUser(), ...profile });
+            return profile;
         },
 
         async changePassword(currentPassword, newPassword) {
-            return request('/me/change-password', { method: 'POST', body: { currentPassword, newPassword } });
+            const result = await request('/me/change-password', { method: 'POST', body: { currentPassword, newPassword } });
+            setSession(null, null);
+            return result;
         },
 
         async addresses() {
             return request('/me/addresses');
+        },
+
+        async updateAddress(id, payload) {
+            return request(`/me/addresses/${id}`, { method: 'PUT', body: payload });
+        },
+
+        async deleteAddress(id) {
+            return request(`/me/addresses/${id}`, { method: 'DELETE' });
         },
 
         async addAddress(payload) {
@@ -283,6 +292,26 @@ const Api = (() => {
         async staff(query = {}) {
             const params = new URLSearchParams(query);
             return request(`/admin/staff?${params.toString()}`);
+        },
+
+        async createStaff(payload) {
+            return request('/admin/staff', { method: 'POST', body: payload });
+        },
+
+        async changeRole(id, role) {
+            return request(`/admin/staff/${id}/role`, { method: 'PATCH', body: { role } });
+        },
+
+        async lockAccount(id, isLocked, reason) {
+            return request(`/admin/staff/${id}/lock`, { method: 'PATCH', body: { isLocked, reason } });
+        },
+
+        async resetPassword(id, newPassword) {
+            return request(`/admin/staff/${id}/reset-password`, { method: 'POST', body: { newPassword } });
+        },
+
+        async dashboard(query = {}) {
+            return request(`/admin/reports/dashboard?${new URLSearchParams(query)}`);
         },
 
         async confirmOrder(orderId, note) {

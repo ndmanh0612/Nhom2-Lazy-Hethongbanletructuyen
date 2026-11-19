@@ -34,7 +34,7 @@ public class StaffController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateStaff([FromBody] CreateStaffRequest request, CancellationToken cancellationToken)
     {
-        var result = await _identityService.CreateStaffAsync(request, cancellationToken);
+        var result = await _identityService.CreateStaffAsync(request, RequireActorId(), cancellationToken);
         return StatusCode(201, ApiResponse<UserProfileDto>.Ok(result.Value, "Tạo tài khoản nhân viên thành công."));
     }
 
@@ -84,7 +84,7 @@ public class StaffController : ControllerBase
         [FromBody] ResetPasswordRequest request,
         CancellationToken cancellationToken)
     {
-        await _identityService.ResetPasswordAsync(userId, request, cancellationToken);
+        await _identityService.ResetPasswordAsync(userId, request, RequireActorId(), cancellationToken);
         return Ok(ApiResponse.Ok("Đặt lại mật khẩu thành công."));
     }
 

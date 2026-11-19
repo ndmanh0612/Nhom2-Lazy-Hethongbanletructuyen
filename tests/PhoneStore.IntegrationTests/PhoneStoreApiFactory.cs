@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
+using PhoneStore.Modules.Identity.Infrastructure.Services;
 
 namespace PhoneStore.IntegrationTests;
 
@@ -85,6 +87,7 @@ public class PhoneStoreApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
+        builder.ConfigureServices(services => services.PostConfigure<IdentityRateLimitOptions>(options => options.PermitLimit = 10000));
     }
 }
 

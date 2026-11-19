@@ -45,7 +45,11 @@ public record UserProfileDto(
     string Role,
     bool IsActive,
     DateTimeOffset CreatedAt
-);
+)
+{
+    public DateTimeOffset UpdatedAt { get; init; }
+    public bool PhoneVerified { get; init; }
+}
 
 public record UpdateProfileRequest(
     string FullName,
@@ -71,6 +75,8 @@ public record CreateAddressRequest(
     string ReceiverPhone,
     string AddressText
 );
+
+public record UpdateAddressRequest(string ReceiverName, string ReceiverPhone, string AddressText);
 
 // ---------------------------------------------------------------------------
 // FR-15 (N2LHTBLTT-16): Quản lý tài khoản nhân viên.

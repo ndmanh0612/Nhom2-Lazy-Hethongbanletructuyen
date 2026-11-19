@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using PhoneStore.BuildingBlocks.Common;
 using PhoneStore.BuildingBlocks.Infrastructure.Web;
 using PhoneStore.Modules.Identity.Application.DTOs;
 using PhoneStore.Modules.Identity.Application.Services;
+using PhoneStore.Modules.Identity.Infrastructure.Services;
 
 namespace PhoneStore.Modules.Identity.Endpoints;
 
@@ -33,6 +35,7 @@ public class AuthController : ControllerBase
     /// FR-01: Đăng ký tài khoản khách hàng mới.
     /// </summary>
     [HttpPost("register")]
+    [EnableRateLimiting(IdentityRateLimiting.Policy)]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
@@ -48,6 +51,7 @@ public class AuthController : ControllerBase
     /// FR-02: Đăng nhập hệ thống, trả access token + refresh token (cookie).
     /// </summary>
     [HttpPost("login")]
+    [EnableRateLimiting(IdentityRateLimiting.Policy)]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {

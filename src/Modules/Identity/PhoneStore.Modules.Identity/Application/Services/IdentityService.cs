@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using PhoneStore.BuildingBlocks.Application;
 using PhoneStore.BuildingBlocks.Common;
@@ -23,32 +24,37 @@ public interface IIdentityService
     Task<Result> ChangePasswordAsync(long userId, ChangePasswordRequest request, CancellationToken cancellationToken = default);
     Task<Result<IReadOnlyList<AddressDto>>> GetAddressesAsync(long userId, CancellationToken cancellationToken = default);
     Task<Result<AddressDto>> AddAddressAsync(long userId, CreateAddressRequest request, CancellationToken cancellationToken = default);
+    Task<Result<AddressDto>> UpdateAddressAsync(long userId, long addressId, UpdateAddressRequest request, CancellationToken cancellationToken = default);
+    Task<Result> DeleteAddressAsync(long userId, long addressId, CancellationToken cancellationToken = default);
 
     // FR-15 (N2LHTBLTT-16): Quản lý tài khoản nhân viên.
-    Task<Result<UserProfileDto>> CreateStaffAsync(CreateStaffRequest request, CancellationToken cancellationToken = default);
+    Task<Result<UserProfileDto>> CreateStaffAsync(CreateStaffRequest request, long actorId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<UserProfileDto>>> GetStaffAsync(StaffFilterQuery query, CancellationToken cancellationToken = default);
     Task<Result<UserProfileDto>> ChangeRoleAsync(long userId, ChangeRoleRequest request, long actorId, CancellationToken cancellationToken = default);
     Task<Result<UserProfileDto>> LockAccountAsync(long userId, LockAccountRequest request, long actorId, CancellationToken cancellationToken = default);
-    Task<Result> ResetPasswordAsync(long userId, ResetPasswordRequest request, CancellationToken cancellationToken = default);
+    Task<Result> ResetPasswordAsync(long userId, ResetPasswordRequest request, long actorId, CancellationToken cancellationToken = default);
 }
 
-public class IdentityService : IIdentityService
+public partial class IdentityService : IIdentityService
 {
     private readonly IdentityDbContext _dbContext;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
     private readonly IRefreshTokenStore _refreshTokenStore;
+    private readonly ILogger<IdentityService>? _logger;
 
     public IdentityService(
         IdentityDbContext dbContext,
         IPasswordHasher passwordHasher,
         ITokenService tokenService,
-        IRefreshTokenStore refreshTokenStore)
+        IRefreshTokenStore refreshTokenStore,
+        ILogger<IdentityService>? logger = null)
     {
         _dbContext = dbContext;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
         _refreshTokenStore = refreshTokenStore;
+        _logger = logger;
     }
 
     // -----------------------------------------------------------------------
@@ -200,14 +206,17 @@ public class IdentityService : IIdentityService
 
     public async Task<Result<UserProfileDto>> UpdateProfileAsync(long userId, UpdateProfileRequest request, CancellationToken cancellationToken = default)
     {
-        var user = await _dbContext.Users.FindAsync([userId], cancellationToken);
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var user = await LockUserAsync(userId, cancellationToken);
         if (user == null)
         {
             throw new NotFoundException("Không tìm thấy người dùng.", "USER_NOT_FOUND");
         }
 
         user.UpdateProfile(request.FullName, request.Phone);
+        await InvalidateChallengesAsync(userId, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return Result.Success(ToProfileDto(user));
     }
@@ -233,6 +242,7 @@ public class IdentityService : IIdentityService
         // Đổi mật khẩu phải thu hồi mọi phiên đang mở (N2LHTBLTT-38).
         await RevokeAllSessionsAsync(userId, cancellationToken);
 
+        await WriteAuditAsync(userId, userId, "PasswordChanged", null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return Result.Success();
     }
@@ -257,11 +267,31 @@ public class IdentityService : IIdentityService
         return Result.Success(new AddressDto(address.Id, address.UserId, address.ReceiverName, address.ReceiverPhone, address.AddressText, address.CreatedAt));
     }
 
+    public async Task<Result<AddressDto>> UpdateAddressAsync(long userId, long addressId, UpdateAddressRequest request, CancellationToken cancellationToken = default)
+    {
+        var address = await _dbContext.Addresses.SingleOrDefaultAsync(
+            a => a.Id == addressId && a.UserId == userId, cancellationToken)
+            ?? throw new NotFoundException("Không tìm thấy địa chỉ.", "ADDRESS_NOT_FOUND");
+        address.Update(request.ReceiverName, request.ReceiverPhone, request.AddressText);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return Result.Success(new AddressDto(address.Id, address.UserId, address.ReceiverName,
+            address.ReceiverPhone, address.AddressText, address.CreatedAt));
+    }
+
+    public async Task<Result> DeleteAddressAsync(long userId, long addressId, CancellationToken cancellationToken = default)
+    {
+        var affected = await _dbContext.Addresses.Where(a => a.Id == addressId && a.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+        if (affected == 0)
+            throw new NotFoundException("Không tìm thấy địa chỉ.", "ADDRESS_NOT_FOUND");
+        return Result.Success();
+    }
+
     // -----------------------------------------------------------------------
     // FR-15 (N2LHTBLTT-16): Quản lý tài khoản nhân viên.
     // -----------------------------------------------------------------------
 
-    public async Task<Result<UserProfileDto>> CreateStaffAsync(CreateStaffRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<UserProfileDto>> CreateStaffAsync(CreateStaffRequest request, long actorId, CancellationToken cancellationToken = default)
     {
         var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
@@ -271,10 +301,7 @@ public class IdentityService : IIdentityService
             throw new ConflictException("Email này đã được sử dụng trong hệ thống.", "EMAIL_ALREADY_EXISTS");
         }
 
-        if (!Enum.TryParse<UserRole>(request.Role, ignoreCase: true, out var role))
-        {
-            throw new ValidationException("role", "Vai trò không hợp lệ. Chỉ nhận STAFF hoặc ADMIN.");
-        }
+        var role = ParseStaffRole(request.Role);
 
         var user = User.CreateWithRole(
             normalizedEmail,
@@ -283,16 +310,31 @@ public class IdentityService : IIdentityService
             role,
             request.Phone);
 
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await LockAdministrationAsync(actorId, cancellationToken);
         _dbContext.Users.Add(user);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException
+            { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: "IX_users_Email" })
+        {
+            throw new ConflictException("Email này đã được sử dụng trong hệ thống.", "EMAIL_ALREADY_EXISTS");
+        }
 
+        await WriteAuditAsync(actorId, user.Id, "StaffCreated", null, cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        _logger?.LogInformation("IdentityAdmin StaffCreated ActorId={ActorId} TargetId={TargetId} Role={Role}", actorId, user.Id, role);
         return Result.Success(ToProfileDto(user));
     }
 
     public async Task<Result<PagedResult<UserProfileDto>>> GetStaffAsync(StaffFilterQuery query, CancellationToken cancellationToken = default)
     {
-        var page = query.Page < 1 ? 1 : query.Page;
-        var pageSize = query.PageSize is < 1 or > 100 ? 20 : query.PageSize;
+        var page = query.Page;
+        var pageSize = query.PageSize;
+        if (page < 1 || pageSize is < 1 or > 100 || ((long)page - 1) * pageSize > int.MaxValue)
+            throw new ValidationException("page", "Phân trang không hợp lệ.");
 
         var baseQuery = _dbContext.Users
             .AsNoTracking()
@@ -307,10 +349,7 @@ public class IdentityService : IIdentityService
 
         if (!string.IsNullOrWhiteSpace(query.Role))
         {
-            if (!Enum.TryParse<UserRole>(query.Role, ignoreCase: true, out var role))
-            {
-                throw new ValidationException("role", "Vai trò không hợp lệ. Chỉ nhận STAFF hoặc ADMIN.");
-            }
+            var role = ParseStaffRole(query.Role);
 
             baseQuery = baseQuery.Where(u => u.Role == role);
         }
@@ -336,10 +375,7 @@ public class IdentityService : IIdentityService
 
     public async Task<Result<UserProfileDto>> ChangeRoleAsync(long userId, ChangeRoleRequest request, long actorId, CancellationToken cancellationToken = default)
     {
-        if (!Enum.TryParse<UserRole>(request.Role, ignoreCase: true, out var role))
-        {
-            throw new ValidationException("role", "Vai trò không hợp lệ. Chỉ nhận STAFF hoặc ADMIN.");
-        }
+        var role = ParseStaffRole(request.Role);
 
         if (userId == actorId)
         {
@@ -347,19 +383,24 @@ public class IdentityService : IIdentityService
         }
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await LockAdministrationAsync(actorId, cancellationToken);
         var user = await LockUserAsync(userId, cancellationToken);
         if (user == null)
         {
             throw new NotFoundException("Không tìm thấy tài khoản.", "USER_NOT_FOUND");
         }
 
+        if (role != UserRole.ADMIN)
+            await EnsureAnotherAdminAsync(user, cancellationToken);
         user.ChangeRole(role);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Vai trò cũ không còn hợp lệ nên phải đăng nhập lại để lấy claim mới.
         await RevokeAllSessionsAsync(userId, cancellationToken);
 
+        await WriteAuditAsync(actorId, userId, "RoleChanged:" + role, null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+        _logger?.LogInformation("IdentityAdmin RoleChanged ActorId={ActorId} TargetId={TargetId} Role={Role}", actorId, userId, role);
         return Result.Success(ToProfileDto(user));
     }
 
@@ -371,12 +412,15 @@ public class IdentityService : IIdentityService
         }
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await LockAdministrationAsync(actorId, cancellationToken);
         var user = await LockUserAsync(userId, cancellationToken);
         if (user == null)
         {
             throw new NotFoundException("Không tìm thấy tài khoản.", "USER_NOT_FOUND");
         }
 
+        if (request.IsLocked)
+            await EnsureAnotherAdminAsync(user, cancellationToken);
         user.Lock(request.IsLocked);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -386,13 +430,16 @@ public class IdentityService : IIdentityService
             await RevokeAllSessionsAsync(userId, cancellationToken);
         }
 
+        await WriteAuditAsync(actorId, userId, request.IsLocked ? "AccountLocked" : "AccountUnlocked", request.Reason, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+        _logger?.LogInformation("IdentityAdmin AccountLockChanged ActorId={ActorId} TargetId={TargetId} IsLocked={IsLocked}", actorId, userId, request.IsLocked);
         return Result.Success(ToProfileDto(user));
     }
 
-    public async Task<Result> ResetPasswordAsync(long userId, ResetPasswordRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result> ResetPasswordAsync(long userId, ResetPasswordRequest request, long actorId, CancellationToken cancellationToken = default)
     {
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await LockAdministrationAsync(actorId, cancellationToken);
         var user = await LockUserAsync(userId, cancellationToken);
         if (user == null)
         {
@@ -404,7 +451,9 @@ public class IdentityService : IIdentityService
 
         await RevokeAllSessionsAsync(userId, cancellationToken);
 
+        await WriteAuditAsync(actorId, userId, "PasswordResetByAdmin", null, cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+        _logger?.LogInformation("IdentityAdmin PasswordReset ActorId={ActorId} TargetId={TargetId}", actorId, userId);
         return Result.Success();
     }
 
@@ -422,6 +471,7 @@ public class IdentityService : IIdentityService
     /// </summary>
     private async Task RevokeAllSessionsAsync(long userId, CancellationToken cancellationToken)
     {
+        await InvalidateChallengesAsync(userId, cancellationToken);
         var tokens = await _dbContext.RefreshTokens
             .Where(t => t.UserId == userId && !t.IsRevoked)
             .ToListAsync(cancellationToken);
@@ -462,6 +512,37 @@ public class IdentityService : IIdentityService
             user.Phone,
             user.Role.ToString(),
             user.IsActive,
-            user.CreatedAt);
+            user.CreatedAt)
+        {
+            UpdatedAt = new DateTimeOffset(user.UpdatedAt.Ticks - user.UpdatedAt.Ticks % 10, TimeSpan.Zero),
+            PhoneVerified = user.VerifiedPhone is not null
+        };
     }
+
+    private static UserRole ParseStaffRole(string? value)
+    {
+        if (string.Equals(value, "STAFF", StringComparison.OrdinalIgnoreCase)) return UserRole.STAFF;
+        if (string.Equals(value, "ADMIN", StringComparison.OrdinalIgnoreCase)) return UserRole.ADMIN;
+        throw new ValidationException("role", "Vai trò chỉ nhận STAFF hoặc ADMIN.");
+    }
+
+    private async Task LockAdministrationAsync(long actorId, CancellationToken cancellationToken)
+    {
+        // Serialize privilege mutations across processes; recheck the actor after waiting.
+        // All administrative mutations acquire this lock BEFORE user/session row locks.
+        await _dbContext.Database.ExecuteSqlRawAsync("SELECT pg_advisory_xact_lock(7350191601)", cancellationToken);
+        var actor = await _dbContext.Users
+            .FromSqlInterpolated($"""SELECT * FROM identity.users WHERE "Id" = {actorId} FOR UPDATE""")
+            .AsNoTracking().FirstOrDefaultAsync(cancellationToken);
+        if (actor is null || !actor.IsActive || actor.Role != UserRole.ADMIN)
+            throw new ForbiddenException("Quyền quản trị không còn hiệu lực.", "FORBIDDEN");
+    }
+
+    private async Task EnsureAnotherAdminAsync(User target, CancellationToken cancellationToken)
+    {
+        if (target.IsActive && target.Role == UserRole.ADMIN
+            && !await _dbContext.Users.AnyAsync(u => u.Id != target.Id && u.IsActive && u.Role == UserRole.ADMIN, cancellationToken))
+            throw new ConflictException("Không thể vô hiệu hóa quản trị viên hoạt động cuối cùng.", "LAST_ADMIN_REQUIRED");
+    }
+
 }

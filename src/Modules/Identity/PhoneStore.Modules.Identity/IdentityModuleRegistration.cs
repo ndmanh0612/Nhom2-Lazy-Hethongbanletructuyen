@@ -20,13 +20,20 @@ public static class IdentityModuleRegistration
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", IdentityDbContext.Schema)));
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddIdentityRateLimiting(configuration);
 
         // N2LHTBLTT-9: Phát JWT + lưu refresh token trong schema identity.
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<ITokenService, JwtTokenService>();
         services.AddScoped<IRefreshTokenStore, RefreshTokenStore>();
 
-        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IdentityService>();
+        services.AddScoped<IIdentityService>(provider => provider.GetRequiredService<IdentityService>());
+        services.AddScoped<AccountRecoveryService>();
+        services.Configure<RecoveryOptions>(configuration.GetSection("Recovery"));
+        services.AddHttpClient("identity-sms").ConfigurePrimaryHttpMessageHandler(() =>
+            new HttpClientHandler { AllowAutoRedirect = false });
+        services.AddScoped<IRecoveryDelivery, RecoveryDelivery>();
 
         return services;
     }

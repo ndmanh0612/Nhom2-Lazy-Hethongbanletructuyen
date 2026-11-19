@@ -11,6 +11,7 @@ public class User : AggregateRoot<long>
     public string? Phone { get; private set; }
     public UserRole Role { get; private set; } = UserRole.CUSTOMER;
     public bool IsActive { get; private set; } = true;
+    public string? VerifiedPhone { get; private set; }
 
     private readonly List<Address> _addresses = [];
     public IReadOnlyCollection<Address> Addresses => _addresses.AsReadOnly();
@@ -60,7 +61,7 @@ public class User : AggregateRoot<long>
         UserRole role,
         string? phone = null)
     {
-        if (role == UserRole.CUSTOMER)
+        if (role is not (UserRole.STAFF or UserRole.ADMIN))
         {
             throw new ValidationException(
                 "role",
@@ -83,14 +84,21 @@ public class User : AggregateRoot<long>
 
     public void UpdateProfile(string fullName, string? phone)
     {
+        if (!string.Equals(Phone, phone?.Trim(), StringComparison.Ordinal)) VerifiedPhone = null;
         FullName = fullName.Trim();
-        Phone = phone?.Trim();
+        Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
         Touch();
     }
 
     public void UpdatePassword(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+        Touch();
+    }
+
+    public void VerifyPhone(string normalizedPhone)
+    {
+        VerifiedPhone = normalizedPhone;
         Touch();
     }
 
@@ -106,7 +114,7 @@ public class User : AggregateRoot<long>
     /// </summary>
     public void ChangeRole(UserRole newRole)
     {
-        if (newRole == UserRole.CUSTOMER)
+        if (Role == UserRole.CUSTOMER || newRole is not (UserRole.STAFF or UserRole.ADMIN))
         {
             throw new ValidationException(
                 "role",
