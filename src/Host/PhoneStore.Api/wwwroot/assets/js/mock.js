@@ -125,6 +125,11 @@ const Mock = (() => {
         }
     }
 
+    /** Ghi đè danh sách yêu thích cục bộ (dùng khi đồng bộ từ server sau đăng nhập). */
+    function setWishlist(ids) {
+        localStorage.setItem(wishlistKey, JSON.stringify(ids));
+    }
+
     function toggleWishlist(productId) {
         const list = getWishlist();
         const index = list.indexOf(productId);
@@ -295,6 +300,7 @@ const Mock = (() => {
         faqs,
         installmentPlan,
         getWishlist,
+        setWishlist,
         toggleWishlist,
         compare,
         priceHistory,

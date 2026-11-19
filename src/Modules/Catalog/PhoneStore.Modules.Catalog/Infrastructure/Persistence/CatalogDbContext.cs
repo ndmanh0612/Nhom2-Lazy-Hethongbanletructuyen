@@ -12,6 +12,8 @@ public class CatalogDbContext : DbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
     public DbSet<ProductImage> ProductImages => Set<ProductImage>();
+    public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<WishlistItem> WishlistItems => Set<WishlistItem>();
 
     public CatalogDbContext(DbContextOptions<CatalogDbContext> options) : base(options)
     {
@@ -95,6 +97,31 @@ public class CatalogDbContext : DbContext
             entity.Property(e => e.ImageUrl).HasMaxLength(500).IsRequired();
             entity.Property(e => e.SortOrder).HasDefaultValue(0);
             entity.HasIndex(e => e.ProductId);
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.ToTable("reviews");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+            entity.Property(e => e.ReviewerName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Comment).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.HasIndex(e => new { e.ProductId, e.UserId }).IsUnique();
+            entity.HasOne<Product>().WithMany().HasForeignKey(e => e.ProductId).OnDelete(DeleteBehavior.Cascade);
+            entity.ToTable(t => t.HasCheckConstraint("ck_reviews_rating", "\"Rating\" BETWEEN 1 AND 5"));
+        });
+
+        modelBuilder.Entity<WishlistItem>(entity =>
+        {
+            entity.ToTable("wishlist_items");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()").IsRequired();
+            entity.HasIndex(e => new { e.UserId, e.ProductId }).IsUnique();
+            entity.HasOne<Product>().WithMany().HasForeignKey(e => e.ProductId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

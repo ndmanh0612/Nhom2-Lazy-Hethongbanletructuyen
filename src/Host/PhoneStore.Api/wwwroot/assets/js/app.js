@@ -342,14 +342,36 @@ const App = (() => {
                 const isActive = list.includes(productId);
                 wishlistButton.classList.toggle('is-active', isActive);
                 wishlistButton.textContent = isActive ? '♥' : '♡';
+                pushWishlist(productId, isActive);
                 UI.toast(isActive ? 'Đã thêm vào danh sách yêu thích.' : 'Đã bỏ khỏi danh sách yêu thích.', 'success');
             }
         });
 
         document.addEventListener('phonestore:auth-changed', () => {
+            pullWishlist();
             syncAuthUi();
             refreshCartBadge();
         });
+    }
+
+    /** Đẩy thay đổi yêu thích lên server (chỉ khi đã đăng nhập; chưa đăng nhập thì lưu cục bộ). */
+    function pushWishlist(productId, isActive) {
+        if (!Api.isAuthenticated()) return;
+        const call = isActive ? Api.engagement.addWishlist(productId) : Api.engagement.removeWishlist(productId);
+        call.catch(() => { /* lỗi mạng: danh sách cục bộ vẫn đúng, lần đăng nhập sau sẽ đồng bộ lại */ });
+    }
+
+    /** Sau khi đăng nhập: gộp danh sách cục bộ vào server rồi lấy danh sách chuẩn về. */
+    async function pullWishlist() {
+        if (!Api.isAuthenticated()) return;
+        try {
+            const local = Mock.getWishlist();
+            await Promise.all(local.map(id => Api.engagement.addWishlist(id).catch(() => null)));
+            const serverIds = await Api.engagement.getWishlist();
+            Mock.setWishlist(serverIds);
+        } catch {
+            /* giữ nguyên danh sách cục bộ */
+        }
     }
 
     function compareProducts(product) {
@@ -400,5 +422,5 @@ const App = (() => {
 
     document.addEventListener('DOMContentLoaded', init);
 
-    return { init, route, refreshCartBadge, openQuickLogin, compareProducts, afterLoginHash, logout };
+    return { init, route, refreshCartBadge, openQuickLogin, compareProducts, afterLoginHash, logout, pushWishlist };
 })();

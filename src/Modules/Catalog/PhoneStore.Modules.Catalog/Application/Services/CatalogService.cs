@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using PhoneStore.BuildingBlocks.Application;
 using PhoneStore.BuildingBlocks.Contracts.Catalog;
@@ -291,6 +293,22 @@ public class CatalogService : ICatalogService
     // FR-04 / FR-05: Truy vấn sản phẩm.
     // -----------------------------------------------------------------------
 
+    /// <summary>Chữ thường, bỏ dấu tiếng Việt (đ → d), gom khoảng trắng — dùng cho tìm kiếm.</summary>
+    private static string NormalizeSearchText(string text)
+    {
+        var decomposed = text.Trim().ToLowerInvariant().Replace('đ', 'd').Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder(decomposed.Length);
+        foreach (var ch in decomposed)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(ch);
+            }
+        }
+
+        return sb.ToString().Normalize(NormalizationForm.FormC);
+    }
+
     public async Task<Result<PagedResult<ProductDto>>> GetProductsAsync(ProductFilterQuery query, CancellationToken cancellationToken = default)
     {
         var errors = new Dictionary<string, string[]>();
@@ -345,8 +363,28 @@ public class CatalogService : ICatalogService
 
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
-            var search = query.Search.Trim().ToLower();
-            baseQuery = baseQuery.Where(p => p.Name.ToLower().Contains(search));
+            // Tìm theo tên + hãng + danh mục, tách từng từ (mọi từ đều phải khớp), không phân biệt hoa/thường và dấu tiếng Việt.
+            var tokens = NormalizeSearchText(query.Search)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            var candidates = await (
+                from p in _dbContext.Products.AsNoTracking()
+                where p.IsActive
+                join b in _dbContext.Brands.AsNoTracking() on p.BrandId equals b.Id
+                join c in _dbContext.Categories.AsNoTracking() on p.CategoryId equals c.Id
+                select new { p.Id, p.Name, Brand = b.Name, Category = c.Name })
+                .ToListAsync(cancellationToken);
+
+            var matchedIds = candidates
+                .Where(x =>
+                {
+                    var haystack = NormalizeSearchText($"{x.Name} {x.Brand} {x.Category}");
+                    return tokens.All(haystack.Contains);
+                })
+                .Select(x => x.Id)
+                .ToList();
+
+            baseQuery = baseQuery.Where(p => matchedIds.Contains(p.Id));
         }
 
         if (query.CategoryId.HasValue)

@@ -18,6 +18,7 @@ public static class CatalogModuleRegistration
             options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", CatalogDbContext.Schema)));
 
         services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<IEngagementService, EngagementService>();
         services.AddScoped<IProductPricingContract, ProductPricingContract>();
 
         return services;

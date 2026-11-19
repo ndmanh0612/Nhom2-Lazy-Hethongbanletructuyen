@@ -324,5 +324,32 @@ const Api = (() => {
         }
     };
 
-    return { auth, catalog, cart, order, admin, ApiError, getAccessToken, getUser, setSession, restoreSession, isAuthenticated, isStaff, request };
+    /* ---------------- Đánh giá & yêu thích ---------------- */
+
+    const engagement = {
+        getReviews(productId) {
+            return request(`/products/${productId}/reviews`);
+        },
+        saveReview(productId, rating, comment) {
+            const user = getUser();
+            return request(`/products/${productId}/reviews`, {
+                method: 'PUT',
+                body: { reviewerName: user ? user.fullName : null, rating, comment }
+            });
+        },
+        deleteReview(productId) {
+            return request(`/products/${productId}/reviews`, { method: 'DELETE' });
+        },
+        getWishlist() {
+            return request('/me/wishlist');
+        },
+        addWishlist(productId) {
+            return request(`/me/wishlist/${productId}`, { method: 'PUT' });
+        },
+        removeWishlist(productId) {
+            return request(`/me/wishlist/${productId}`, { method: 'DELETE' });
+        }
+    };
+
+    return { auth, catalog, cart, order, admin, engagement, ApiError, getAccessToken, getUser, setSession, restoreSession, isAuthenticated, isStaff, request };
 })();

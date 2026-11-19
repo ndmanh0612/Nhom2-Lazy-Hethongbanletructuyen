@@ -342,17 +342,6 @@ const Pages = (() => {
                 <td>${escapeHtml(plan.note)}</td>
             </tr>`).join('');
 
-        const reviews = Mock.reviews.map(review => `
-            <div class="order-item-row" style="align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)">
-                <div style="flex:1">
-                    <b>${escapeHtml(review.author)}</b>
-                    <span style="margin-left:8px;color:var(--amber);font-size:12px">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
-                    <span style="display:block;color:var(--ink-soft);font-size:12px">${escapeHtml(review.date)} · ${escapeHtml(review.variant)}</span>
-                    <p style="margin:6px 0 0;font-size:13.5px"><b>${escapeHtml(review.title)}</b> — ${escapeHtml(review.body)}</p>
-                </div>
-                <span class="badge badge--muted">👍 ${review.likes}</span>
-            </div>`).join('');
-
         UI.render(`
             ${UI.breadcrumb([
                 { label: 'Trang chủ', href: '#/' },
@@ -442,8 +431,7 @@ const Pages = (() => {
                     </table>
 
                     <h3>Đánh giá sản phẩm</h3>
-                    ${UI.mockBanner('Đánh giá và bình luận chưa có endpoint, dữ liệu dưới đây là mô phỏng.')}
-                    ${reviews}
+                    <div id="reviews-box"><p class="field__hint">Đang tải đánh giá…</p></div>
 
                     <h3>Lịch sử giá</h3>
                     ${UI.mockBanner('Lịch sử giá được mô phỏng từ giá hiện tại.')}
@@ -535,14 +523,88 @@ const Pages = (() => {
                 window.location.hash = '#/thanh-toan';
             }
         });
+        loadReviews(product.id);
         document.getElementById('btn-wishlist').addEventListener('click', () => {
             const list = Mock.toggleWishlist(product.id);
+            App.pushWishlist(product.id, list.includes(product.id));
             UI.toast(list.includes(product.id) ? 'Đã thêm vào danh sách yêu thích.' : 'Đã bỏ khỏi danh sách yêu thích.', 'success');
         });
         document.getElementById('btn-compare').addEventListener('click', () => {
             const compared = App.compareProducts(product);
             window.location.hash = `#/so-sanh?ids=${compared.join(',')}`;
         });
+    }
+
+    /** Tải và hiển thị đánh giá thật từ API, kèm form gửi đánh giá cho người đã đăng nhập. */
+    async function loadReviews(productId) {
+        const box = document.getElementById('reviews-box');
+        if (!box) return;
+        let data;
+        try {
+            data = await Api.engagement.getReviews(productId);
+        } catch (error) {
+            box.innerHTML = `<p class="field__hint">${escapeHtml(error.message || 'Không tải được đánh giá.')}</p>`;
+            return;
+        }
+
+        const me = Api.getUser();
+        const mine = me ? data.items.find(r => r.userId === me.id) : null;
+        const list = data.items.map(review => `
+            <div class="order-item-row" style="align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)">
+                <div style="flex:1">
+                    <b>${escapeHtml(review.reviewerName)}</b>
+                    <span style="margin-left:8px;color:var(--amber);font-size:12px">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                    <span style="display:block;color:var(--ink-soft);font-size:12px">${new Date(review.createdAt).toLocaleDateString('vi-VN')}</span>
+                    ${review.comment ? `<p style="margin:6px 0 0;font-size:13.5px">${escapeHtml(review.comment)}</p>` : ''}
+                </div>
+            </div>`).join('');
+
+        const form = Api.isAuthenticated() ? `
+            <form id="review-form" class="form" style="margin-top:14px">
+                <label class="field"><span class="field__label">Số sao</span>
+                    <select name="rating">${[5, 4, 3, 2, 1].map(n => `<option value="${n}" ${mine && mine.rating === n ? 'selected' : ''}>${n} sao</option>`).join('')}</select>
+                </label>
+                <label class="field"><span class="field__label">Nhận xét</span>
+                    <textarea name="comment" rows="3" maxlength="1000" placeholder="Chia sẻ trải nghiệm của bạn">${mine ? escapeHtml(mine.comment) : ''}</textarea>
+                </label>
+                <div class="form__error" id="review-error" hidden></div>
+                <button class="btn btn--primary" type="submit">${mine ? 'Cập nhật đánh giá' : 'Gửi đánh giá'}</button>
+                ${mine ? '<button class="btn btn--ghost" type="button" id="review-delete">Xoá đánh giá</button>' : ''}
+            </form>`
+            : '<p class="field__hint" style="margin-top:12px"><a href="#/dang-nhap">Đăng nhập</a> để gửi đánh giá.</p>';
+
+        box.innerHTML = `
+            <p><b>${data.count ? data.averageRating.toFixed(1) + ' / 5' : 'Chưa có đánh giá'}</b>
+               ${data.count ? `<span class="field__hint"> · ${data.count} đánh giá</span>` : ''}</p>
+            ${list}${form}`;
+
+        const reviewForm = document.getElementById('review-form');
+        if (!reviewForm) return;
+        const errorBox = document.getElementById('review-error');
+        reviewForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            errorBox.hidden = true;
+            try {
+                await Api.engagement.saveReview(productId, Number(reviewForm.rating.value), reviewForm.comment.value);
+                UI.toast('Đã lưu đánh giá.', 'success');
+                loadReviews(productId);
+            } catch (error) {
+                errorBox.hidden = false;
+                errorBox.textContent = formatAuthError(error);
+            }
+        });
+        const del = document.getElementById('review-delete');
+        if (del) {
+            del.addEventListener('click', async () => {
+                try {
+                    await Api.engagement.deleteReview(productId);
+                    UI.toast('Đã xoá đánh giá.', 'success');
+                    loadReviews(productId);
+                } catch (error) {
+                    UI.toast(error.message, 'error');
+                }
+            });
+        }
     }
 
     function parseSpecifications(json) {
